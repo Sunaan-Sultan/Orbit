@@ -3,7 +3,11 @@ package com.orbit.starsystems.core
 import androidx.compose.ui.graphics.Color
 
 /** Identifies which animated scene a fact renders. */
-enum class SceneId { SIZES, SUN, DISTANCE, MOON, LIGHT, STAR }
+enum class SceneId {
+    SIZES, SUN, DISTANCE, MOON, LIGHT, STAR,
+    // Worlds Up Close (and a few extras in existing categories)
+    RINGS, VOLCANO, STORM, DIAMOND, VENUSDAY, URANUS, MERCURYTEMP, SATURNFLOAT, ASTEROIDBELT, PLUTOYEAR,
+}
 
 /** A planet: diameter in Earth-diameters, mean distance in AU, and a 3-stop sphere palette. */
 data class Planet(
@@ -125,6 +129,76 @@ val FACTS: List<Fact> = listOf(
             "In kilometres" to "≈ 40 trillion",
             "By fastest probe" to "≈ 73,000 years",
         ),
+    ),
+    Fact(
+        id = "rings", cat = "Worlds Up Close", accent = hex(0xe8d6a6), scene = SceneId.RINGS,
+        dur = 9f, hero = 5.4f, title = "Saturn's Rings",
+        sub = "282,000 km wide, ~10 m thick",
+        blurb = "Saturn's rings stretch about 282,000 km edge to edge — most of the Earth–Moon distance — yet they average only around ten metres thick. They're built almost entirely of ice, from dust grains to house-sized boulders.",
+        stats = listOf("Width" to "≈ 282,000 km", "Average thickness" to "≈ 10 m", "Made of" to "Ice & rock"),
+    ),
+    Fact(
+        id = "olympus", cat = "Worlds Up Close", accent = hex(0xb5462a), scene = SceneId.VOLCANO,
+        dur = 9f, hero = 4.4f, title = "Olympus Mons",
+        sub = "22 km tall — 2.5× Everest",
+        blurb = "Olympus Mons on Mars is the tallest known volcano in the solar system: about 22 km high, two and a half times the height of Everest, on a base roughly the size of Arizona. Low gravity and a still crust let it grow for millions of years.",
+        stats = listOf("Height" to "≈ 22 km", "vs Everest" to "≈ 2.5×", "Base width" to "≈ 600 km"),
+    ),
+    Fact(
+        id = "redspot", cat = "Worlds Up Close", accent = hex(0xc8643a), scene = SceneId.STORM,
+        dur = 9f, hero = 5f, title = "The Great Red Spot",
+        sub = "A storm wider than Earth",
+        blurb = "Jupiter's Great Red Spot is a high-pressure storm observed for more than 350 years. It is wide enough to swallow the entire Earth, with winds tearing around its edge at hundreds of km/h.",
+        stats = listOf("Age observed" to "350+ years", "Width" to "> 1 Earth", "Edge winds" to "≈ 430 km/h"),
+    ),
+    Fact(
+        id = "diamondrain", cat = "Worlds Up Close", accent = hex(0x7fa8e6), scene = SceneId.DIAMOND,
+        dur = 9f, hero = 5f, title = "Diamond Rain",
+        sub = "Carbon falls as diamond",
+        blurb = "Deep inside Neptune (and Uranus), immense heat and pressure break methane apart and squeeze its carbon into diamond. Experiments suggest these diamonds drift downward like a slow, glittering rain.",
+        stats = listOf("Where" to "Deep interior", "From" to "Methane", "Falls as" to "Solid diamond"),
+    ),
+    Fact(
+        id = "venusday", cat = "Light & Time", accent = hex(0xdcb37e), scene = SceneId.VENUSDAY,
+        dur = 9f, hero = 4.6f, title = "Longest Day",
+        sub = "A day longer than a year",
+        blurb = "Venus rotates so slowly — and backwards — that a single day (243 Earth days) lasts longer than its entire year (225 Earth days). The Sun there would rise in the west and set in the east.",
+        stats = listOf("One day" to "243 Earth days", "One year" to "225 Earth days", "Spin" to "Retrograde"),
+    ),
+    Fact(
+        id = "uranus", cat = "Worlds Up Close", accent = hex(0x9ac8cb), scene = SceneId.URANUS,
+        dur = 9.4f, hero = 5f, title = "The Tipped Planet",
+        sub = "Uranus orbits on its side",
+        blurb = "Uranus is tilted a staggering 98°, so it effectively rolls around the Sun on its side — likely knocked over by a giant impact. Each pole spends about 42 years in continuous sunlight, then 42 years in darkness.",
+        stats = listOf("Axial tilt" to "98°", "Polar day/night" to "≈ 42 years each", "Likely cause" to "Giant impact"),
+    ),
+    Fact(
+        id = "mercurytemp", cat = "Worlds Up Close", accent = hex(0xff9e34), scene = SceneId.MERCURYTEMP,
+        dur = 9.4f, hero = 5.4f, title = "Fire & Ice",
+        sub = "430°C day, −180°C night",
+        blurb = "Mercury has barely any atmosphere to hold heat, so its sunlit side roasts at about 430°C while the night side plunges to around −180°C — a swing of more than 600°C, the most extreme of any planet.",
+        stats = listOf("Day side" to "≈ +430°C", "Night side" to "≈ −180°C", "Temperature swing" to "> 600°C"),
+    ),
+    Fact(
+        id = "saturnfloat", cat = "Worlds Up Close", accent = hex(0xd8bd82), scene = SceneId.SATURNFLOAT,
+        dur = 9.4f, hero = 4.4f, title = "It Would Float",
+        sub = "Less dense than water",
+        blurb = "Saturn is a giant ball of mostly hydrogen and helium with an average density of just 0.69 g/cm³ — lower than water. Given an ocean large enough, the whole planet would bob on the surface.",
+        stats = listOf("Saturn density" to "0.69 g/cm³", "Water density" to "1.00 g/cm³", "Mostly" to "Hydrogen & helium"),
+    ),
+    Fact(
+        id = "asteroidbelt", cat = "Distances", accent = hex(0xb6a479), scene = SceneId.ASTEROIDBELT,
+        dur = 9.4f, hero = 4.6f, title = "The Empty Belt",
+        sub = "Millions of rocks, vast gaps",
+        blurb = "The asteroid belt between Mars and Jupiter holds over a million catalogued rocks, yet they are spread so thinly — often a million km apart — that every spacecraft sent through has passed without coming close to one.",
+        stats = listOf("Known asteroids" to "1,000,000+", "Typical gap" to "≈ 1,000,000 km", "Location" to "Mars ↔ Jupiter"),
+    ),
+    Fact(
+        id = "plutoyear", cat = "Light & Time", accent = hex(0xc9b8d8), scene = SceneId.PLUTOYEAR,
+        dur = 9.4f, hero = 5f, title = "Pluto's Long Year",
+        sub = "248 Earth years per orbit",
+        blurb = "Pluto orbits so far from the Sun that one lap takes about 248 Earth years. Since its discovery in 1930, it still hasn't completed a single trip around the Sun.",
+        stats = listOf("One orbit" to "248 Earth years", "Discovered" to "1930", "Orbits since" to "Still not one"),
     ),
 )
 
