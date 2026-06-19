@@ -84,26 +84,36 @@ fun BoxScope.SceneFade(t: Float, duration: Float, content: @Composable BoxScope.
     Box(Modifier.fillMaxSize().alpha(o.coerceIn(0f, 1f))) { content() }
 }
 
-/** A radial-gradient disc (the Sun, halos) drawn so the gradient centre can be offset. */
+/**
+ * A radial-gradient disc (the Sun, halos) positioned by absolute scene coordinates.
+ * Drawn on a scene-sized canvas — the circle can be far larger than the canvas (the Sun
+ * is) and only the part overlapping the scene shows, which is exactly the rising limb.
+ * Using a normal-sized canvas (rather than an enormous offset node) avoids the huge-layer
+ * rendering glitches that shifted the disc off-centre.
+ */
 @Composable
 private fun RadialDisc(
-    dUnits: Float,
+    cxUnits: Float,
+    cyUnits: Float,
+    rUnits: Float,
     stops: Array<Pair<Float, Color>>,
     centerFracX: Float,
     centerFracY: Float,
     radiusFactor: Float,
-    modifier: Modifier = Modifier,
 ) {
-    Canvas(modifier.size(dUnits.dp)) {
-        val w = size.width
+    Canvas(Modifier.fillMaxSize()) {
+        val k = size.width / 1080f
+        val cx = cxUnits * k; val cy = cyUnits * k; val r = rUnits * k
+        val gcx = cx + r * (2f * centerFracX - 1f)
+        val gcy = cy + r * (2f * centerFracY - 1f)
         drawCircle(
             brush = Brush.radialGradient(
                 colorStops = stops,
-                center = Offset(w * centerFracX, w * centerFracY),
-                radius = w * radiusFactor,
+                center = Offset(gcx, gcy),
+                radius = (2f * r) * radiusFactor,
             ),
-            radius = w / 2f,
-            center = Offset(w / 2f, w / 2f),
+            radius = r,
+            center = Offset(cx, cy),
         )
     }
 }
@@ -210,19 +220,20 @@ fun BoxScope.SceneSun(t: Float, duration: Float) = SceneFade(t, duration) {
     val rise = animate(80f, 0f, 0f, 2.4f, Easing.easeOutCubic)(t)
     val count = interpolate(listOf(1.6f, 4.6f), listOf(0f, 1300000f), Easing.easeOutExpo)(t)
     val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
-    val sunR = 1750f; val sunCx = 540f; val sunCy = 2560f + rise
+    // A much larger radius than the original (1750) keeps the visible limb nearly
+    // horizontal across the full canvas width; `810 + sunR` keeps the limb's top edge
+    // at the same height the design framed it at.
+    val sunR = 3600f; val sunCx = 540f; val sunCy = 810f + sunR + rise
 
     RadialDisc(
-        dUnits = (sunR + 260f) * 2f,
+        cxUnits = sunCx, cyUnits = sunCy, rUnits = sunR + 260f,
         stops = arrayOf(0f to Color(0x4Dffb240), 0.55f to Color(0x0Dff8c28), 0.7f to Color(0x00ff8c28), 1f to Color(0x00ff8c28)),
         centerFracX = 0.5f, centerFracY = 0.5f, radiusFactor = 0.5f,
-        modifier = Modifier.offset((sunCx - sunR - 260f).dp, (sunCy - sunR - 260f).dp),
     )
     RadialDisc(
-        dUnits = sunR * 2f,
+        cxUnits = sunCx, cyUnits = sunCy, rUnits = sunR,
         stops = arrayOf(0f to c(0xfff7d6), 0.34f to c(0xffd451), 0.66f to c(0xff9e34), 1f to c(0xff7a1f)),
         centerFracX = 0.5f, centerFracY = 0.36f, radiusFactor = 0.66f,
-        modifier = Modifier.offset((sunCx - sunR).dp, (sunCy - sunR).dp),
     )
     At(90f, 210f + e1.ty, e1.opacity) {
         androidx.compose.material3.Text("AND THEN, THE SUN", style = eyebrow(c(0xd9a24e)))
