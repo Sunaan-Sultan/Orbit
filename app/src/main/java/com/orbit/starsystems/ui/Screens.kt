@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -76,7 +77,11 @@ fun SystemsList(onOpenSol: () -> Unit) {
             .verticalScroll(rememberScrollState())
             .padding(bottom = 80.dp),
     ) {
-        Column(Modifier.padding(start = 18.dp, end = 18.dp, top = 22.dp, bottom = 6.dp)) {
+        Column(
+            Modifier
+                .statusBarsPadding()
+                .padding(start = 18.dp, end = 18.dp, top = 22.dp, bottom = 6.dp)
+        ) {
             Text("ORBIT", style = ts(13f, FontWeight.SemiBold, Dim, 0.16f))
             Text("Star systems", style = ts(33f, FontWeight.Bold, Color.White, -0.02f), modifier = Modifier.padding(top = 2.dp))
             Text(
@@ -183,6 +188,7 @@ fun SystemExplore(onOpenFact: (String) -> Unit, onBack: () -> Unit) {
             Modifier
                 .fillMaxWidth()
                 .background(Color.Black.copy(alpha = 0.78f))
+                .statusBarsPadding()
                 .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -230,7 +236,11 @@ fun SystemExplore(onOpenFact: (String) -> Unit, onBack: () -> Unit) {
 fun SavedScreen(saved: Set<String>, onOpen: (String) -> Unit) {
     val items = FACTS.filter { saved.contains(it.id) }
     Column(Modifier.fillMaxSize().background(Color.Black).padding(bottom = 80.dp)) {
-        Column(Modifier.padding(start = 18.dp, end = 18.dp, top = 20.dp, bottom = 14.dp)) {
+        Column(
+            Modifier
+                .statusBarsPadding()
+                .padding(start = 18.dp, end = 18.dp, top = 20.dp, bottom = 14.dp)
+        ) {
             Text("YOUR COLLECTION", style = ts(13f, FontWeight.SemiBold, Dim, 0.14f))
             Text("Saved", style = ts(32f, FontWeight.Bold, Color.White, -0.02f), modifier = Modifier.padding(top = 2.dp))
         }
@@ -266,7 +276,13 @@ fun ProfileScreen(savedCount: Int, viewed: Int) {
     Column(
         Modifier.fillMaxSize().background(Color.Black).verticalScroll(rememberScrollState()).padding(bottom = 80.dp),
     ) {
-        Column(Modifier.fillMaxWidth().padding(top = 28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(top = 28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Sphere(sizeUnits = 84f, colors = listOf(Color(0xFF9CC4EC), Color(0xFF3D72B8), Color(0xFF1A3360)), glow = Color(0xFF508CD2).copy(alpha = 0.4f))
             Text("Stargazer", style = ts(22f, FontWeight.Bold, Color.White), modifier = Modifier.padding(top = 14.dp))
             Text("Exploring since today", style = ts(14f, color = Dim), modifier = Modifier.padding(top = 2.dp))
@@ -344,7 +360,11 @@ fun FactScreen(
 
         // top bar
         Row(
-            Modifier.align(Alignment.TopStart).fillMaxWidth().padding(12.dp),
+            Modifier
+                .align(Alignment.TopStart)
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             RoundButton(onClick = onBack) { Ico("back", size = 22.dp, color = Color.White, sw = 2.1f) }
