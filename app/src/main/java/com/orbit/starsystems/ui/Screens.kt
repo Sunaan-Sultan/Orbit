@@ -359,19 +359,19 @@ fun FactScreen(
         }
 
         // top bar
-        Row(
-            Modifier
-                .align(Alignment.TopStart)
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            RoundButton(onClick = onBack) { Ico("back", size = 22.dp, color = Color.White, sw = 2.1f) }
-            RoundButton(onClick = onToggleSave) {
-                Ico("saved", size = 20.dp, color = if (isSaved) fact.accent else Color.White, filled = isSaved)
-            }
-        }
+//        Row(
+//            Modifier
+//                .align(Alignment.TopStart)
+//                .fillMaxWidth()
+//                .statusBarsPadding()
+//                .padding(horizontal = 12.dp, vertical = 2.dp),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//        ) {
+//            RoundButton(onClick = onBack) { Ico("back", size = 22.dp, color = Color.White, sw = 2.1f) }
+//            RoundButton(onClick = onToggleSave) {
+//                Ico("saved", size = 20.dp, color = if (isSaved) fact.accent else Color.White, filled = isSaved)
+//            }
+//        }
 
         // caption + learn more (taps here don't toggle play)
         Column(

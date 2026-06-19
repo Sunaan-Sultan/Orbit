@@ -268,16 +268,16 @@ fun BoxScope.SceneSun(t: Float, duration: Float) = SceneFade(t, duration) {
 
 @Composable
 fun BoxScope.SceneDistance(t: Float, duration: Float) = SceneFade(t, duration) {
-    val topY = 230f; val auScale = 51f
+    val topY = 270f; val auScale = 51f
     val draw = animate(0f, 1f, 0.8f, 5.5f, Easing.easeInOutSine)(t)
     val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
     val lineBottom = topY + 30.07f * auScale
     val drawnTo = topY + (lineBottom - topY) * draw
 
-    At(90f, 150f + e1.ty, e1.opacity) {
+    At(90f, 50f + e1.ty, e1.opacity) {
         androidx.compose.material3.Text("TRUE ORBITAL DISTANCES", style = eyebrow(c(0x8c8c8c)))
     }
-    At(88f, 196f + e2.ty, e2.opacity) {
+    At(88f, 96f + e2.ty, e2.opacity) {
         androidx.compose.material3.Text(
             buildAnnotatedString {
                 append("Mostly ")
@@ -326,7 +326,7 @@ fun BoxScope.SceneDistance(t: Float, duration: Float) = SceneFade(t, duration) {
         }
     }
     val ba = reveal(t, 6f)
-    At(90f, 1760f, ba.opacity, modifier = Modifier.width(900.dp)) {
+    At(90f, 1850f, ba.opacity, modifier = Modifier.width(900.dp)) {
         androidx.compose.material3.Text(
             buildAnnotatedString {
                 append("Sunlight takes ")
