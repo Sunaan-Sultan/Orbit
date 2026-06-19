@@ -136,6 +136,18 @@ fun BoxScope.SceneSizes(t: Float, duration: Float) = SceneFade(t, duration) {
     }
     val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.9f); val e3 = reveal(t, 6.4f)
 
+    // Stagger labels onto stacked rows so the tightly-clustered inner planets
+    // (Mercury…Mars) don't overlap each other.
+    val labelW = 96f
+    val lastCenter = ArrayList<Float>()
+    val labelRow = IntArray(items.size)
+    items.forEach { item ->
+        var r = 0
+        while (r < lastCenter.size && item.cx - lastCenter[r] < labelW) r++
+        if (r == lastCenter.size) lastCenter.add(item.cx) else lastCenter[r] = item.cx
+        labelRow[item.idx] = r
+    }
+
     At(90f, 220f + e1.ty, e1.opacity) {
         androidx.compose.material3.Text("THE SOLAR SYSTEM", style = eyebrow(c(0x8c8c8c)))
     }
@@ -165,7 +177,7 @@ fun BoxScope.SceneSizes(t: Float, duration: Float) = SceneFade(t, duration) {
                 },
         )
         val la = reveal(t, 4.6f + i * 0.05f)
-        At(cx - 200f, baseline + 26f, la.opacity) {
+        At(cx - 200f, baseline + 26f + labelRow[i] * 30f, la.opacity) {
             androidx.compose.material3.Text(
                 planet.name,
                 style = TextStyle(

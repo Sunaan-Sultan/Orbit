@@ -363,10 +363,7 @@ fun FactScreen(
                     interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
                 ) {},
         ) {
-            CategoryPill(fact.cat, fact.accent)
-            Spacer(Modifier.height(12.dp))
-            Text(fact.title, style = ts(32f, FontWeight.Bold, Color.White, -0.02f, lineHeight = 34f))
-            Text(fact.sub, style = ts(16f, FontWeight.Light, Color(0xFFD4D4D4)), modifier = Modifier.padding(top = 5.dp))
+            Text(fact.sub, style = ts(16f, FontWeight.Light, Color(0xFFD4D4D4)))
             Spacer(Modifier.height(16.dp))
             Row(
                 Modifier
