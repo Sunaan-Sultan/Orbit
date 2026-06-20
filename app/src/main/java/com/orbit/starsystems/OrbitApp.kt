@@ -156,7 +156,11 @@ fun OrbitApp() {
                         if (sys != null) {
                             SystemExplore(sys = sys, onOpenFact = { openFact(it) }, onBack = { openSys = null })
                         } else {
-                            SystemsList(onOpenSol = { openSys = "sol" }, onOpenAcen = { openSys = "acen" })
+                            SystemsList(
+                                onOpenSol = { openSys = "sol" },
+                                onOpenAcen = { openSys = "acen" },
+                                onOpenTrappist = { openSys = "tr" },
+                            )
                         }
                     }
                     "saved" -> SavedScreen(saved = saved, onOpen = { openFact(it) })

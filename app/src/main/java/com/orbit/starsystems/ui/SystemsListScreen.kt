@@ -32,9 +32,10 @@ import com.orbit.starsystems.core.AC_FACTS
 import com.orbit.starsystems.core.SOL_FACTS
 import com.orbit.starsystems.core.SYSTEMS
 import com.orbit.starsystems.core.SceneId
+import com.orbit.starsystems.core.TRAPPIST_FACTS
 
 @Composable
-fun SystemsList(onOpenSol: () -> Unit, onOpenAcen: () -> Unit) {
+fun SystemsList(onOpenSol: () -> Unit, onOpenAcen: () -> Unit, onOpenTrappist: () -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
@@ -67,6 +68,12 @@ fun SystemsList(onOpenSol: () -> Unit, onOpenAcen: () -> Unit) {
             pill = "Nearest neighbour", pillColor = Color(0xFFFFCF8A),
             title = "Alpha Centauri", subtitle = "Triple-star system · ${AC_FACTS.size} facts",
             onClick = onOpenAcen,
+        )
+        FeaturedSystem(
+            scene = SceneId.TP_INTRO, dur = 9.4f, hero = 5.5f,
+            pill = "Seven worlds", pillColor = Color(0xFFE0744A),
+            title = "TRAPPIST-1", subtitle = "Seven Earth-size worlds · ${TRAPPIST_FACTS.size} facts",
+            onClick = onOpenTrappist,
         )
 
         Row(

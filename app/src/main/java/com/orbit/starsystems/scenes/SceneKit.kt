@@ -242,5 +242,13 @@ fun BoxScope.RenderScene(scene: SceneId, t: Float, duration: Float) {
         SceneId.AC_PROXIMA -> SceneAcProxima(t, duration)
         SceneId.AC_PROXIMAB -> SceneAcProximaB(t, duration)
         SceneId.AC_TRAVEL -> SceneAcTravel(t, duration)
+        SceneId.TP_INTRO -> TpIntro(t, duration)
+        SceneId.TP_STAR -> TpStarSize(t, duration)
+        SceneId.TP_MERCURY -> TpMercury(t, duration)
+        SceneId.TP_ORBITS -> TpOrbits(t, duration)
+        SceneId.TP_HABITABLE -> TpHabitable(t, duration)
+        SceneId.TP_TIDAL -> TpTidal(t, duration)
+        SceneId.TP_SKY -> TpSky(t, duration)
+        SceneId.TP_DISTANCE -> TpDistance(t, duration)
     }
 }
