@@ -102,7 +102,8 @@ fun FactCard(fact: Fact, onClick: () -> Unit, modifier: Modifier = Modifier, wid
         modifier
             .aspectRatio(if (wide) 16f / 10f else 3f / 4f)
             .clip(RoundedCornerShape(16.dp))
-            .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(16.dp))
+            .background(Color.White.copy(alpha = 0.04f))
+            .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
     ) {
         MiniStage(fact.scene, fact.dur, fact.hero, active = false, paused = true, modifier = Modifier.fillMaxSize())

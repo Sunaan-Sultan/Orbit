@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,12 +62,17 @@ fun SystemExplore(sys: String, onOpenFact: (String) -> Unit, onBack: () -> Unit)
         }
         categoriesForSys(sys).forEach { cat ->
             val inCat = facts.filter { it.cat == cat }
+            val accent = inCat.firstOrNull()?.accent ?: Color.White
             Row(
-                Modifier.fillMaxWidth().padding(start = 22.dp, end = 22.dp, top = 28.dp, bottom = 14.dp),
+                Modifier.fillMaxWidth().padding(start = 22.dp, end = 22.dp, top = 40.dp, bottom = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(cat, style = ts(18f, FontWeight.SemiBold, Color.White))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(Modifier.size(3.5.dp, 22.dp).clip(RoundedCornerShape(100)).background(accent))
+                    Spacer(Modifier.width(12.dp))
+                    Text(cat, style = ts(26f, FontWeight.Bold, Color.White, -0.01f))
+                }
                 Text("${inCat.size} ${if (inCat.size == 1) "fact" else "facts"}".uppercase(), style = ts(11f, FontWeight.SemiBold, Color(0xFF6A6A6A), 0.14f))
             }
             Column(Modifier.padding(horizontal = 22.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
