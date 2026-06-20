@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.orbit.starsystems.core.ALL_FACTS
 import com.orbit.starsystems.core.factById
+import com.orbit.starsystems.core.factsForSys
 import com.orbit.starsystems.ui.BottomNav
 import com.orbit.starsystems.ui.DetailSheet
 import com.orbit.starsystems.ui.FactScreen
@@ -87,21 +91,49 @@ fun OrbitApp() {
 
     val curFact = factById(factId) ?: ALL_FACTS.first()
 
+    val pagerFacts = remember(factId != null, openSys) {
+        if (factId == null) emptyList()
+        else factsForSys(openSys ?: "sol")
+    }
+
     Box(Modifier.fillMaxSize().background(Color.Black)) {
-        if (factId != null) {
-            FactScreen(
-                fact = curFact,
-                paused = paused,
-                onTogglePause = { paused = !paused },
-                onBack = { sheet = false; factId = null },
-                onLearn = { paused = true; sheet = true },
-                isSaved = saved.contains(curFact.id),
-                onToggleSave = {
-                    val was = saved.contains(curFact.id)
-                    toggleSave(curFact.id)
-                    toast = if (was) "Removed from Saved" else "Saved to your collection"
-                },
-            )
+        if (factId != null && pagerFacts.isNotEmpty()) {
+            val initialPage = remember(pagerFacts) {
+                pagerFacts.indexOfFirst { it.id == factId }.coerceAtLeast(0)
+            }
+            val pagerState = rememberPagerState(initialPage = initialPage) { pagerFacts.size }
+
+            LaunchedEffect(pagerState) {
+                snapshotFlow { pagerState.currentPage }.collect { page ->
+                    val newFact = pagerFacts[page]
+                    if (factId != newFact.id) {
+                        factId = newFact.id
+                        viewed = viewed + newFact.id
+                    }
+                }
+            }
+
+            VerticalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize(),
+                key = { pagerFacts[it].id }
+            ) { page ->
+                val f = pagerFacts[page]
+                FactScreen(
+                    fact = f,
+                    paused = paused,
+                    isActive = factId == f.id,
+                    onTogglePause = { paused = !paused },
+                    onBack = { sheet = false; factId = null },
+                    onLearn = { paused = true; sheet = true },
+                    isSaved = saved.contains(f.id),
+                    onToggleSave = {
+                        val was = saved.contains(f.id)
+                        toggleSave(f.id)
+                        toast = if (was) "Removed from Saved" else "Saved to your collection"
+                    },
+                )
+            }
         } else {
             Box(Modifier.fillMaxSize()) {
                 when (tab) {

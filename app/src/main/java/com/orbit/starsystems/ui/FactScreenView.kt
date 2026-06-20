@@ -38,6 +38,7 @@ import com.orbit.starsystems.core.Fact
 fun FactScreen(
     fact: Fact,
     paused: Boolean,
+    isActive: Boolean,
     onTogglePause: () -> Unit,
     onBack: () -> Unit,
     onLearn: () -> Unit,
@@ -45,7 +46,8 @@ fun FactScreen(
     onToggleSave: () -> Unit,
 ) {
     val context = LocalContext.current
-    DisposableEffect(fact.id) {
+    DisposableEffect(fact.id, isActive) {
+        if (!isActive) return@DisposableEffect onDispose {}
         val resId = fact.musicResId
         if (resId == null) return@DisposableEffect onDispose {}
 
