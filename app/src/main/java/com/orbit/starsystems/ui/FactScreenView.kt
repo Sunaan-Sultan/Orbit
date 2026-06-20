@@ -9,17 +9,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -76,6 +84,19 @@ fun FactScreen(
         }
     }
 
+    // Looping clock (0 → dur) driving the top progress bar; restarts per fact, only ticks while active.
+    var clock by remember(fact.id) { mutableFloatStateOf(0f) }
+    LaunchedEffect(fact.id, isActive, paused, fact.dur) {
+        if (!isActive || paused) return@LaunchedEffect
+        var last = withFrameNanos { it }
+        while (true) {
+            val now = withFrameNanos { it }
+            clock = (clock + (now - last) / 1_000_000_000f).let { if (it >= fact.dur) it % fact.dur else it }
+            last = now
+        }
+    }
+    val progress = (clock / fact.dur).coerceIn(0f, 1f)
+
     Box(
         Modifier.fillMaxSize().background(Color.Black).clickable(
             indication = null,
@@ -83,6 +104,18 @@ fun FactScreen(
         ) { onTogglePause() },
     ) {
         MiniStage(fact.scene, fact.dur, fact.hero, active = true, paused = paused, modifier = Modifier.fillMaxSize(), cover = false)
+
+        // Thin progress line across the top, filling in the fact's accent colour.
+        Box(
+            Modifier
+                .align(Alignment.TopStart)
+                .statusBarsPadding()
+                .fillMaxWidth()
+                .height(3.dp)
+                .background(Color.White.copy(alpha = 0.14f)),
+        ) {
+            Box(Modifier.fillMaxHeight().fillMaxWidth(progress).background(fact.accent))
+        }
 
         if (paused) {
             Box(
