@@ -57,29 +57,27 @@ fun OrbitApp() {
 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(factId == null, lifecycleOwner) {
-        if (factId != null) return@DisposableEffect onDispose {}
-
-        val mp = MediaPlayer.create(context, R.raw.menu_music).apply {
-            isLooping = true
-            start()
-        }
-
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_PAUSE -> mp.pause()
-                Lifecycle.Event.ON_RESUME -> mp.start()
-                else -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-            mp.stop()
-            mp.release()
-        }
-    }
+    // Menu music disabled
+    // DisposableEffect(factId == null, lifecycleOwner) {
+    //     if (factId != null) return@DisposableEffect onDispose {}
+    //     val mp = MediaPlayer.create(context, R.raw.menu_music).apply {
+    //         isLooping = true
+    //         start()
+    //     }
+    //     val observer = LifecycleEventObserver { _, event ->
+    //         when (event) {
+    //             Lifecycle.Event.ON_PAUSE -> mp.pause()
+    //             Lifecycle.Event.ON_RESUME -> mp.start()
+    //             else -> {}
+    //         }
+    //     }
+    //     lifecycleOwner.lifecycle.addObserver(observer)
+    //     onDispose {
+    //         lifecycleOwner.lifecycle.removeObserver(observer)
+    //         mp.stop()
+    //         mp.release()
+    //     }
+    // }
 
     fun toggleSave(id: String) {
         saved = if (saved.contains(id)) saved - id else saved + id
