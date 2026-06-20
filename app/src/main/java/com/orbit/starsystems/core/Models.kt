@@ -41,6 +41,7 @@ data class Fact(
     val blurb: String,
     val stats: List<Pair<String, String>>,
     val sys: String,
+    val musicResId: Int? = null,
 )
 
 /** Header copy for a featured/explorable system. */

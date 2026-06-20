@@ -1,5 +1,6 @@
 package com.orbit.starsystems
 
+import android.media.MediaPlayer
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,6 +47,21 @@ fun OrbitApp() {
     var sheet by remember { mutableStateOf(false) }
     var toast by remember { mutableStateOf<String?>(null) }
     var viewed by remember { mutableStateOf(setOf<String>()) }
+
+    val context = LocalContext.current
+    DisposableEffect(factId == null) {
+        if (factId != null) return@DisposableEffect onDispose {}
+
+        val mp = MediaPlayer.create(context, R.raw.menu_music).apply {
+            isLooping = true
+            start()
+        }
+
+        onDispose {
+            mp.stop()
+            mp.release()
+        }
+    }
 
     fun toggleSave(id: String) {
         saved = if (saved.contains(id)) saved - id else saved + id
