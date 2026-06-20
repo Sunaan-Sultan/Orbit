@@ -19,8 +19,11 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -70,6 +73,7 @@ fun BoxScope.TpIntro(t: Float, duration: Float) = SceneFade(t, duration) {
     val grow = animate(0f, 1f, 0.4f, 2.2f, Easing.easeOutBack)(t)
     Eyebrow("TRAPPIST-1 · the system next door", c(0xe07a4a), 200f, e1)
     Head(headline("Seven Earths,\none ", "tiny", " star."), 90f, 246f, e2)
+    BottomLine(1640f, reveal(t, 5.5f), body("Three of them could hold ", "liquid water", "."))
     Sphere(150f * grow, STAR_C, glow = STAR_GLOW, modifier = Modifier.offset((cx - 75f * grow).dp, (cy - 75f * grow).dp))
     TP.forEachIndexed { i, p ->
         val r = 150f + i * 48f
@@ -94,6 +98,7 @@ fun BoxScope.TpStarSize(t: Float, duration: Float) = SceneFade(t, duration) {
     val starSeg = barW * 0.12f
     Eyebrow("An ultracool red dwarf", c(0xe07a4a), 200f, e1)
     Head(headline("Barely bigger\nthan ", "Jupiter", "."), 84f, 246f, e2)
+    BottomLine(1640f, reveal(t, 5.5f), body("Just ", "9% the Sun's mass", " — so cool it glows mostly in infrared."))
     Sphere(starR * 2 * grow, STAR_C, glow = STAR_GLOW, modifier = Modifier.offset((370f - starR * grow).dp, (cy - starR * grow).dp))
     Sphere(jupR * 2 * grow, listOf(c(0xecd8b4), c(0xc8a072), c(0x8f6a40)), modifier = Modifier.offset((760f - jupR * grow).dp, (cy - jupR * grow).dp))
     val la = reveal(t, 2.2f)
@@ -121,10 +126,11 @@ fun BoxScope.TpMercury(t: Float, duration: Float) = SceneFade(t, duration) {
     val mAng = -HALF_PI + t * 0.5f
     val mx = cx + cos(mAng) * rm; val my = cy + sin(mAng) * rm
     val tinyR = rm * (0.062f / 0.39f)
-    val insetCx = 540f; val insetCy = 1440f; val insetMax = 290f
+    val insetCx = 540f; val insetCy = 1356f; val insetMax = 248f
     val insetDraw = reveal(t, 3.4f, 1.0f)
     Eyebrow("The whole system vs. Mercury", c(0x8c8c8c), 96f, e1)
     Head(headline("Smaller than one ", "orbit", "."), 76f, 140f, e2)
+    BottomLine(1648f, reveal(t, 6f), body("Every planet orbits closer than Mercury — the farthest takes just ", "19 days", "."))
     RingArc(cx, cy, rm * 2f, rm * 2f, 0f, Color(0x66b4b4b4), 1.5f, dash = true, alpha = ringDraw)
     Sphere(30f, listOf(c(0xfff7d6), c(0xffc23a), c(0xff8a26)), glow = Color(0x80ffa03c), modifier = Modifier.offset((cx - 15f).dp, (cy - 15f).dp))
     At(mx - 7f, my - 7f, ringDraw) { Sphere(14f, listOf(c(0xd8ccba), c(0x9c9078), c(0x4f4738))) }
@@ -135,7 +141,7 @@ fun BoxScope.TpMercury(t: Float, duration: Float) = SceneFade(t, duration) {
     At(cx + tinyR + 10f, cy + tinyR - 6f, reveal(t, 3f).opacity) {
         Text("← entire TRAPPIST-1 system", style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.SemiBold, fontSize = 17.sp, letterSpacing = 0.06.em, color = c(0xff8a4a)))
     }
-    At(90f, 1130f, insetDraw.opacity) { Text("MAGNIFIED ↓", style = tpLabel(20f, c(0x666666))) }
+    At(90f, 1062f, insetDraw.opacity) { Text("MAGNIFIED ↓", style = tpLabel(20f, c(0x666666))) }
     At(insetCx - 13f, insetCy - 13f, insetDraw.opacity) { Sphere(26f, STAR_C, glow = STAR_GLOW) }
     TP.forEachIndexed { i, p ->
         val r = (p.au / 0.0619f) * insetMax
@@ -155,6 +161,7 @@ fun BoxScope.TpOrbits(t: Float, duration: Float) = SceneFade(t, duration) {
     val cx = 540f; val cy = 1080f; val speedK = 1.34f
     Eyebrow("Orbital periods", c(0xe07a4a), 200f, e1)
     Head(headline("A year in ", "days", "."), 84f, 246f, e2)
+    BottomLine(1640f, reveal(t, 5.5f), body("Periods run from ", "1.5 to 19 days", " — the inner world laps the outer again and again."))
     Sphere(70f, STAR_C, glow = STAR_GLOW, modifier = Modifier.offset((cx - 35f).dp, (cy - 35f).dp))
     TP.forEachIndexed { i, p ->
         val r = 120f + i * 56f
@@ -179,6 +186,14 @@ fun BoxScope.TpHabitable(t: Float, duration: Float) = SceneFade(t, duration) {
     val bandO = reveal(t, 2.6f, 1.0f)
     Eyebrow("The habitable zone", c(0x5fae7a), 200f, e1)
     Head(headline("Three in the\n", "water zone", "."), 80f, 246f, e2)
+    BottomLine(
+        1640f, reveal(t, 5.5f),
+        buildAnnotatedString {
+            append("Planets ")
+            withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = c(0x9cc4ec))) { append("e, f and g") }
+            append(" sit where water could pool on the surface.")
+        },
+    )
     At(hzL, 600f, bandO.opacity) {
         Box(Modifier.size((hzR - hzL).dp, 820.dp).background(Brush.horizontalGradient(listOf(Color(0x0A3caa6e), Color(0x2E46be82), Color(0x0A3caa6e)))))
     }
@@ -209,6 +224,7 @@ fun BoxScope.TpTidal(t: Float, duration: Float) = SceneFade(t, duration) {
     val starX = 130f; val starY = 1080f
     Eyebrow("Tidally locked", c(0xe07a4a), 200f, e1)
     Head(headline("One face, ", "always", "\ntoward the star."), 80f, 246f, e2)
+    BottomLine(1640f, reveal(t, 5.5f), body("One side roasts in endless daylight; the other freezes in ", "eternal night", "."))
     Sphere(120f, STAR_C, glow = STAR_GLOW, modifier = Modifier.offset((starX - 60f).dp, (starY - 60f).dp))
     val beam = reveal(t, 1.6f).opacity
     At(starX, starY - 60f, beam) { Box(Modifier.size((cx - starX).dp, 2.dp).background(Brush.horizontalGradient(listOf(Color(0x80ff8c46), Color(0x00ff8c46))))) }
@@ -249,6 +265,7 @@ fun BoxScope.TpSky(t: Float, duration: Float) = SceneFade(t, duration) {
     Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.30f to Color(0x0028100c), 0.75f to Color(0x80782310), 1f to Color(0x9eb43c1c))))
     Eyebrow("The view from the surface", c(0xe07a4a), 200f, e1)
     Head(headline("Worlds that\nfill the ", "sky", "."), 80f, 246f, e2)
+    BottomLine(1640f, reveal(t, 5.5f), body("A neighbour can loom ", "several times wider", " than the Moon looks to us."))
     // a sister world looming overhead
     RadialDisc(660f, 920f + rise, bigR, arrayOf(0f to c(0xa8d0e0), 0.52f to c(0x3d72b8), 1f to c(0x16223f)), 0.38f, 0.36f, 0.62f)
     CenterLabel(660f, 920f - bigR - 36f + rise, reveal(t, 3f).opacity) { Text("A SISTER WORLD", style = tpLabel(20f, c(0x9cc4ec))) }
@@ -284,6 +301,7 @@ fun BoxScope.TpDistance(t: Float, duration: Float) = SceneFade(t, duration) {
     val photon = interpolate(listOf(2f, 6f), listOf(sunX, tpX), Easing.easeInOutSine)(t)
     val moving = t in 2f..6.2f
     Eyebrow("How far is it?", c(0xe07a4a), 300f, e1)
+    BottomLine(1648f, reveal(t, 6f), body("Close enough that we can already read its planets' skies for ", "signs of life", "."))
     At(84f, 370f + e2.ty, e2.opacity) {
         Text("$num", style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Bold, fontSize = 240.sp, color = Color.White, letterSpacing = (-0.04).em, lineHeight = 216.sp))
     }
