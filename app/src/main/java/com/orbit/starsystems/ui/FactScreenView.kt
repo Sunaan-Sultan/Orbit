@@ -27,6 +27,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.orbit.starsystems.core.Fact
 
 /**
@@ -46,7 +49,8 @@ fun FactScreen(
     onToggleSave: () -> Unit,
 ) {
     val context = LocalContext.current
-    DisposableEffect(fact.id, isActive) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(fact.id, isActive, lifecycleOwner) {
         if (!isActive) return@DisposableEffect onDispose {}
         val resId = fact.musicResId
         if (resId == null) return@DisposableEffect onDispose {}
@@ -56,7 +60,17 @@ fun FactScreen(
             start()
         }
 
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> mp.pause()
+                Lifecycle.Event.ON_RESUME -> mp.start()
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
         onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
             mp.stop()
             mp.release()
         }

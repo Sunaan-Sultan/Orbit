@@ -28,6 +28,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.orbit.starsystems.core.ALL_FACTS
 import com.orbit.starsystems.core.factById
 import com.orbit.starsystems.core.factsForSys
@@ -53,7 +56,8 @@ fun OrbitApp() {
     var viewed by remember { mutableStateOf(setOf<String>()) }
 
     val context = LocalContext.current
-    DisposableEffect(factId == null) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(factId == null, lifecycleOwner) {
         if (factId != null) return@DisposableEffect onDispose {}
 
         val mp = MediaPlayer.create(context, R.raw.menu_music).apply {
@@ -61,7 +65,17 @@ fun OrbitApp() {
             start()
         }
 
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> mp.pause()
+                Lifecycle.Event.ON_RESUME -> mp.start()
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
         onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
             mp.stop()
             mp.release()
         }
