@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.orbit.starsystems.core.ALL_FACTS
 import com.orbit.starsystems.core.factById
 import com.orbit.starsystems.ui.BottomNav
 import com.orbit.starsystems.ui.DetailSheet
@@ -37,7 +37,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun OrbitApp() {
     var tab by remember { mutableStateOf("systems") }
-    var solOpen by remember { mutableStateOf(false) }
+    var openSys by remember { mutableStateOf<String?>(null) }
     var factId by remember { mutableStateOf<String?>(null) }
     var paused by remember { mutableStateOf(false) }
     var saved by remember { mutableStateOf(setOf("moon")) }
@@ -58,16 +58,16 @@ fun OrbitApp() {
     }
 
     // Unwind the in-app navigation stack on system back before letting the OS exit.
-    BackHandler(enabled = sheet || factId != null || solOpen || tab != "systems") {
+    BackHandler(enabled = sheet || factId != null || openSys != null || tab != "systems") {
         when {
             sheet -> sheet = false
             factId != null -> { sheet = false; factId = null }
-            solOpen -> solOpen = false
+            openSys != null -> openSys = null
             tab != "systems" -> tab = "systems"
         }
     }
 
-    val curFact = factById(factId)
+    val curFact = factById(factId) ?: ALL_FACTS.first()
 
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         if (factId != null) {
@@ -85,12 +85,15 @@ fun OrbitApp() {
                 },
             )
         } else {
-            Box(Modifier.fillMaxSize().statusBarsPadding()) {
+            Box(Modifier.fillMaxSize()) {
                 when (tab) {
-                    "systems" -> if (solOpen) {
-                        SystemExplore(onOpenFact = { openFact(it) }, onBack = { solOpen = false })
-                    } else {
-                        SystemsList(onOpenSol = { solOpen = true })
+                    "systems" -> {
+                        val sys = openSys
+                        if (sys != null) {
+                            SystemExplore(sys = sys, onOpenFact = { openFact(it) }, onBack = { openSys = null })
+                        } else {
+                            SystemsList(onOpenSol = { openSys = "sol" }, onOpenAcen = { openSys = "acen" })
+                        }
                     }
                     "saved" -> SavedScreen(saved = saved, onOpen = { openFact(it) })
                     "you" -> ProfileScreen(savedCount = saved.size, viewed = viewed.size)
