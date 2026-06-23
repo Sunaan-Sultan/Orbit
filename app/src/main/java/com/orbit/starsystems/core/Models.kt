@@ -12,6 +12,8 @@ enum class SceneId {
     AC_TRIPLE, AC_WALTZ, AC_TWIN, AC_PROXIMA, AC_PROXIMAB, AC_TRAVEL,
     // TRAPPIST-1
     TP_INTRO, TP_STAR, TP_MERCURY, TP_ORBITS, TP_HABITABLE, TP_TIDAL, TP_SKY, TP_DISTANCE,
+    // Sirius
+    SIR_BRIGHTEST, SIR_BINARY, SIR_HOTTER, SIR_WHITEDWARF, SIR_DOGSTAR, SIR_DISTANCE,
 }
 
 /** A planet: diameter in Earth-diameters, mean distance in AU, and a 3-stop sphere palette. */

@@ -250,5 +250,11 @@ fun BoxScope.RenderScene(scene: SceneId, t: Float, duration: Float) {
         SceneId.TP_TIDAL -> TpTidal(t, duration)
         SceneId.TP_SKY -> TpSky(t, duration)
         SceneId.TP_DISTANCE -> TpDistance(t, duration)
+        SceneId.SIR_BRIGHTEST -> SirBrightest(t, duration)
+        SceneId.SIR_BINARY -> SirBinary(t, duration)
+        SceneId.SIR_HOTTER -> SirHotter(t, duration)
+        SceneId.SIR_WHITEDWARF -> SirWhiteDwarf(t, duration)
+        SceneId.SIR_DOGSTAR -> SirDogStar(t, duration)
+        SceneId.SIR_DISTANCE -> SirDistance(t, duration)
     }
 }

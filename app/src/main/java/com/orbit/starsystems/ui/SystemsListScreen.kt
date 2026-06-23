@@ -31,11 +31,17 @@ import androidx.compose.ui.unit.dp
 import com.orbit.starsystems.core.AC_FACTS
 import com.orbit.starsystems.core.SOL_FACTS
 import com.orbit.starsystems.core.SYSTEMS
+import com.orbit.starsystems.core.SIRIUS_FACTS
 import com.orbit.starsystems.core.SceneId
 import com.orbit.starsystems.core.TRAPPIST_FACTS
 
 @Composable
-fun SystemsList(onOpenSol: () -> Unit, onOpenAcen: () -> Unit, onOpenTrappist: () -> Unit) {
+fun SystemsList(
+    onOpenSol: () -> Unit,
+    onOpenAcen: () -> Unit,
+    onOpenTrappist: () -> Unit,
+    onOpenSirius: () -> Unit,
+) {
     Column(
         Modifier
             .fillMaxSize()
@@ -74,6 +80,12 @@ fun SystemsList(onOpenSol: () -> Unit, onOpenAcen: () -> Unit, onOpenTrappist: (
             pill = "Seven worlds", pillColor = Color(0xFFE0744A),
             title = "TRAPPIST-1", subtitle = "Seven Earth-size worlds · ${TRAPPIST_FACTS.size} facts",
             onClick = onOpenTrappist,
+        )
+        FeaturedSystem(
+            scene = SceneId.SIR_BRIGHTEST, dur = 9.4f, hero = 5.5f,
+            pill = "The brightest star", pillColor = Color(0xFF8FC0FF),
+            title = "Sirius", subtitle = "Brightest star in our sky · ${SIRIUS_FACTS.size} facts",
+            onClick = onOpenSirius,
         )
 
         Row(

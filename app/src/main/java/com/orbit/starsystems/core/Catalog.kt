@@ -4,14 +4,15 @@ package com.orbit.starsystems.core
 private fun List<Fact>.at15() = map { if (it.dur == 15f) it else it.copy(dur = 15f) }
 
 /** Every fact across all explorable systems (uniform 15s loop). */
-val ALL_FACTS: List<Fact> = (SOL_FACTS + AC_FACTS + TRAPPIST_FACTS).at15()
+val ALL_FACTS: List<Fact> = (SOL_FACTS + AC_FACTS + TRAPPIST_FACTS + SIRIUS_FACTS).at15()
 
 fun factById(id: String?): Fact? = ALL_FACTS.find { it.id == id }
 
-/** Facts belonging to a system id ("sol" / "acen" / "tr"). */
+/** Facts belonging to a system id ("sol" / "acen" / "tr" / "sir"). */
 fun factsForSys(sys: String): List<Fact> = when (sys) {
     "acen" -> AC_FACTS
     "tr" -> TRAPPIST_FACTS
+    "sir" -> SIRIUS_FACTS
     else -> SOL_FACTS
 }.at15()
 
@@ -35,12 +36,15 @@ val SYS_META: Map<String, SysMeta> = mapOf(
         title = "TRAPPIST-1",
         blurb = "A single ultracool dwarf circled by seven Earth-size planets, 39 light-years away.",
     ),
+    "sir" to SysMeta(
+        label = "Sirius", eyebrow = "The brightest star", eyebrowColor = hex(0x8fc0ff),
+        title = "Sirius",
+        blurb = "The most brilliant star in our night sky — a hot blue-white sun with a dense white-dwarf companion, 8.6 light-years away.",
+    ),
 )
 
 /** Still-locked systems shown under "More systems" on the home screen. */
 val SYSTEMS: List<StarSystem> = listOf(
-    StarSystem("Sirius", "8.6 light-years", "The brightest star in our sky",
-        listOf(hex(0xeaf2ff), hex(0xbcd2f0), hex(0x7a93b8))),
     StarSystem("Kepler-90", "2,840 light-years", "Eight known planets — a rival to Sol",
         listOf(hex(0xdfe8ff), hex(0x9ab0e0), hex(0x46598f))),
 )

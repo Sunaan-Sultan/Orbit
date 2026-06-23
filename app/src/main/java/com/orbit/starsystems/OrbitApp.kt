@@ -158,6 +158,7 @@ fun OrbitApp() {
                                 onOpenSol = { openSys = "sol" },
                                 onOpenAcen = { openSys = "acen" },
                                 onOpenTrappist = { openSys = "tr" },
+                                onOpenSirius = { openSys = "sir" },
                             )
                         }
                     }
