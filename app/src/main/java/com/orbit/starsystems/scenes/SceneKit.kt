@@ -256,5 +256,10 @@ fun BoxScope.RenderScene(scene: SceneId, t: Float, duration: Float) {
         SceneId.SIR_WHITEDWARF -> SirWhiteDwarf(t, duration)
         SceneId.SIR_DOGSTAR -> SirDogStar(t, duration)
         SceneId.SIR_DISTANCE -> SirDistance(t, duration)
+        SceneId.KEP_EIGHT -> KepEight(t, duration)
+        SceneId.KEP_SUNLIKE -> KepSunlike(t, duration)
+        SceneId.KEP_CROWDED -> KepCrowded(t, duration)
+        SceneId.KEP_AI -> KepAi(t, duration)
+        SceneId.KEP_DISTANCE -> KepDistance(t, duration)
     }
 }

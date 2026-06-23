@@ -4,7 +4,7 @@ package com.orbit.starsystems.core
 private fun List<Fact>.at15() = map { if (it.dur == 15f) it else it.copy(dur = 15f) }
 
 /** Every fact across all explorable systems (uniform 15s loop). */
-val ALL_FACTS: List<Fact> = (SOL_FACTS + AC_FACTS + TRAPPIST_FACTS + SIRIUS_FACTS).at15()
+val ALL_FACTS: List<Fact> = (SOL_FACTS + AC_FACTS + TRAPPIST_FACTS + SIRIUS_FACTS + KEPLER_FACTS).at15()
 
 fun factById(id: String?): Fact? = ALL_FACTS.find { it.id == id }
 
@@ -13,6 +13,7 @@ fun factsForSys(sys: String): List<Fact> = when (sys) {
     "acen" -> AC_FACTS
     "tr" -> TRAPPIST_FACTS
     "sir" -> SIRIUS_FACTS
+    "kep" -> KEPLER_FACTS
     else -> SOL_FACTS
 }.at15()
 
@@ -41,10 +42,15 @@ val SYS_META: Map<String, SysMeta> = mapOf(
         title = "Sirius",
         blurb = "The most brilliant star in our night sky — a hot blue-white sun with a dense white-dwarf companion, 8.6 light-years away.",
     ),
+    "kep" to SysMeta(
+        label = "Kepler-90", eyebrow = "Eight worlds", eyebrowColor = hex(0xa9c2ff),
+        title = "Kepler-90",
+        blurb = "A Sun-like star with eight known planets — the first system found to rival our own, 2,840 light-years away in Draco.",
+    ),
 )
 
 /** Still-locked systems shown under "More systems" on the home screen. */
 val SYSTEMS: List<StarSystem> = listOf(
-    StarSystem("Kepler-90", "2,840 light-years", "Eight known planets — a rival to Sol",
-        listOf(hex(0xdfe8ff), hex(0x9ab0e0), hex(0x46598f))),
+    StarSystem("Kepler-186", "580 light-years", "First Earth-size world in a habitable zone",
+        listOf(hex(0xffd9c2), hex(0xe0987a), hex(0x8f4a3a))),
 )

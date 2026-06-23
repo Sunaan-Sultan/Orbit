@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.orbit.starsystems.core.AC_FACTS
+import com.orbit.starsystems.core.KEPLER_FACTS
 import com.orbit.starsystems.core.SOL_FACTS
 import com.orbit.starsystems.core.SYSTEMS
 import com.orbit.starsystems.core.SIRIUS_FACTS
@@ -41,6 +42,7 @@ fun SystemsList(
     onOpenAcen: () -> Unit,
     onOpenTrappist: () -> Unit,
     onOpenSirius: () -> Unit,
+    onOpenKepler: () -> Unit,
 ) {
     Column(
         Modifier
@@ -86,6 +88,12 @@ fun SystemsList(
             pill = "The brightest star", pillColor = Color(0xFF8FC0FF),
             title = "Sirius", subtitle = "Brightest star in our sky · ${SIRIUS_FACTS.size} facts",
             onClick = onOpenSirius,
+        )
+        FeaturedSystem(
+            scene = SceneId.KEP_EIGHT, dur = 9.4f, hero = 5.5f,
+            pill = "Eight worlds", pillColor = Color(0xFFA9C2FF),
+            title = "Kepler-90", subtitle = "A rival to our Solar System · ${KEPLER_FACTS.size} facts",
+            onClick = onOpenKepler,
         )
 
         Row(

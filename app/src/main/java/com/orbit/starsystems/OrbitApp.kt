@@ -137,7 +137,7 @@ fun OrbitApp() {
                     isActive = factId == f.id,
                     onTogglePause = { paused = !paused },
                     onBack = { sheet = false; factId = null },
-                    onLearn = { paused = true; sheet = true },
+                    onLearn = { sheet = true },
                     isSaved = saved.contains(f.id),
                     onToggleSave = {
                         val was = saved.contains(f.id)
@@ -159,6 +159,7 @@ fun OrbitApp() {
                                 onOpenAcen = { openSys = "acen" },
                                 onOpenTrappist = { openSys = "tr" },
                                 onOpenSirius = { openSys = "sir" },
+                                onOpenKepler = { openSys = "kep" },
                             )
                         }
                     }
