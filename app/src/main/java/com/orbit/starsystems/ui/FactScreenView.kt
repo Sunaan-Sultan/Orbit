@@ -31,6 +31,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -103,7 +104,7 @@ fun FactScreen(
             interactionSource = remember { MutableInteractionSource() },
         ) { onTogglePause() },
     ) {
-        MiniStage(fact.scene, fact.dur, fact.hero, active = true, paused = paused, modifier = Modifier.fillMaxSize(), cover = false)
+        MiniStage(fact.scene, fact.dur, fact.hero, active = isActive, paused = paused, modifier = Modifier.fillMaxSize(), cover = false)
 
         // Thin progress line across the top, filling in the fact's accent colour.
         Box(
@@ -123,6 +124,15 @@ fun FactScreen(
                 contentAlignment = Alignment.Center,
             ) { Ico("play", size = 30.dp, color = Color.White) }
         }
+
+        // Scrim so the caption + button stay readable over bright scenes (e.g. the Sun).
+        Box(
+            Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(320.dp)
+                .background(Brush.verticalGradient(0f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.72f))),
+        )
 
         // caption + learn more (taps here don't toggle play)
         Column(

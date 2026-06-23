@@ -131,6 +131,9 @@ internal fun RadialDisc(
     Canvas(Modifier.fillMaxSize()) {
         val k = size.width / 1080f
         val cx = cxUnits * k; val cy = cyUnits * k; val r = rUnits * k
+        // A zero/negative radius (e.g. a disc animating up from 0) has nothing to draw
+        // and would make Brush.radialGradient throw "ending radius must be > 0".
+        if (r <= 0f) return@Canvas
         val gcx = cx + r * (2f * centerFracX - 1f)
         val gcy = cy + r * (2f * centerFracY - 1f)
         drawCircle(
@@ -261,5 +264,16 @@ fun BoxScope.RenderScene(scene: SceneId, t: Float, duration: Float) {
         SceneId.KEP_CROWDED -> KepCrowded(t, duration)
         SceneId.KEP_AI -> KepAi(t, duration)
         SceneId.KEP_DISTANCE -> KepDistance(t, duration)
+        SceneId.SP_VOYAGER -> SpVoyager(t, duration)
+        SceneId.SP_ISS -> SpIss(t, duration)
+        SceneId.SP_STARSHIP -> SpStarship(t, duration)
+        SceneId.SP_SUN -> SpSun(t, duration)
+        SceneId.SP_OLYMPUS -> SpOlympus(t, duration)
+        SceneId.SP_BLACKHOLE -> SpBlackHole(t, duration)
+        SceneId.SP_WORMHOLE -> SpWormhole(t, duration)
+        SceneId.SP_PULSAR -> SpPulsar(t, duration)
+        SceneId.SP_SUPERNOVA -> SpSupernova(t, duration)
+        SceneId.SP_COMET -> SpComet(t, duration)
+        SceneId.SP_ECLIPSE -> SpEclipse(t, duration)
     }
 }

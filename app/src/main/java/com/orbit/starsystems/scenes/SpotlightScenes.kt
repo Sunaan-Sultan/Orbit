@@ -1,0 +1,768 @@
+package com.orbit.starsystems.scenes
+
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
+import com.orbit.starsystems.core.Easing
+import com.orbit.starsystems.core.animate
+import com.orbit.starsystems.core.interpolate
+import com.orbit.starsystems.core.reveal
+import com.orbit.starsystems.ui.OrbitFont
+import com.orbit.starsystems.ui.Sphere
+import java.util.Locale
+import kotlin.math.abs
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
+import kotlin.math.sqrt
+
+private const val SP_TAU = 6.2831855f
+
+/** A body spiralling into the black hole: spawn phase, loop period, start angle, spiral turns, size, palette. */
+private class BHBody(
+    val phase: Float, val period: Float, val base: Float, val turns: Float,
+    val sz: Float, val col: List<Color>,
+)
+
+private val BH_BODIES = listOf(
+    BHBody(0.00f, 7.4f, 0.5f, 3.2f, 15f, listOf(c(0xc4bcb0), c(0x8a8276), c(0x46403a))),
+    BHBody(0.30f, 9.2f, 2.2f, 3.6f, 11f, listOf(c(0xbeb6aa), c(0x847c70), c(0x423c36))),
+    BHBody(0.62f, 8.1f, 4.1f, 3.0f, 13f, listOf(c(0xcabfb2), c(0x8f8678), c(0x4a443c))),
+    BHBody(0.16f, 12.0f, 5.3f, 2.6f, 38f, listOf(c(0x9cc4ec), c(0x3d72b8), c(0x16223f))),  // a planet
+    BHBody(0.48f, 6.6f, 1.3f, 4.0f, 9f, listOf(c(0xc0b8ac), c(0x867e72), c(0x423c34))),
+    BHBody(0.80f, 10.6f, 3.2f, 2.8f, 42f, listOf(c(0xe8b06a), c(0xb5702f), c(0x5e3414))),  // a planet
+)
+
+private fun spLabel(size: Float, color: Color) = TextStyle(
+    fontFamily = OrbitFont, fontWeight = FontWeight.SemiBold, fontSize = size.sp, letterSpacing = 0.12.em, color = color,
+)
+
+/** A small sleek ship drawn at (cx,cy) px, scaled by [s], heading [angleDeg]. */
+private fun DrawScope.drawShip(cx: Float, cy: Float, s: Float, angleDeg: Float, alpha: Float, k: Float) {
+    if (alpha <= 0.01f || s <= 0.01f) return
+    val sk = s * k
+    rotate(angleDeg, pivot = Offset(cx, cy)) {
+        drawCircle(
+            brush = Brush.radialGradient(listOf(Color(0xCC8ff0d8), Color(0x008ff0d8)), center = Offset(cx - 64f * sk, cy), radius = 58f * sk),
+            radius = 58f * sk, center = Offset(cx - 64f * sk, cy), alpha = alpha,
+        )
+        val hull = Path().apply {
+            moveTo(cx + 88f * sk, cy)
+            lineTo(cx - 54f * sk, cy - 26f * sk)
+            lineTo(cx - 68f * sk, cy)
+            lineTo(cx - 54f * sk, cy + 26f * sk)
+            close()
+        }
+        drawPath(hull, c(0xe7edf2), alpha = alpha)
+        drawPath(hull, c(0x8fd6ff), alpha = alpha, style = Stroke(width = 2.5f * k))
+        drawCircle(c(0x6fd6ff), radius = 8f * sk, center = Offset(cx + 34f * sk, cy), alpha = alpha)
+    }
+}
+
+// ───────────────────── Voyager — the farthest we've reached ─────────────────────
+
+@Composable
+fun BoxScope.SpVoyager(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xe8d6a6)
+    val sunX = 70f; val sunY = 1180f
+    // The probe drifts out and away from the Sun.
+    val px = interpolate(listOf(0.6f, 8f), listOf(330f, 880f), Easing.easeInOutSine)(t)
+    val py = interpolate(listOf(0.6f, 8f), listOf(1080f, 940f), Easing.easeInOutSine)(t)
+    val km = interpolate(listOf(1.2f, 6f), listOf(0f, 24f), Easing.easeOutCubic)(t)
+    val helio = reveal(t, 1.4f, 1.4f)
+
+    Eyebrow("Voyager · 1977 → forever", accent, 200f, e1)
+    Head(headline("The farthest\nwe've ever ", "reached", "."), 84f, 246f, e2)
+    BottomLine(1640f, reveal(t, 5.5f), body("Adrift in interstellar space, still calling home across ", "billions of kilometres", "."))
+
+    // Heliosphere — the Sun's bubble the probe is leaving.
+    RingArc(sunX, sunY, 1560f, 1560f, 0f, Color(0x33ffd9a0), 1.5f, dash = true, alpha = helio.opacity)
+    Sphere(70f, listOf(c(0xfff7d6), c(0xffc23a), c(0xff8a26)), glow = Color(0x80ffa03c), modifier = Modifier.offset((sunX - 35f).dp, (sunY - 35f).dp))
+
+    // Dotted trail from the Sun out to the craft.
+    val trail = reveal(t, 1f)
+    Canvas(Modifier.fillMaxSize().alpha(trail.opacity)) {
+        val k = size.width / 1080f
+        drawLine(
+            Color(0x55ffe6bd), Offset(sunX * k, sunY * k), Offset(px * k, py * k),
+            strokeWidth = 2f * k, pathEffect = PathEffect.dashPathEffect(floatArrayOf(7f * k, 14f * k)),
+        )
+    }
+
+    // The probe: high-gain dish + bus + booms.
+    val appear = reveal(t, 0.9f)
+    Canvas(Modifier.fillMaxSize().alpha(appear.opacity)) {
+        val k = size.width / 1080f
+        val cx = px * k; val cy = py * k
+        // booms (magnetometer + RTG)
+        drawLine(c(0x8a8f99), Offset(cx, cy), Offset(cx + 150f * k, cy + 70f * k), strokeWidth = 3f * k)
+        drawLine(c(0x8a8f99), Offset(cx, cy), Offset(cx - 40f * k, cy + 120f * k), strokeWidth = 3f * k)
+        // bus (body)
+        rotate(-18f, pivot = Offset(cx, cy)) {
+            drawRect(c(0xc9cdd4), topLeft = Offset(cx - 26f * k, cy - 24f * k), size = Size(52f * k, 48f * k))
+        }
+        // RTG tip
+        drawCircle(c(0xffb169), radius = 8f * k, center = Offset(cx - 40f * k, cy + 120f * k))
+        // high-gain dish, facing back toward the Sun (left)
+        drawCircle(Color(0x1affffff), radius = 60f * k, center = Offset(cx, cy - 6f * k))
+        drawCircle(Color.White, radius = 60f * k, center = Offset(cx, cy - 6f * k), style = Stroke(width = 3.5f * k))
+        drawLine(Color.White, Offset(cx, cy - 6f * k), Offset(cx - 64f * k, cy - 6f * k), strokeWidth = 2.5f * k)
+        drawCircle(Color.White, radius = 5f * k, center = Offset(cx - 64f * k, cy - 6f * k))
+    }
+    CenterLabel(px, py - 120f, reveal(t, 2.4f).opacity) { Text("VOYAGER 1", style = spLabel(18f, accent)) }
+
+    // Distance read-out.
+    At(90f, 1380f, reveal(t, 2.2f).opacity) {
+        Text(
+            String.format(Locale.US, "%.0f", km),
+            style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Bold, fontSize = 150.sp, color = Color.White, letterSpacing = (-0.04).em, lineHeight = 150.sp),
+        )
+    }
+    At(360f, 1452f, reveal(t, 2.6f).opacity) {
+        Text("billion km from Earth", style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Light, fontSize = 40.sp, color = accent))
+    }
+}
+
+// ───────────────────── The Space Station — a city in orbit ─────────────────────
+
+@Composable
+fun BoxScope.SpIss(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0x9cc4ec)
+    // Curved Earth limb across the lower third.
+    RadialDisc(540f, 2520f, 1240f, arrayOf(0f to c(0xbfe0ff), 0.5f to c(0x3d72b8), 1f to c(0x101f3a)), 0.42f, 0.28f, 0.7f)
+
+    Eyebrow("The International Space Station", accent, 200f, e1)
+    Head(headline("A city in ", "orbit", "."), 92f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Circling Earth every 90 minutes, the crew sees ", "16 sunrises a day", "."))
+
+    // The station tracks left → right above the limb.
+    val ix = interpolate(listOf(0.6f, 9f), listOf(230f, 880f), Easing.easeInOutSine)(t)
+    val iy = 980f + sin((ix - 230f) / 650f * 3.1416f) * -40f
+    val appear = reveal(t, 1f)
+    // faint ground track
+    RingArc(540f, 1640f, 1500f, 1180f, 0f, Color(0x2299c4ff), 1.5f, dash = true, clipTop = 760f, alpha = appear.opacity)
+
+    Canvas(Modifier.fillMaxSize().alpha(appear.opacity)) {
+        val k = size.width / 1080f
+        val cx = ix * k; val cy = iy * k
+        rotate(-16f, pivot = Offset(cx, cy)) {
+            // central truss
+            drawLine(c(0xb9bec8), Offset(cx - 150f * k, cy), Offset(cx + 150f * k, cy), strokeWidth = 7f * k)
+            // pressurised modules at the hub
+            drawRect(c(0xe6e9ef), topLeft = Offset(cx - 34f * k, cy - 15f * k), size = Size(68f * k, 30f * k))
+            drawRect(c(0xc4c9d2), topLeft = Offset(cx - 10f * k, cy - 40f * k), size = Size(20f * k, 80f * k))
+            // four solar array wings
+            val panel = c(0x2f4a7a); val edge = c(0x6f9fd6)
+            listOf(-150f, -86f, 86f, 150f).forEach { ox ->
+                val left = cx + (ox - 28f) * k
+                val top = cy - 56f * k
+                drawRect(panel, topLeft = Offset(left, top), size = Size(56f * k, 112f * k))
+                drawRect(edge, topLeft = Offset(left, top), size = Size(56f * k, 112f * k), style = Stroke(width = 1.5f * k))
+            }
+        }
+    }
+    CenterLabel(ix, iy - 150f, reveal(t, 2.4f).opacity) { Text("ISS · 408 km up", style = spLabel(18f, accent)) }
+
+    // Speed read-out.
+    val sp = reveal(t, 2.8f)
+    At(90f, 1180f, sp.opacity) {
+        Text("27,600", style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Bold, fontSize = 120.sp, color = Color.White, letterSpacing = (-0.03).em, lineHeight = 120.sp))
+    }
+    At(96f, 1320f, reveal(t, 3.1f).opacity) {
+        Text("km/h — eight times faster than a rifle bullet", style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Light, fontSize = 30.sp, color = accent))
+    }
+}
+
+// ───────────────────── Starships to come — interstellar concept ─────────────────────
+
+@Composable
+fun BoxScope.SpStarship(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0x7fd6c0)
+    val cx = 540f; val cy = 1120f
+    val launch = animate(0f, 1f, 0.8f, 4f, Easing.easeInCubic)(t)
+    val thrust = 0.6f + 0.4f * sin(t * 9f)
+
+    // Streaks rushing past to imply speed.
+    val streaks = reveal(t, 0.8f)
+    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.4f to Color.Transparent, 1f to Color(0x14123a52))))
+    Canvas(Modifier.fillMaxSize().alpha(streaks.opacity)) {
+        val k = size.width / 1080f
+        var s = 12345L
+        val rnd = { s = (s * 9301 + 49297) % 233280; s / 233280f }
+        repeat(28) {
+            val y = rnd() * 1920f
+            val len = (60f + rnd() * 220f) * (0.4f + launch)
+            val speed = 300f + rnd() * 700f
+            val x = (1080f - ((t * speed + rnd() * 1080f) % 1400f))
+            val a = (0.10f + rnd() * 0.22f) * (0.5f + 0.5f * launch)
+            drawLine(
+                Color(0x80a9f0e0).copy(alpha = a),
+                Offset((x + len) * k, y * k), Offset(x * k, y * k), strokeWidth = 2f * k,
+            )
+        }
+    }
+
+    Eyebrow("Concept · interstellar flight", accent, 200f, e1)
+    Head(headline("Built for the\n", "stars", "."), 88f, 246f, e2)
+    BottomLine(1640f, reveal(t, 5.5f), body("Fusion, ion drives and laser-pushed sails — engines that might one day carry us ", "to another star", "."))
+
+    // Destination star ahead.
+    val starA = reveal(t, 2.4f)
+    Sphere(40f, listOf(c(0xffffff), c(0xcfe0ff), c(0x9fb9dd)), glow = Color(0x99cfe0ff), modifier = Modifier.offset((900f - 20f).dp, (760f - 20f).dp))
+    CenterLabel(900f, 800f, starA.opacity) { Text("A NEW SUN", style = spLabel(15f, c(0xcfe0ff))) }
+
+    // The ship: a sleek hull with a pulsing engine, climbing toward the star.
+    val appear = reveal(t, 0.9f)
+    Canvas(Modifier.fillMaxSize().alpha(appear.opacity)) {
+        val k = size.width / 1080f
+        rotate(-30f, pivot = Offset(cx * k, cy * k)) {
+            // engine plume behind
+            drawCircle(
+                brush = Brush.radialGradient(
+                    listOf(Color(0xCC8ff0d8), Color(0x66ff9a5a), Color(0x00000000)),
+                    center = Offset((cx - 150f) * k, cy * k), radius = 130f * k * thrust,
+                ),
+                radius = 130f * k * thrust, center = Offset((cx - 150f) * k, cy * k),
+            )
+            // hull
+            val hull = Path().apply {
+                moveTo((cx + 170f) * k, cy * k)          // nose
+                lineTo((cx - 110f) * k, (cy - 42f) * k)
+                lineTo((cx - 130f) * k, cy * k)
+                lineTo((cx - 110f) * k, (cy + 42f) * k)
+                close()
+            }
+            drawPath(hull, c(0xe7edf2))
+            drawPath(hull, c(0x7fd6c0), style = Stroke(width = 3f * k))
+            // fin
+            val fin = Path().apply {
+                moveTo((cx - 10f) * k, (cy - 30f) * k)
+                lineTo((cx - 70f) * k, (cy - 96f) * k)
+                lineTo((cx - 70f) * k, (cy - 26f) * k)
+                close()
+            }
+            drawPath(fin, c(0x9aa6b2))
+            // cockpit
+            drawCircle(c(0x6fd6ff), radius = 13f * k, center = Offset((cx + 70f) * k, cy * k))
+        }
+    }
+
+    // Speed read-out.
+    val pct = interpolate(listOf(2f, 5f), listOf(0f, 15f), Easing.easeOutCubic)(t).roundToInt()
+    At(90f, 1320f, reveal(t, 2.2f).opacity) {
+        Text("$pct%", style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Bold, fontSize = 130.sp, color = Color.White, letterSpacing = (-0.03).em, lineHeight = 130.sp))
+    }
+    At(96f, 1470f, reveal(t, 2.6f).opacity) {
+        Text("of the speed of light — in theory", style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Light, fontSize = 30.sp, color = accent))
+    }
+}
+
+// ───────────────────── The Sun — our star up close ─────────────────────
+
+@Composable
+fun BoxScope.SpSun(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xff9e34)
+    val cx = 540f; val cy = 1100f
+    val r = animate(40f, 300f, 0.4f, 2.2f, Easing.easeOutCubic)(t)
+    val pulse = 1f + 0.05f * sin(t * 1.8f)
+
+    // Corona halo (breathing) and the glowing body — an evenly-lit star, not a planet sphere.
+    RadialDisc(
+        cx, cy, (r + 230f) * pulse,
+        arrayOf(0f to Color(0x59ffb240), 0.5f to Color(0x1Aff8c28), 0.75f to Color(0x00ff8c28), 1f to Color(0x00ff8c28)),
+        0.5f, 0.5f, 0.5f,
+    )
+    RadialDisc(
+        cx, cy, r,
+        arrayOf(0f to c(0xfff7d6), 0.4f to c(0xffd451), 0.74f to c(0xff9e34), 1f to c(0xff7a1f)),
+        0.5f, 0.5f, 0.5f,
+    )
+
+    // Looping prominences off the limb + drifting sunspots (the rotating surface).
+    val pa = reveal(t, 1.2f)
+    Canvas(Modifier.fillMaxSize().alpha(pa.opacity)) {
+        val k = size.width / 1080f
+        val rr = r * k
+        val ctr = Offset(cx * k, cy * k)
+        fun limb(ang: Float, rad: Float) = Offset(ctr.x + cos(ang) * rad, ctr.y + sin(ang) * rad)
+        val proms = listOf(-2.4f, -1.2f, 0.2f, 1.5f, 2.8f)
+        proms.forEachIndexed { i, base ->
+            val ang = base + t * 0.22f
+            val flick = 0.55f + 0.45f * sin(t * (2.4f + i) + i)
+            val h = (55f + 45f * flick) * k
+            val dθ = 0.17f
+            val p1 = limb(ang - dθ, rr); val p2 = limb(ang + dθ, rr)
+            val apex = limb(ang, r * k + h)
+            val path = Path().apply { moveTo(p1.x, p1.y); quadraticBezierTo(apex.x, apex.y, p2.x, p2.y) }
+            drawPath(path, color = c(0xffa83a).copy(alpha = 0.85f * flick), style = Stroke(width = 5f * k))
+        }
+        // sunspots drift across, wrapping — implies the Sun rotating
+        val spots = listOf(Triple(-0.3f, 0.18f, 26f), Triple(0.4f, -0.12f, 18f), Triple(0.05f, 0.46f, 13f))
+        spots.forEach { (fx, fy, sz) ->
+            val drift = ((fx + t * 0.05f + 1f) % 2f) - 1f
+            val sx = ctr.x + drift * rr * 0.72f
+            val sy = ctr.y + fy * rr
+            val dx = sx - ctr.x; val dy = sy - ctr.y
+            if (dx * dx + dy * dy < (rr * 0.8f) * (rr * 0.8f)) {
+                drawCircle(c(0x6a2400).copy(alpha = 0.55f), radius = sz * k, center = Offset(sx, sy))
+            }
+        }
+    }
+
+    Eyebrow("Our star, up close", accent, 200f, e1)
+    Head(headline("Closer to\nthe ", "fire", "."), 88f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Every second it fuses ", "600 million tonnes", " of hydrogen into light."))
+
+    // Earth, roughly to scale, sitting just off the limb.
+    val ea = reveal(t, 2.8f)
+    Sphere(16f, listOf(c(0x9cc4ec), c(0x3d72b8), c(0x16223f)), modifier = Modifier.offset((cx + r + 30f).dp, (cy + r - 40f).dp))
+    CenterLabel(cx + r + 38f, cy + r + 0f, ea.opacity) { Text("EARTH · 109 fit across", style = spLabel(15f, c(0x9cc4ec))) }
+}
+
+// ───────────────────── Olympus Mons — seen from above ─────────────────────
+
+@Composable
+fun BoxScope.SpOlympus(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.9f)
+    val accent = c(0xe8915c)
+    val cx = 540f; val cy = 1140f; val baseR = 380f
+    val grow = animate(0.7f, 1f, 0.4f, 2.4f, Easing.easeOutCubic)(t)
+
+    Eyebrow("Mars · Olympus Mons", accent, 200f, e1)
+    Head(headline("A volcano the\nsize of a ", "country", "."), 78f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Its base would blanket Arizona — and it rises ", "2.5× higher than Everest", "."))
+
+    Canvas(Modifier.fillMaxSize()) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        val rr = baseR * grow * k
+        // shield-volcano slope, shaded from the centre out
+        drawCircle(
+            brush = Brush.radialGradient(listOf(c(0x66b5462a), c(0x44823018), c(0x10401409)), center = ctr, radius = rr),
+            radius = rr, center = ctr,
+        )
+        // concentric lava-flow ridges, rotating slowly
+        rotate(t * 3.2f, pivot = ctr) {
+            for (i in 1..7) {
+                val rev = reveal(t, 0.6f + i * 0.12f).opacity
+                drawCircle(
+                    c(0xe8915c).copy(alpha = 0.30f * rev), radius = rr * (0.26f + 0.105f * i), center = ctr,
+                    style = Stroke(width = 2.2f * k, pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f * k, 10f * k))),
+                )
+            }
+        }
+        // the escarpment — the kilometres-high cliff ringing the base
+        val edge = reveal(t, 1f).opacity
+        drawCircle(c(0xe8915c).copy(alpha = 0.7f * edge), radius = rr, center = ctr, style = Stroke(width = 4f * k))
+        // central caldera complex — overlapping collapse pits
+        val cal = reveal(t, 2f).opacity
+        if (cal > 0.01f) {
+            listOf(Triple(0f, 0f, 80f), Triple(-48f, 24f, 52f), Triple(42f, 34f, 44f), Triple(22f, -42f, 36f)).forEach { (ox, oy, sz) ->
+                val cc = Offset(ctr.x + ox * grow * k, ctr.y + oy * grow * k)
+                drawCircle(c(0x3a160c).copy(alpha = 0.85f * cal), radius = sz * grow * k, center = cc)
+                drawCircle(c(0xe8915c).copy(alpha = 0.5f * cal), radius = sz * grow * k, center = cc, style = Stroke(width = 2f * k))
+            }
+        }
+    }
+
+    // Scale tick from the centre to the rim.
+    val sa = reveal(t, 2.6f)
+    Canvas(Modifier.fillMaxSize().alpha(sa.opacity)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        drawLine(
+            Color(0x99FFFFFF), ctr, Offset(ctr.x + baseR * grow * k, ctr.y),
+            strokeWidth = 1.5f * k, pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f * k, 8f * k)),
+        )
+    }
+    CenterLabel(cx + baseR / 2f, cy - 46f, sa.opacity) { Text("≈ 300 km", style = spLabel(16f, c(0xf0b48c))) }
+    CenterLabel(cx, cy + baseR + 26f, reveal(t, 3f).opacity) { Text("OLYMPUS MONS · FROM ABOVE", style = spLabel(17f, accent)) }
+}
+
+// ───────────────────── Black hole — where light can't escape ─────────────────────
+
+@Composable
+fun BoxScope.SpBlackHole(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xffb060)
+    val cx = 540f; val cy = 1100f
+    val grow = animate(0.6f, 1f, 0.4f, 2.2f, Easing.easeOutCubic)(t)
+    val rh = 112f * grow                // event-horizon shadow
+    val shimmer = 0.82f + 0.18f * sin(t * 3f)
+
+    // hot glow where the doomed matter piles up
+    RadialDisc(
+        cx, cy, 300f,
+        arrayOf(0f to Color(0x40ffb060), 0.5f to Color(0x14ff8a30), 0.8f to Color(0x00000000), 1f to Color(0x00000000)),
+        0.5f, 0.5f, 0.5f,
+    )
+
+    val appear = reveal(t, 0.7f)
+    Canvas(Modifier.fillMaxSize().alpha(appear.opacity)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        val rhk = rh * k
+        val squash = 0.88f
+        val rMax = 500f * k
+
+        // Decaying spiral: radius collapses toward the horizon while the body winds faster.
+        fun rOf(p: Float) = rhk + (rMax - rhk) * (1f - Easing.easeInCubic(p))
+        fun angOf(b: BHBody, p: Float) = b.base + b.turns * (p * p) * SP_TAU
+        fun posOf(b: BHBody, p: Float): Offset {
+            val r = rOf(p); val a = angOf(b, p)
+            return Offset(ctr.x + cos(a) * r, ctr.y + sin(a) * r * squash)
+        }
+
+        BH_BODIES.forEach { b ->
+            val p = (((t / b.period) + b.phase) % 1f)
+            if (p >= 0.99f) return@forEach
+            val a0 = ((1f - p) / 0.12f).coerceIn(0f, 1f) * (p / 0.05f).coerceIn(0f, 1f)
+            val rad = b.sz * k
+            // comet tail streaming back along the inbound spiral
+            val seg = 7
+            for (s in 1..seg) {
+                val p2 = p - s * 0.018f
+                if (p2 > 0f) {
+                    val f = 1f - s / seg.toFloat()
+                    drawLine(b.col[1].copy(alpha = a0 * f * 0.6f), posOf(b, p - (s - 1) * 0.018f), posOf(b, p2), strokeWidth = rad * 0.9f * f)
+                }
+            }
+            // the body, stretched radially (tidal spaghettification) as it nears the hole
+            val pos = posOf(b, p)
+            val stretch = 1f + p * p * 2.6f
+            rotate(angOf(b, p) * 57.2957795f, pivot = pos) {
+                scale(stretch, 1f, pivot = pos) {
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            listOf(b.col[0], b.col[1], b.col[2]),
+                            center = Offset(pos.x - rad * 0.3f, pos.y - rad * 0.3f), radius = rad * 1.15f,
+                        ),
+                        radius = rad, center = pos, alpha = a0,
+                    )
+                }
+            }
+        }
+
+        // event-horizon shadow + photon ring, drawn last so matter vanishes behind it
+        drawCircle(Color.Black, radius = rhk, center = ctr)
+        drawCircle(c(0xffd9a0).copy(alpha = 0.5f * shimmer), radius = rhk * 1.14f, center = ctr, style = Stroke(width = 18f * k))
+        drawCircle(c(0xfff2d6).copy(alpha = shimmer), radius = rhk * 1.05f, center = ctr, style = Stroke(width = 4f * k))
+    }
+
+    Eyebrow("Extreme gravity", accent, 200f, e1)
+    Head(headline("Swallowing\n", "worlds whole", "."), 84f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Its pull shreds and devours all that strays too close — gas, asteroids, even ", "whole planets", "."))
+}
+
+// ───────────────────── Wormhole — a tunnel through spacetime ─────────────────────
+
+@Composable
+fun BoxScope.SpWormhole(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0x8fd6ff)
+    val cx = 540f; val cy = 1080f
+    val grow = animate(0.4f, 1f, 0.4f, 2.4f, Easing.easeOutCubic)(t)
+    val m = ((t - 5.4f) / 2.2f).coerceIn(0f, 1f)            // home galaxy → far galaxy
+    val flash = (1f - (abs(t - 6.4f) / 1.3f)).coerceIn(0f, 1f)
+
+    // Background nebulae of the two galaxies, cross-fading as the ship transits.
+    Canvas(Modifier.fillMaxSize()) {
+        val k = size.width / 1080f
+        fun nebula(xf: Float, yf: Float, rf: Float, home: Color, far: Color) {
+            val col = lerp(home, far, m)
+            drawCircle(
+                brush = Brush.radialGradient(listOf(col, Color(0x00000000)), center = Offset(xf * k, yf * k), radius = rf * k),
+                radius = rf * k, center = Offset(xf * k, yf * k),
+            )
+        }
+        nebula(240f, 540f, 460f, Color(0x33356fd0), Color(0x33b0408f))
+        nebula(860f, 1520f, 500f, Color(0x282aa0c0), Color(0x28d08a3a))
+    }
+
+    RadialDisc(
+        cx, cy, 380f * grow,
+        arrayOf(0f to Color(0x00000000), 0.62f to Color(0x00000000), 0.82f to Color(0x338fd6ff), 1f to Color(0x008fd6ff)),
+        0.5f, 0.5f, 0.5f,
+    )
+
+    val appear = reveal(t, 0.8f)
+    Canvas(Modifier.fillMaxSize().alpha(appear.opacity)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        val maxR = 360f * grow * k
+        val rings = 16
+        for (i in 0 until rings) {
+            val frac = (((i.toFloat() / rings) + t * 0.12f) % 1f)
+            val rad = maxR * frac
+            if (rad > 3f) {
+                // swirl each ring along a tightening spiral toward the throat
+                val tw = frac * SP_TAU * 1.5f + t * 0.6f
+                val off = (1f - frac) * 18f * k
+                val rc = Offset(ctr.x + cos(tw) * off, ctr.y + sin(tw) * off)
+                val col = lerp(c(0x6fe6ff), c(0x3a4fd0), frac)
+                val a = sin(frac * 3.1416f).coerceIn(0f, 1f)
+                drawCircle(col.copy(alpha = 0.55f * a), radius = rad, center = rc, style = Stroke(width = 3f * k))
+            }
+        }
+        // bright throat — the view out the far side, flaring as the ship punches through
+        val throatR = maxR * (0.2f + 0.16f * flash)
+        drawCircle(
+            brush = Brush.radialGradient(listOf(c(0xffffff), c(0x9ff0e0), c(0x2a6fd0)), center = ctr, radius = throatR * 1.1f),
+            radius = throatR, center = ctr,
+        )
+        if (flash > 0.01f) {
+            drawCircle(Color.White.copy(alpha = flash * 0.8f), radius = maxR * (0.25f + 0.9f * (1f - flash)), center = ctr, style = Stroke(width = 10f * k * flash))
+        }
+        listOf(Offset(-0.05f, -0.04f), Offset(0.06f, 0.03f), Offset(0f, 0.07f)).forEach { o ->
+            drawCircle(Color.White.copy(alpha = 0.9f), radius = 2.5f * k, center = Offset(ctr.x + o.x * maxR, ctr.y + o.y * maxR))
+        }
+        // the mouth
+        drawCircle(c(0x8fd6ff), radius = maxR, center = ctr, style = Stroke(width = 4f * k))
+
+        // The ship dives in from the home side…
+        if (t in 1.6f..5.6f) {
+            val p = Easing.easeInCubic(((t - 1.6f) / 4f).coerceIn(0f, 1f))
+            val sx = (170f + (cx - 170f) * p) * k
+            val sy = (1500f + (cy - 1500f) * p) * k
+            val al = 1f - ((p - 0.82f) / 0.18f).coerceIn(0f, 1f)
+            drawShip(sx, sy, 1f - 0.94f * p, atan2(cy - 1500f, cx - 170f) * 57.2957795f, al, k)
+        }
+        // …and pops out the far side into the other galaxy.
+        if (t in 7.4f..11.6f) {
+            val p = Easing.easeOutCubic(((t - 7.4f) / 4.2f).coerceIn(0f, 1f))
+            val ex = (cx + (940f - cx) * p) * k
+            val ey = (cy + (640f - cy) * p) * k
+            val al = (p / 0.18f).coerceIn(0f, 1f)
+            drawShip(ex, ey, 0.06f + 0.94f * p, atan2(640f - cy, 940f - cx) * 57.2957795f, al, k)
+        }
+    }
+
+    Eyebrow("A shortcut through spacetime", accent, 200f, e1)
+    Head(headline("In one side, out\nin ", "another galaxy", "."), 74f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("In theory a wormhole could fling a ship across the universe in a single step — but none has ever ", "been found", "."))
+}
+
+// ───────────────────── Pulsar — a spinning neutron star ─────────────────────
+
+@Composable
+fun BoxScope.SpPulsar(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0x9fe8ff)
+    val cx = 540f; val cy = 1090f
+    val grow = animate(0.4f, 1f, 0.4f, 2.0f, Easing.easeOutCubic)(t)
+    val spin = t * 230f
+    val beat = 0.45f + 0.55f * abs(sin(t * 6.0f))
+
+    RadialDisc(
+        cx, cy, (150f + 40f * beat) * grow,
+        arrayOf(0f to Color(0x99cfeeff), 0.4f to Color(0x33a0dfff), 0.75f to Color(0x00000000), 1f to Color(0x00000000)),
+        0.5f, 0.5f, 0.5f,
+    )
+
+    val appear = reveal(t, 0.7f)
+    Canvas(Modifier.fillMaxSize().alpha(appear.opacity)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        // two opposite lighthouse beams sweeping with the spin
+        rotate(spin, pivot = ctr) {
+            listOf(0f, 180f).forEach { baseAng ->
+                rotate(baseAng, pivot = ctr) {
+                    val len = 760f * k; val halfW = 120f * k
+                    val path = Path().apply {
+                        moveTo(ctr.x, ctr.y)
+                        lineTo(ctr.x + len, ctr.y - halfW)
+                        lineTo(ctr.x + len, ctr.y + halfW)
+                        close()
+                    }
+                    drawPath(path, brush = Brush.horizontalGradient(listOf(c(0x9fe8ff).copy(alpha = 0.55f), Color(0x009fe8ff)), startX = ctr.x, endX = ctr.x + len), alpha = beat)
+                }
+            }
+        }
+        // the neutron star itself: tiny, intensely bright
+        val rcore = 42f * grow * k
+        drawCircle(brush = Brush.radialGradient(listOf(Color.White, c(0xbfe8ff), c(0x3a7fb0)), center = ctr, radius = rcore * 1.4f), radius = rcore, center = ctr)
+        drawCircle(Color.White.copy(alpha = 0.6f * beat), radius = rcore * 1.5f, center = ctr, style = Stroke(width = 4f * k))
+    }
+
+    Eyebrow("A lighthouse in space", accent, 200f, e1)
+    Head(headline("A dead star\nthat ", "spins", "."), 86f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("A city-sized neutron star, spinning so fast its beam flashes us ", "hundreds of times a second", "."))
+}
+
+// ───────────────────── Supernova — a star detonates ─────────────────────
+
+@Composable
+fun BoxScope.SpSupernova(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xffd36a)
+    val cx = 540f; val cy = 1080f
+    val tBlast = 4.0f
+    val swell = animate(70f, 150f, 0.5f, tBlast, Easing.easeInCubic)(t)
+    val flash = (1f - (abs(t - tBlast) / 0.9f)).coerceIn(0f, 1f)
+    val shellP = ((t - tBlast) / 7f).coerceIn(0f, 1f)
+    val shellR = 90f + shellP * 560f
+    val shellA = 1f - shellP
+
+    if (t < tBlast + 0.5f) {
+        RadialDisc(
+            cx, cy, swell * (0.92f + 0.08f * sin(t * 9f)),
+            arrayOf(0f to c(0xfff3d0), 0.45f to c(0xffd35e), 0.8f to c(0xff8a30), 1f to Color(0x00000000)),
+            0.5f, 0.42f, 0.6f,
+        )
+    }
+    if (flash > 0.01f) {
+        RadialDisc(
+            cx, cy, 720f * flash,
+            arrayOf(0f to Color.White.copy(alpha = flash), 0.5f to Color(0xCCfff0d0).copy(alpha = flash), 0.85f to Color(0x00000000), 1f to Color(0x00000000)),
+            0.5f, 0.5f, 0.5f,
+        )
+    }
+
+    val appear = reveal(t, 0.6f)
+    Canvas(Modifier.fillMaxSize().alpha(appear.opacity)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        if (shellP > 0f && shellP < 1f) {
+            drawCircle(c(0xffb347).copy(alpha = 0.5f * shellA), radius = shellR * k, center = ctr, style = Stroke(width = (38f * (1f - shellP) + 6f) * k))
+            drawCircle(Color.White.copy(alpha = 0.6f * shellA), radius = shellR * k, center = ctr, style = Stroke(width = 4f * k))
+            val n = 18
+            for (i in 0 until n) {
+                val ang = i.toFloat() / n * SP_TAU + i * 0.6f
+                val rr = shellR * (0.78f + 0.2f * sin(i * 2.3f)) * k
+                val col = if (i % 2 == 0) c(0xffe9b0) else c(0xff8a3a)
+                drawCircle(col.copy(alpha = 0.7f * shellA), radius = (4f + 3f * (i % 3)) * k, center = Offset(ctr.x + cos(ang) * rr, ctr.y + sin(ang) * rr))
+            }
+        }
+        if (t > tBlast) {
+            val ra = (1f - shellP) * 0.7f + 0.3f
+            drawCircle(brush = Brush.radialGradient(listOf(Color.White, c(0x9fe8ff), Color(0x00000000)), center = ctr, radius = 60f * k), radius = 52f * k, center = ctr, alpha = ra)
+        }
+    }
+
+    Eyebrow("The death of a giant star", accent, 200f, e1)
+    Head(headline("Brighter than\na ", "galaxy", "."), 84f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("A collapsing giant explodes — forging the ", "gold, iron and oxygen", " that build new worlds."))
+}
+
+// ───────────────────── Comet — tails that flee the Sun ─────────────────────
+
+@Composable
+fun BoxScope.SpComet(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xbfe8ff)
+    val sunX = 940f; val sunY = 560f
+    val p = interpolate(listOf(0.6f, 9.5f), listOf(0f, 1f), Easing.easeInOutSine)(t)
+    val cmx = 120f + p * 840f
+    val cmy = 1320f - sin(p * 3.1416f) * 540f
+
+    RadialDisc(sunX, sunY, 230f, arrayOf(0f to Color(0x40ffd35e), 0.5f to Color(0x14ffa030), 0.8f to Color(0x00000000), 1f to Color(0x00000000)), 0.5f, 0.5f, 0.5f)
+    Sphere(96f, listOf(c(0xfff7d6), c(0xffc23a), c(0xff8a26)), glow = Color(0x80ffa03c), modifier = Modifier.offset((sunX - 48f).dp, (sunY - 48f).dp))
+
+    val appear = reveal(t, 0.9f)
+    Canvas(Modifier.fillMaxSize().alpha(appear.opacity)) {
+        val k = size.width / 1080f
+        val nuc = Offset(cmx * k, cmy * k)
+        val sun = Offset(sunX * k, sunY * k)
+        var dx = nuc.x - sun.x; var dy = nuc.y - sun.y
+        val d = sqrt(dx * dx + dy * dy).coerceAtLeast(1f)
+        dx /= d; dy /= d
+        val px = -dy; val py = dx
+        val near = (1f - d / (900f * k)).coerceIn(0.15f, 1f)
+        val tailLen = (220f + 470f * near) * k
+        // ion tail — straight, bluish
+        val ibx = nuc.x + dx * tailLen; val iby = nuc.y + dy * tailLen
+        drawPath(
+            Path().apply { moveTo(nuc.x, nuc.y); lineTo(ibx + px * 30f * k, iby + py * 30f * k); lineTo(ibx - px * 30f * k, iby - py * 30f * k); close() },
+            brush = Brush.linearGradient(listOf(c(0x99bfe8ff), Color(0x00bfe8ff)), start = nuc, end = Offset(ibx, iby)),
+        )
+        // dust tail — shorter, warmer, fanned slightly off-axis
+        val ddx = dx + px * 0.18f; val ddy = dy + py * 0.18f
+        val dbx = nuc.x + ddx * tailLen * 0.8f; val dby = nuc.y + ddy * tailLen * 0.8f
+        drawPath(
+            Path().apply { moveTo(nuc.x, nuc.y); lineTo(dbx + px * 48f * k, dby + py * 48f * k); lineTo(dbx - px * 48f * k, dby - py * 48f * k); close() },
+            brush = Brush.linearGradient(listOf(c(0x66ffe2b0), Color(0x00ffe2b0)), start = nuc, end = Offset(dbx, dby)),
+        )
+        // nucleus + coma
+        drawCircle(brush = Brush.radialGradient(listOf(Color.White, c(0xbfe8ff), Color(0x00bfe8ff)), center = nuc, radius = 34f * k), radius = 30f * k, center = nuc)
+    }
+
+    Eyebrow("An icy visitor", accent, 200f, e1)
+    Head(headline("Tails that flee\nthe ", "Sun", "."), 84f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Sunlight boils its ice into glowing tails that always stream ", "away from the Sun", "."))
+}
+
+// ───────────────────── Total eclipse — the Moon hides the Sun ─────────────────────
+
+@Composable
+fun BoxScope.SpEclipse(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xffcaa0)
+    val cx = 540f; val cy = 1040f; val R = 240f
+    val mp = interpolate(listOf(1f, 11f), listOf(-1.7f, 1.7f), Easing.linear)(t)
+    val moonX = cx + mp * R * 1.6f
+    val moonY = cy - mp * R * 0.18f
+    val coverage = (1f - abs(mp) / 1.0f).coerceIn(0f, 1f)
+    val corona = ((coverage - 0.4f) / 0.6f).coerceIn(0f, 1f)
+
+    RadialDisc(cx, cy, R + 120f, arrayOf(0f to Color(0x55ffd58a), 0.5f to Color(0x18ffa030), 0.8f to Color(0x00000000), 1f to Color(0x00000000)), 0.5f, 0.5f, 0.5f)
+    RadialDisc(cx, cy, R, arrayOf(0f to c(0xfff7e0), 0.55f to c(0xffd35e), 1f to c(0xff9e34)), 0.5f, 0.42f, 0.62f)
+
+    val appear = reveal(t, 0.7f)
+    Canvas(Modifier.fillMaxSize().alpha(appear.opacity)) {
+        val k = size.width / 1080f
+        val mc = Offset(moonX * k, moonY * k)
+        val rk = R * k
+        if (corona > 0.02f) {
+            val n = 40
+            for (i in 0 until n) {
+                val ang = i.toFloat() / n * SP_TAU
+                val l = (1.1f + 0.5f * abs(sin(i * 1.7f))) * rk * (0.7f + 0.3f * corona)
+                val a = 0.5f * corona * (0.5f + 0.5f * abs(sin(i * 2.1f)))
+                drawLine(c(0xfff0d8).copy(alpha = a), Offset(mc.x + cos(ang) * rk * 1.02f, mc.y + sin(ang) * rk * 1.02f), Offset(mc.x + cos(ang) * l, mc.y + sin(ang) * l), strokeWidth = 2.5f * k)
+            }
+            drawCircle(c(0xfff0d8).copy(alpha = 0.35f * corona), radius = rk * 1.06f, center = mc, style = Stroke(width = 10f * k))
+        }
+        drawCircle(c(0x0b0b10), radius = rk, center = mc)
+        if (coverage in 0.82f..0.985f) {
+            val edgeAng = if (mp < 0f) 0.6f else 3.74f
+            val b = Offset(mc.x + cos(edgeAng) * rk, mc.y + sin(edgeAng) * rk)
+            drawCircle(Color.White.copy(alpha = 0.5f), radius = 30f * k, center = b)
+            drawCircle(Color.White, radius = 16f * k, center = b)
+        }
+    }
+
+    Eyebrow("A cosmic coincidence", accent, 200f, e1)
+    Head(headline("When the Moon\nhides the ", "Sun", "."), 80f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Moon and Sun look the same size — so now and then one ", "perfectly eclipses", " the other."))
+}

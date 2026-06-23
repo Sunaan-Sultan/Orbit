@@ -99,6 +99,16 @@ private fun DrawScope.drawIcon(name: String, color: Color, filled: Boolean, sw: 
                 drawPath(p, color, style = Stroke(width = sw))
             }
         }
+        "spotlight" -> {
+            // Four-point sparkle: a large star with a small companion.
+            val big = Path().apply {
+                moveTo(12f, 2.5f); lineTo(14f, 9.5f); lineTo(21f, 12f); lineTo(14f, 14.5f)
+                lineTo(12f, 21.5f); lineTo(10f, 14.5f); lineTo(3f, 12f); lineTo(10f, 9.5f); close()
+            }
+            if (filled) drawPath(big, color)
+            else drawPath(big, color, style = Stroke(width = sw, join = StrokeJoin.Round))
+            drawCircle(color, radius = 1.3f, center = Offset(19.5f, 5.5f))
+        }
     }
 }
 

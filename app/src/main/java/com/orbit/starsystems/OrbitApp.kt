@@ -40,6 +40,7 @@ import com.orbit.starsystems.ui.FactScreen
 import com.orbit.starsystems.ui.OrbitFont
 import com.orbit.starsystems.ui.ProfileScreen
 import com.orbit.starsystems.ui.SavedScreen
+import com.orbit.starsystems.ui.SpotlightScreen
 import com.orbit.starsystems.ui.SystemExplore
 import com.orbit.starsystems.ui.SystemsList
 import kotlinx.coroutines.delay
@@ -103,9 +104,11 @@ fun OrbitApp() {
 
     val curFact = factById(factId) ?: ALL_FACTS.first()
 
-    val pagerFacts = remember(factId != null, openSys) {
-        if (factId == null) emptyList()
-        else factsForSys(openSys ?: "sol")
+    // Page through the facts of the opened fact's own system (works for systems,
+    // Spotlight, and Saved alike — independent of which screen launched it).
+    val pagerSys = factById(factId)?.sys
+    val pagerFacts = remember(pagerSys) {
+        pagerSys?.let { factsForSys(it) } ?: emptyList()
     }
 
     Box(Modifier.fillMaxSize().background(Color.Black)) {
@@ -163,6 +166,7 @@ fun OrbitApp() {
                             )
                         }
                     }
+                    "spotlight" -> SpotlightScreen(onOpen = { openFact(it) })
                     "saved" -> SavedScreen(saved = saved, onOpen = { openFact(it) })
                     "you" -> ProfileScreen(savedCount = saved.size, viewed = viewed.size)
                 }

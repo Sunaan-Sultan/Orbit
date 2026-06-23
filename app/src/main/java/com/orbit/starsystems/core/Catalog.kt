@@ -4,7 +4,7 @@ package com.orbit.starsystems.core
 private fun List<Fact>.at15() = map { if (it.dur == 15f) it else it.copy(dur = 15f) }
 
 /** Every fact across all explorable systems (uniform 15s loop). */
-val ALL_FACTS: List<Fact> = (SOL_FACTS + AC_FACTS + TRAPPIST_FACTS + SIRIUS_FACTS + KEPLER_FACTS).at15()
+val ALL_FACTS: List<Fact> = (SOL_FACTS + AC_FACTS + TRAPPIST_FACTS + SIRIUS_FACTS + KEPLER_FACTS + SPOTLIGHT_FACTS).at15()
 
 fun factById(id: String?): Fact? = ALL_FACTS.find { it.id == id }
 
@@ -14,6 +14,7 @@ fun factsForSys(sys: String): List<Fact> = when (sys) {
     "tr" -> TRAPPIST_FACTS
     "sir" -> SIRIUS_FACTS
     "kep" -> KEPLER_FACTS
+    "spot" -> SPOTLIGHT_FACTS
     else -> SOL_FACTS
 }.at15()
 
