@@ -134,7 +134,7 @@ fun FactCard(fact: Fact, onClick: () -> Unit, modifier: Modifier = Modifier, wid
 /** Translucent bottom navigation with three destinations. */
 @Composable
 fun BottomNav(tab: String, onSelect: (String) -> Unit, modifier: Modifier = Modifier) {
-    val items = listOf("systems" to "Systems", "spotlight" to "Spotlight", "saved" to "Saved", "you" to "You")
+    val items = listOf("systems" to "Systems", "spotlight" to "Spotlight", "compare" to "Compare", "saved" to "Saved", "you" to "You")
     Row(
         modifier
             .fillMaxWidth()

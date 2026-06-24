@@ -274,6 +274,7 @@ fun BoxScope.RenderScene(scene: SceneId, t: Float, duration: Float) {
         SceneId.SP_PULSAR -> SpPulsar(t, duration)
         SceneId.SP_NEUTRON -> SpNeutron(t, duration)
         SceneId.SP_SUPERNOVA -> SpSupernova(t, duration)
+        SceneId.SP_MILKYWAY -> SpMilkyWay(t, duration)
         SceneId.SP_COMET -> SpComet(t, duration)
         SceneId.SP_ECLIPSE -> SpEclipse(t, duration)
     }

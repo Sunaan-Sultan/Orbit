@@ -18,7 +18,7 @@ enum class SceneId {
     KEP_EIGHT, KEP_SUNLIKE, KEP_CROWDED, KEP_AI, KEP_DISTANCE,
     // Spotlight — standalone facts
     SP_VOYAGER, SP_ISS, SP_STARSHIP, SP_SUN, SP_OLYMPUS, SP_BLACKHOLE, SP_WORMHOLE,
-    SP_PULSAR, SP_NEUTRON, SP_SUPERNOVA, SP_COMET, SP_ECLIPSE,
+    SP_PULSAR, SP_NEUTRON, SP_SUPERNOVA, SP_MILKYWAY, SP_COMET, SP_ECLIPSE,
 }
 
 /** A planet: diameter in Earth-diameters, mean distance in AU, and a 3-stop sphere palette. */

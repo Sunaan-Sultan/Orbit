@@ -19,10 +19,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -54,6 +56,57 @@ private val BH_STARS: List<BHStar> = run {
     List(120) {
         BHStar(rnd() * 1080f, 380f + rnd() * 1320f, 1.4f + rnd() * 3.4f, 0.4f + rnd() * 0.55f)
     }
+}
+
+// The galaxy is a four-arm barred spiral; these constants are shared by the starfield and the dust lanes.
+private const val MW_ARMS = 4
+private const val MW_WIND = 0.55f          // how far each arm wraps (in turns)
+
+/** One drawn dot of the galaxy: radius fraction, base angle, size, brightness, colour, soft-glow flag. */
+private class GalDot(val rFrac: Float, val ang: Float, val sz: Float, val a: Float, val col: Color, val soft: Boolean)
+
+/** A deterministic, multi-population starfield: spiral arms, HII regions, blue clusters, disc, halo. */
+private val MW_DOTS: List<GalDot> = run {
+    var s = 0x51ED2719
+    fun rnd(): Float { s = s * 1664525 + 1013904223; return ((s ushr 8) and 0xFFFF) / 65535f }
+    fun gauss(): Float = (rnd() + rnd() + rnd() - 1.5f) / 1.5f   // ~N(0,1)-ish in [-1,1]
+    fun armAngle(arm: Int, along: Float) = arm * (SP_TAU / MW_ARMS) + along * MW_WIND * SP_TAU
+    val out = ArrayList<GalDot>()
+
+    // 1 — arm stars, tightly concentrated on each arm's ridgeline (warm inner → blue outer)
+    for (i in 0 until 560) {
+        val arm = i % MW_ARMS
+        val along = rnd()
+        val rFrac = 0.15f + 0.85f * sqrt(along) + gauss() * 0.018f
+        val ang = armAngle(arm, along) + gauss() * (0.09f + 0.16f * (1f - along))
+        val col = lerp(c(0x9fb8ff), c(0xffe6b6), (1f - along).coerceIn(0f, 1f))
+        out.add(GalDot(rFrac, ang, 1.0f + rnd() * 2.6f, 0.4f + rnd() * 0.55f, col, false))
+    }
+    // 2 — pink star-forming (HII) regions, glowing knots strung along the arms
+    for (i in 0 until 30) {
+        val along = 0.25f + rnd() * 0.7f
+        val ang = armAngle(i % MW_ARMS, along) + gauss() * 0.05f
+        out.add(GalDot(0.2f + 0.8f * sqrt(along) + gauss() * 0.012f, ang, 5f + rnd() * 5f, 0.55f, c(0xff86b8), true))
+    }
+    // 3 — hot blue O/B star clusters lighting the arms
+    for (i in 0 until 54) {
+        val along = 0.3f + rnd() * 0.68f
+        val ang = armAngle((i + 1) % MW_ARMS, along) + gauss() * 0.045f
+        out.add(GalDot(0.22f + 0.78f * sqrt(along) + gauss() * 0.01f, ang, 2.6f + rnd() * 3.0f, 0.9f, c(0xc6e6ff), true))
+    }
+    // 4 — faint inter-arm disc field stars (uniform over the disc area)
+    for (i in 0 until 170) {
+        out.add(GalDot(sqrt(rnd()) * 0.98f, rnd() * SP_TAU, 0.9f + rnd() * 1.7f, 0.22f + rnd() * 0.4f, lerp(c(0xcfe0ff), c(0xfff0d8), rnd()), false))
+    }
+    // 5 — sparse halo stars drifting beyond the disc
+    for (i in 0 until 70) {
+        out.add(GalDot(0.6f + rnd() * 0.72f, rnd() * SP_TAU, 0.8f + rnd() * 1.3f, 0.16f + rnd() * 0.3f, c(0xdfe6ff), false))
+    }
+    // 6 — a handful of globular clusters as fuzzy points in the halo
+    for (i in 0 until 8) {
+        out.add(GalDot(0.7f + rnd() * 0.6f, rnd() * SP_TAU, 7f + rnd() * 4f, 0.42f, c(0xffe9c8), true))
+    }
+    out
 }
 
 private fun spLabel(size: Float, color: Color) = TextStyle(
@@ -878,4 +931,117 @@ fun BoxScope.SpNeutron(t: Float, duration: Float) = SceneFade(t, duration) {
     Eyebrow("The densest thing in the universe", accent, 200f, e1)
     Head(headline("A whole Sun\ncrushed into a ", "city", "."), 80f, 246f, e2)
     BottomLine(1648f, reveal(t, 5.5f), body("Squeeze a giant star's core into a ball 20 km wide — one teaspoon would weigh about ", "a billion tonnes", "."))
+}
+
+// ───────────────────── Milky Way — our home galaxy ─────────────────────
+
+@Composable
+fun BoxScope.SpMilkyWay(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0x9fc2ff)
+    val cx = 540f; val cy = 1010f
+    val maxRu = 430f
+    val tilt = 0.46f                                    // vertical squash → an inclined disc
+    val spin = t * 0.10f                                // a slow, majestic rotation
+    val sunAng = 0.7f; val sunRu = 0.66f * maxRu        // our Sun, parked in an outer arm
+
+    // a warm glow standing in for the whole disc's light
+    RadialDisc(
+        cx, cy, maxRu * 0.95f,
+        arrayOf(0f to Color(0x44ffe6b0), 0.4f to Color(0x18b9c6ff), 0.78f to Color(0x00000000), 1f to Color(0x00000000)),
+        0.5f, 0.5f, 0.5f,
+    )
+
+    val appear = reveal(t, 0.5f, dur = 0.9f).opacity
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        val maxR = maxRu * k
+        val spinDeg = spin * 57.2957795f
+
+        // the whole disc — squashed by [tilt] so we view it on a slant
+        scale(1f, tilt, pivot = ctr) {
+            // diffuse disc light
+            drawCircle(
+                brush = Brush.radialGradient(
+                    0f to c(0xffe9c0).copy(alpha = 0.30f), 0.45f to c(0x8aa6e0).copy(alpha = 0.14f),
+                    0.85f to Color(0x00000000), 1f to Color(0x00000000),
+                    center = ctr, radius = maxR,
+                ),
+                radius = maxR, center = ctr,
+            )
+
+            // every population of dots
+            MW_DOTS.forEach { d ->
+                val ang = d.ang + spin
+                val r = d.rFrac * maxR
+                val pos = Offset(ctr.x + cos(ang) * r, ctr.y + sin(ang) * r)
+                val twinkle = 0.74f + 0.26f * sin(t * 1.8f + d.ang * 5f)
+                val a = (d.a * twinkle).coerceIn(0f, 1f)
+                if (d.soft) {
+                    drawCircle(
+                        brush = Brush.radialGradient(listOf(d.col.copy(alpha = a), Color(0x00000000)), center = pos, radius = d.sz * 2.4f * k),
+                        radius = d.sz * 2.4f * k, center = pos,
+                    )
+                    drawCircle(Color.White, radius = d.sz * 0.4f * k, center = pos, alpha = a * 0.8f)
+                } else {
+                    drawCircle(d.col, radius = d.sz * k, center = pos, alpha = a)
+                }
+            }
+
+            // dark dust lanes hugging the inner edge of each arm
+            val laneCol = Color(0x73140d0a)
+            for (arm in 0 until MW_ARMS) {
+                val path = Path()
+                var first = true
+                var along = 0.12f
+                while (along <= 1.0f) {
+                    val ang = arm * (SP_TAU / MW_ARMS) + along * MW_WIND * SP_TAU + spin - 0.11f
+                    val r = (0.15f + 0.85f * sqrt(along)) * maxR * 0.97f
+                    val p = Offset(ctr.x + cos(ang) * r, ctr.y + sin(ang) * r)
+                    if (first) { path.moveTo(p.x, p.y); first = false } else path.lineTo(p.x, p.y)
+                    along += 0.04f
+                }
+                drawPath(path, laneCol, style = Stroke(width = 24f * k, cap = StrokeCap.Round))
+            }
+
+            // the central bar (Milky Way is a barred spiral) — an elongated warm core
+            rotate(28f + spinDeg, pivot = ctr) {
+                scale(1.95f, 0.6f, pivot = ctr) {
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            0f to c(0xfff0cf), 0.55f to c(0xffca7a).copy(alpha = 0.7f), 1f to Color(0x00000000),
+                            center = ctr, radius = 132f * k,
+                        ),
+                        radius = 132f * k, center = ctr,
+                    )
+                }
+            }
+            // the bright round bulge sitting over the bar
+            drawCircle(
+                brush = Brush.radialGradient(
+                    0f to Color.White, 0.3f to c(0xfff0c4), 0.66f to c(0xffba60).copy(alpha = 0.45f), 1f to Color(0x00000000),
+                    center = ctr, radius = 150f * k,
+                ),
+                radius = 138f * k, center = ctr,
+            )
+        }
+
+        // our Sun: a highlighted star sitting in one of the outer arms (held still — "you are here")
+        val sunPulse = 0.8f + 0.2f * sin(t * 3f)
+        val sun = Offset(ctr.x + cos(sunAng) * sunRu * k, ctr.y + sin(sunAng) * sunRu * k * tilt)
+        val sa = reveal(t, 4.2f).opacity
+        if (sa > 0.01f) {
+            drawCircle(Color.White.copy(alpha = 0.5f * sa * sunPulse), radius = 24f * k, center = sun, style = Stroke(width = 2f * k))
+            drawCircle(c(0xfff0c8), radius = 6.5f * k, center = sun, alpha = sa)
+            drawCircle(Color.White, radius = 3f * k, center = sun, alpha = sa)
+        }
+    }
+    CenterLabel(cx + cos(sunAng) * sunRu, cy + sin(sunAng) * sunRu * tilt + 30f, reveal(t, 4.4f).opacity) {
+        Text("THE SUN · YOU ARE HERE", style = spLabel(15f, accent))
+    }
+
+    Eyebrow("Our home galaxy", accent, 200f, e1)
+    Head(headline("Home to a hundred\nbillion ", "stars", "."), 78f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Our Sun is just one star in a spiral ", "100,000 light-years", " wide — one lap takes 225 million years."))
 }

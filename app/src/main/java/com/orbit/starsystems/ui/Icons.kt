@@ -99,6 +99,11 @@ private fun DrawScope.drawIcon(name: String, color: Color, filled: Boolean, sw: 
                 drawPath(p, color, style = Stroke(width = sw))
             }
         }
+        "compare" -> {
+            // a small disc beside a larger one — the size-comparison glyph
+            drawCircle(color, radius = 2.6f, center = Offset(7.5f, 14f), style = Stroke(width = sw))
+            drawCircle(color, radius = 5.4f, center = Offset(16f, 12f), style = Stroke(width = sw))
+        }
         "spotlight" -> {
             // Four-point sparkle: a large star with a small companion.
             val big = Path().apply {

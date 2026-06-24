@@ -35,6 +35,7 @@ import com.orbit.starsystems.core.ALL_FACTS
 import com.orbit.starsystems.core.factById
 import com.orbit.starsystems.core.factsForSys
 import com.orbit.starsystems.ui.BottomNav
+import com.orbit.starsystems.ui.ComparisonScreen
 import com.orbit.starsystems.ui.DetailSheet
 import com.orbit.starsystems.ui.FactScreen
 import com.orbit.starsystems.ui.OrbitFont
@@ -167,6 +168,7 @@ fun OrbitApp() {
                         }
                     }
                     "spotlight" -> SpotlightScreen(onOpen = { openFact(it) })
+                    "compare" -> ComparisonScreen()
                     "saved" -> SavedScreen(saved = saved, onOpen = { openFact(it) })
                     "you" -> ProfileScreen(savedCount = saved.size, viewed = viewed.size)
                 }

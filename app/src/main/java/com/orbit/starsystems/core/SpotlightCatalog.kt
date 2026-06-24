@@ -84,6 +84,13 @@ val SPOTLIGHT_FACTS: List<Fact> = listOf(
         R.raw.music3,
     ),
     spot(
+        "sp_milkyway", "Our Galaxy", 0x9fc2ff, SceneId.SP_MILKYWAY, 3.6f,
+        "The Milky Way", "Our home — a hundred billion suns",
+        "The Milky Way is our home galaxy: a vast spiral roughly 100,000 light-years across, holding a few hundred billion stars. Our Sun is just one of them, riding a quiet outer arm and taking about 225 million years to circle the galactic centre once.",
+        listOf("Width" to "≈ 100,000 light-years", "Stars" to "100–400 billion", "One orbit" to "≈ 225 million yrs"),
+        R.raw.music2,
+    ),
+    spot(
         "sp_comet", "Wanderers", 0xbfe8ff, SceneId.SP_COMET, 4.5f,
         "Comets", "Icy wanderers that grow tails near the Sun",
         "A comet is a chunk of ice and dust left over from the birth of the solar system. As it swings near the Sun it heats up and streams two glowing tails — always pointing away from the Sun — that can stretch tens of millions of kilometres.",
