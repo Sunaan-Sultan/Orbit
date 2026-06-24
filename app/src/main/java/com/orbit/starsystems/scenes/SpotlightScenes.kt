@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,20 +44,17 @@ import kotlin.math.sqrt
 
 private const val SP_TAU = 6.2831855f
 
-/** A body spiralling into the black hole: spawn phase, loop period, start angle, spiral turns, size, palette. */
-private class BHBody(
-    val phase: Float, val period: Float, val base: Float, val turns: Float,
-    val sz: Float, val col: List<Color>,
-)
+/** A background star the travelling black hole lenses: position (scene units), radius, base brightness. */
+private class BHStar(val x: Float, val y: Float, val r: Float, val a: Float)
 
-private val BH_BODIES = listOf(
-    BHBody(0.00f, 7.4f, 0.5f, 3.2f, 15f, listOf(c(0xc4bcb0), c(0x8a8276), c(0x46403a))),
-    BHBody(0.30f, 9.2f, 2.2f, 3.6f, 11f, listOf(c(0xbeb6aa), c(0x847c70), c(0x423c36))),
-    BHBody(0.62f, 8.1f, 4.1f, 3.0f, 13f, listOf(c(0xcabfb2), c(0x8f8678), c(0x4a443c))),
-    BHBody(0.16f, 12.0f, 5.3f, 2.6f, 38f, listOf(c(0x9cc4ec), c(0x3d72b8), c(0x16223f))),  // a planet
-    BHBody(0.48f, 6.6f, 1.3f, 4.0f, 9f, listOf(c(0xc0b8ac), c(0x867e72), c(0x423c34))),
-    BHBody(0.80f, 10.6f, 3.2f, 2.8f, 42f, listOf(c(0xe8b06a), c(0xb5702f), c(0x5e3414))),  // a planet
-)
+/** A fixed, deterministic starfield scattered across the open band the black hole crosses. */
+private val BH_STARS: List<BHStar> = run {
+    var s = 0x9E3779B9.toInt()
+    fun rnd(): Float { s = s * 1664525 + 1013904223; return ((s ushr 8) and 0xFFFF) / 65535f }
+    List(120) {
+        BHStar(rnd() * 1080f, 380f + rnd() * 1320f, 1.4f + rnd() * 3.4f, 0.4f + rnd() * 0.55f)
+    }
+}
 
 private fun spLabel(size: Float, color: Color) = TextStyle(
     fontFamily = OrbitFont, fontWeight = FontWeight.SemiBold, fontSize = size.sp, letterSpacing = 0.12.em, color = color,
@@ -416,73 +412,106 @@ fun BoxScope.SpOlympus(t: Float, duration: Float) = SceneFade(t, duration) {
 fun BoxScope.SpBlackHole(t: Float, duration: Float) = SceneFade(t, duration) {
     val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
     val accent = c(0xffb060)
-    val cx = 540f; val cy = 1100f
-    val grow = animate(0.6f, 1f, 0.4f, 2.2f, Easing.easeOutCubic)(t)
-    val rh = 112f * grow                // event-horizon shadow
+
+    // The hole glides left → right across the open mid-band; everything bends around it.
+    val cross = animate(-0.24f, 1.24f, 0.5f, 13.6f, Easing.easeInOutSine)(t)
+    val cxU = cross * 1080f
+    val cyU = 1024f
+    val rEU = 200f                                  // Einstein (lensing) radius in scene units
+    val rsU = 104f                                  // event-horizon shadow radius
     val shimmer = 0.82f + 0.18f * sin(t * 3f)
+    val appear = reveal(t, 0.3f, dur = 0.9f).opacity
 
-    // hot glow where the doomed matter piles up
-    RadialDisc(
-        cx, cy, 300f,
-        arrayOf(0f to Color(0x40ffb060), 0.5f to Color(0x14ff8a30), 0.8f to Color(0x00000000), 1f to Color(0x00000000)),
-        0.5f, 0.5f, 0.5f,
-    )
-
-    val appear = reveal(t, 0.7f)
-    Canvas(Modifier.fillMaxSize().alpha(appear.opacity)) {
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
         val k = size.width / 1080f
-        val ctr = Offset(cx * k, cy * k)
-        val rhk = rh * k
-        val squash = 0.88f
-        val rMax = 500f * k
+        val ctr = Offset(cxU * k, cyU * k)
+        val rE = rEU * k
+        val rs = rsU * k
 
-        // Decaying spiral: radius collapses toward the horizon while the body winds faster.
-        fun rOf(p: Float) = rhk + (rMax - rhk) * (1f - Easing.easeInCubic(p))
-        fun angOf(b: BHBody, p: Float) = b.base + b.turns * (p * p) * SP_TAU
-        fun posOf(b: BHBody, p: Float): Offset {
-            val r = rOf(p); val a = angOf(b, p)
-            return Offset(ctr.x + cos(a) * r, ctr.y + sin(a) * r * squash)
+        // Point-lens deflection: a background point at distance d appears pushed outward to
+        // r' = (d + √(d² + 4rE²)) / 2 — so light sweeps aside and rings the dark centre.
+        fun lens(px: Float, py: Float): Offset {
+            val dx = px - ctr.x; val dy = py - ctr.y
+            val d = sqrt(dx * dx + dy * dy)
+            if (d < 0.5f) return Offset(ctr.x, ctr.y - rE)
+            val rp = (d + sqrt(d * d + 4f * rE * rE)) * 0.5f
+            val f = rp / d
+            return Offset(ctr.x + dx * f, ctr.y + dy * f)
         }
 
-        BH_BODIES.forEach { b ->
-            val p = (((t / b.period) + b.phase) % 1f)
-            if (p >= 0.99f) return@forEach
-            val a0 = ((1f - p) / 0.12f).coerceIn(0f, 1f) * (p / 0.05f).coerceIn(0f, 1f)
-            val rad = b.sz * k
-            // comet tail streaming back along the inbound spiral
-            val seg = 7
-            for (s in 1..seg) {
-                val p2 = p - s * 0.018f
-                if (p2 > 0f) {
-                    val f = 1f - s / seg.toFloat()
-                    drawLine(b.col[1].copy(alpha = a0 * f * 0.6f), posOf(b, p - (s - 1) * 0.018f), posOf(b, p2), strokeWidth = rad * 0.9f * f)
+        // 1 — the fabric of space, warped: a faint grid bent by the passing mass.
+        val gridCol = c(0x7c93c4)
+        val stepU = 124f
+        run {
+            // verticals
+            var gx = -60f
+            while (gx <= 1140f) {
+                val path = Path()
+                var first = true
+                var gy = 360f
+                while (gy <= 1700f) {
+                    val p = lens(gx * k, gy * k)
+                    if (first) { path.moveTo(p.x, p.y); first = false } else path.lineTo(p.x, p.y)
+                    gy += 38f
                 }
+                drawPath(path, gridCol.copy(alpha = 0.12f), style = Stroke(width = 1.2f * k))
+                gx += stepU
             }
-            // the body, stretched radially (tidal spaghettification) as it nears the hole
-            val pos = posOf(b, p)
-            val stretch = 1f + p * p * 2.6f
-            rotate(angOf(b, p) * 57.2957795f, pivot = pos) {
-                scale(stretch, 1f, pivot = pos) {
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            listOf(b.col[0], b.col[1], b.col[2]),
-                            center = Offset(pos.x - rad * 0.3f, pos.y - rad * 0.3f), radius = rad * 1.15f,
-                        ),
-                        radius = rad, center = pos, alpha = a0,
-                    )
+            // horizontals
+            var gy = 360f
+            while (gy <= 1700f) {
+                val path = Path()
+                var first = true
+                var hx = -60f
+                while (hx <= 1140f) {
+                    val p = lens(hx * k, gy * k)
+                    if (first) { path.moveTo(p.x, p.y); first = false } else path.lineTo(p.x, p.y)
+                    hx += 38f
                 }
+                drawPath(path, gridCol.copy(alpha = 0.12f), style = Stroke(width = 1.2f * k))
+                gy += stepU
             }
         }
 
-        // event-horizon shadow + photon ring, drawn last so matter vanishes behind it
-        drawCircle(Color.Black, radius = rhk, center = ctr)
-        drawCircle(c(0xffd9a0).copy(alpha = 0.5f * shimmer), radius = rhk * 1.14f, center = ctr, style = Stroke(width = 18f * k))
-        drawCircle(c(0xfff2d6).copy(alpha = shimmer), radius = rhk * 1.05f, center = ctr, style = Stroke(width = 4f * k))
+        // 2 — the starfield, lensed: near the hole stars are flung wide and brighten into a ring.
+        BH_STARS.forEach { st ->
+            val d0 = sqrt((st.x - cxU) * (st.x - cxU) + (st.y - cyU) * (st.y - cyU)) * k
+            val pos = lens(st.x * k, st.y * k)
+            val mag = ((sqrt(d0 * d0 + 4f * rE * rE) + d0) / (2f * d0.coerceAtLeast(1f))).coerceIn(1f, 3.2f)
+            val twinkle = 0.7f + 0.3f * sin(t * 2.2f + st.x * 0.03f)
+            val a = (st.a * twinkle * (0.55f + 0.55f * (mag - 1f))).coerceIn(0f, 1f)
+            drawCircle(c(0xdfe9ff), radius = st.r * k * sqrt(mag), center = pos, alpha = a)
+        }
+
+        // 3 — accretion glow: a hot warm halo hugging just outside the shadow.
+        drawCircle(
+            brush = Brush.radialGradient(
+                0f to Color(0x00000000), 0.34f to Color(0x00000000),
+                0.50f to c(0xffb060).copy(alpha = 0.55f * shimmer),
+                0.66f to c(0xff8a30).copy(alpha = 0.30f),
+                1f to Color(0x00000000),
+                center = ctr, radius = rE * 1.9f,
+            ),
+            radius = rE * 1.9f, center = ctr,
+        )
+
+        // 4 — the event horizon: a pure black disc nothing escapes.
+        drawCircle(Color.Black, radius = rs, center = ctr)
+
+        // 5 — photon ring + a brighter leading arc (the bent light grazing the horizon).
+        drawCircle(c(0xffd9a0).copy(alpha = 0.45f * shimmer), radius = rs * 1.15f, center = ctr, style = Stroke(width = 16f * k))
+        drawCircle(c(0xfff2d6).copy(alpha = shimmer), radius = rs * 1.06f, center = ctr, style = Stroke(width = 4.5f * k))
+        drawArc(
+            color = c(0xffffff).copy(alpha = 0.9f * shimmer),
+            startAngle = 196f, sweepAngle = 148f, useCenter = false,
+            topLeft = Offset(ctr.x - rs * 1.06f, ctr.y - rs * 1.06f),
+            size = Size(rs * 2.12f, rs * 2.12f), style = Stroke(width = 5f * k),
+        )
     }
 
     Eyebrow("Extreme gravity", accent, 200f, e1)
-    Head(headline("Swallowing\n", "worlds whole", "."), 84f, 246f, e2)
-    BottomLine(1648f, reveal(t, 5.5f), body("Its pull shreds and devours all that strays too close — gas, asteroids, even ", "whole planets", "."))
+    Head(headline("It bends\n", "space itself", "."), 84f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Its gravity is so fierce it warps spacetime — bending the very light of the stars ", "passing behind it", "."))
 }
 
 // ───────────────────── Wormhole — a tunnel through spacetime ─────────────────────
