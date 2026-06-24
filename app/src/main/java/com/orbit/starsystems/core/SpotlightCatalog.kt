@@ -70,6 +70,13 @@ val SPOTLIGHT_FACTS: List<Fact> = listOf(
         R.raw.music2,
     ),
     spot(
+        "sp_neutron", "Dead Stars", 0xb8c4ff, SceneId.SP_NEUTRON, 3.4f,
+        "Neutron Stars", "A whole Sun crushed into a city",
+        "When a giant star's core collapses it can crush the mass of an entire Sun into a sphere just 20 km across — the densest matter in the universe short of a black hole. A single teaspoon of it would weigh about a billion tonnes, and its surface gravity is billions of times Earth's.",
+        listOf("Size" to "≈ 20 km across", "Mass" to "Up to ~2 Suns", "A teaspoon" to "≈ a billion tonnes"),
+        R.raw.music1,
+    ),
+    spot(
         "sp_supernova", "Stellar Death", 0xffd36a, SceneId.SP_SUPERNOVA, 4.2f,
         "Supernova", "A dying star outshines a whole galaxy",
         "When a massive star runs out of fuel its core collapses and it detonates as a supernova — for a few weeks blazing brighter than its entire galaxy, and forging the heavy elements that go on to build planets and people.",

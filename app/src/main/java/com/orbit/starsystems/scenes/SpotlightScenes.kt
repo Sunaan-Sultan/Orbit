@@ -795,3 +795,87 @@ fun BoxScope.SpEclipse(t: Float, duration: Float) = SceneFade(t, duration) {
     Head(headline("When the Moon\nhides the ", "Sun", "."), 80f, 246f, e2)
     BottomLine(1648f, reveal(t, 5.5f), body("Moon and Sun look the same size — so now and then one ", "perfectly eclipses", " the other."))
 }
+
+// ───────────────────── Neutron star — a Sun crushed into a city ─────────────────────
+
+@Composable
+fun BoxScope.SpNeutron(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xb8c4ff)
+    val cx = 540f; val cy = 1004f
+    val tCrush = 3.0f
+    // a giant star collapses: its body slams inward from huge to a pinpoint, warm → icy blue.
+    val starR = animate(380f, 30f, 0.7f, tCrush, Easing.easeInCubic)(t)
+    val crushed = ((t - 0.7f) / (tCrush - 0.7f)).coerceIn(0f, 1f)
+    val flash = (1f - (abs(t - tCrush) / 0.6f)).coerceIn(0f, 1f)
+    val pulse = 0.92f + 0.08f * sin(t * 4.5f)
+
+    // the collapsing star body, tinted from warm-giant to blue-white as it shrinks
+    if (t < tCrush + 0.3f) {
+        val inner = lerp(c(0xfff3e0), Color.White, crushed)
+        val mid = lerp(c(0xffcf7a), c(0xbfd0ff), crushed)
+        val outer = lerp(c(0xff8a3a), c(0x5a78d8), crushed)
+        RadialDisc(
+            cx, cy, starR,
+            arrayOf(0f to inner, 0.45f to mid, 0.82f to outer.copy(alpha = 0.5f), 1f to Color(0x00000000)),
+            0.5f, 0.46f, 0.6f,
+        )
+    }
+    // the collapse flash at the instant of crush
+    if (flash > 0.01f) {
+        RadialDisc(
+            cx, cy, 560f * flash,
+            arrayOf(0f to Color.White.copy(alpha = flash), 0.45f to c(0xcdd6ff).copy(alpha = 0.8f * flash), 0.85f to Color(0x00000000), 1f to Color(0x00000000)),
+            0.5f, 0.5f, 0.5f,
+        )
+    }
+    // settled gravitational halo around the new neutron star
+    if (t > tCrush - 0.4f) {
+        RadialDisc(
+            cx, cy, 150f * pulse,
+            arrayOf(0f to Color(0x99cdd6ff), 0.4f to Color(0x33aebcff), 0.78f to Color(0x00000000), 1f to Color(0x00000000)),
+            0.5f, 0.5f, 0.5f,
+        )
+    }
+
+    val appear = reveal(t, 0.6f).opacity
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        val settle = ((t - tCrush) / 0.8f).coerceIn(0f, 1f)
+
+        // matter still raining in — concentric shells collapsing toward the core (relentless gravity)
+        if (settle > 0f) {
+            val n = 5
+            for (i in 0 until n) {
+                val p = (((t * 0.45f) + i.toFloat() / n) % 1f)   // 1 = far out, 0 = swallowed
+                val rr = (36f + p * 300f) * k
+                val a = (settle * (1f - p) * p * 2.4f).coerceIn(0f, 0.5f)
+                if (a > 0.01f) drawCircle(accent.copy(alpha = a), radius = rr, center = ctr, style = Stroke(width = (2f + 5f * (1f - p)) * k))
+            }
+        }
+
+        // the neutron star itself: tiny, blinding, blue-white
+        if (t > tCrush - 0.5f) {
+            val rc = 30f * pulse * k
+            drawCircle(brush = Brush.radialGradient(listOf(Color.White, c(0xcdd6ff), c(0x3a4f9a)), center = ctr, radius = rc * 1.5f), radius = rc, center = ctr)
+            drawCircle(Color.White.copy(alpha = 0.7f * pulse), radius = rc * 1.4f, center = ctr, style = Stroke(width = 3.5f * k))
+        }
+
+        // size callout: a ~20 km scale bar beneath the star
+        val ma = reveal(t, 4.4f).opacity
+        if (ma > 0.01f) {
+            val y = (cy + 150f) * k
+            val half = 150f * k
+            val col = accent.copy(alpha = 0.8f * ma)
+            drawLine(col, Offset(ctr.x - half, y), Offset(ctr.x + half, y), strokeWidth = 2f * k, pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f * k, 8f * k)))
+            drawLine(col, Offset(ctr.x - half, y - 12f * k), Offset(ctr.x - half, y + 12f * k), strokeWidth = 2f * k)
+            drawLine(col, Offset(ctr.x + half, y - 12f * k), Offset(ctr.x + half, y + 12f * k), strokeWidth = 2f * k)
+        }
+    }
+    CenterLabel(cx, cy + 168f, reveal(t, 4.6f).opacity) { Text("≈ 20 KM ACROSS", style = spLabel(17f, accent)) }
+
+    Eyebrow("The densest thing in the universe", accent, 200f, e1)
+    Head(headline("A whole Sun\ncrushed into a ", "city", "."), 80f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Squeeze a giant star's core into a ball 20 km wide — one teaspoon would weigh about ", "a billion tonnes", "."))
+}
