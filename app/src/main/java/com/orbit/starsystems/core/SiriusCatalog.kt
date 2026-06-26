@@ -36,7 +36,7 @@ val SIRIUS_FACTS: List<Fact> = listOf(
         "A Sun the Size of Earth", "Sirius B is a dense white dwarf",
         "Sirius B packs about a full solar mass into a sphere the size of Earth. The result is staggering density — a teaspoon of its matter would weigh as much as a small car.",
         listOf("Mass" to "≈ 1 solar mass", "Size" to "≈ Earth", "Density" to "≈ 5 t / teaspoon"),
-        R.raw.music4,
+        R.raw.music7,
     ),
     sir(
         "sir_dog", "Sky Lore", 0x8fc0ff, SceneId.SIR_DOGSTAR, 5.5f,

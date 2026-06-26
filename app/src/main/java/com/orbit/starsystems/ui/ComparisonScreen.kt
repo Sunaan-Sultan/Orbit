@@ -1,23 +1,18 @@
 package com.orbit.starsystems.ui
 
+import android.media.MediaPlayer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
@@ -25,8 +20,8 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -36,19 +31,26 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.orbit.starsystems.R
+import kotlin.math.cos
 import kotlin.math.exp
 import kotlin.math.floor
 import kotlin.math.ln
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sin
 
 // ───────────────────────── the objects, smallest → largest ─────────────────────────
 
-private enum class CompKind { PLANET, STAR, HOLE }
+private enum class CompKind { PLANET, STAR, HOLE, NEBULA, CLUSTER, GALAXY, WEB, UNIVERSE }
 
 private class CompObj(
     val name: String,
@@ -64,70 +66,149 @@ private class CompObj(
 private fun cc(v: Long) = Color(v or 0xFF000000)
 
 private val COMP_OBJECTS = listOf(
+    CompObj("Ceres", "Dwarf Planet", "940 km", 940.0, CompKind.PLANET, listOf(cc(0xcfcabf), cc(0x8f897e), cc(0x423d35))),
+    CompObj("Pluto", "Dwarf Planet", "2,377 km", 2_377.0, CompKind.PLANET, listOf(cc(0xd9c3a5), cc(0xa07b5c), cc(0x4a3326))),
     CompObj("The Moon", "Earth's Moon", "3,474 km", 3_474.0, CompKind.PLANET, listOf(cc(0xdadae0), cc(0x9a9aa2), cc(0x46464d))),
     CompObj("Mercury", "Terrestrial Planet", "4,879 km", 4_879.0, CompKind.PLANET, listOf(cc(0xc9bdae), cc(0x8c8073), cc(0x40382e))),
+    CompObj("Titan", "Moon of Saturn", "5,150 km", 5_150.0, CompKind.PLANET, listOf(cc(0xe9b96e), cc(0xc8893a), cc(0x6e441a))),
+    CompObj("Ganymede", "Moon of Jupiter", "5,268 km", 5_268.0, CompKind.PLANET, listOf(cc(0xc9c0b0), cc(0x8f8473), cc(0x443e34))),
     CompObj("Mars", "Terrestrial Planet", "6,779 km", 6_779.0, CompKind.PLANET, listOf(cc(0xe6915a), cc(0xb5552c), cc(0x5a2210))),
+    CompObj("Venus", "Terrestrial Planet", "12,104 km", 12_104.0, CompKind.PLANET, listOf(cc(0xf6e7c0), cc(0xd8b87a), cc(0x7a6234))),
     CompObj("Earth", "Terrestrial Planet", "12,742 km", 12_742.0, CompKind.PLANET, listOf(cc(0x9fd6ff), cc(0x2f7fd0), cc(0x123a64))),
     CompObj("Neptune", "Ice Giant", "49,244 km", 49_244.0, CompKind.PLANET, listOf(cc(0x9cc4ff), cc(0x3a6fd0), cc(0x16245f))),
+    CompObj("Uranus", "Ice Giant", "50,724 km", 50_724.0, CompKind.PLANET, listOf(cc(0xd2f0f0), cc(0x86c8cf), cc(0x356a72))),
     CompObj("Saturn", "Gas Giant", "116,460 km", 116_460.0, CompKind.PLANET, listOf(cc(0xf0dcae), cc(0xd0a85e), cc(0x6e4e22)), ring = cc(0xc9b486)),
     CompObj("Jupiter", "Gas Giant", "139,820 km", 139_820.0, CompKind.PLANET, listOf(cc(0xf0d8b0), cc(0xc89a64), cc(0x6e4426))),
+    CompObj("Proxima Centauri", "Red Dwarf Star", "≈ 214,000 km", 214_000.0, CompKind.STAR, listOf(cc(0xffcfa8), cc(0xff7a52), cc(0xb53a26)), glow = Color(0x77ff5a32)),
     CompObj("The Sun", "Yellow Dwarf Star", "1.39 million km", 1_391_000.0, CompKind.STAR, listOf(cc(0xfff4d4), cc(0xffb24a), cc(0xff7a1e)), glow = Color(0x99ffae4a)),
     CompObj("Sirius A", "Main-Sequence Star", "2.38 million km", 2_380_000.0, CompKind.STAR, listOf(cc(0xffffff), cc(0xcfe0ff), cc(0x7fa6da)), glow = Color(0x99a8c8ff)),
+    CompObj("Pollux", "Orange Giant", "12.2 million km", 12_200_000.0, CompKind.STAR, listOf(cc(0xffe6c0), cc(0xffb060), cc(0xc06a26)), glow = Color(0x88ffae5a)),
+    CompObj("Arcturus", "Red Giant", "35.3 million km", 35_300_000.0, CompKind.STAR, listOf(cc(0xffe0b0), cc(0xff9a52), cc(0xbf5226)), glow = Color(0x88ff8a44)),
+    CompObj("Rigel", "Blue Supergiant", "110 million km", 109_800_000.0, CompKind.STAR, listOf(cc(0xeaf2ff), cc(0xa8c8ff), cc(0x5a7fcf)), glow = Color(0x99a8c8ff)),
+    CompObj("Antares", "Red Supergiant", "946 million km", 946_000_000.0, CompKind.STAR, listOf(cc(0xffd0a8), cc(0xff6a44), cc(0xb02e1e)), glow = Color(0x88ff5028)),
     CompObj("Betelgeuse", "Red Supergiant", "1.2 billion km", 1_234_000_000.0, CompKind.STAR, listOf(cc(0xffdcb6), cc(0xff7a4a), cc(0xb5331e)), glow = Color(0x88ff5a32)),
-    CompObj("UY Scuti", "Red Hypergiant", "2.4 billion km", 2_360_000_000.0, CompKind.STAR, listOf(cc(0xffe2bc), cc(0xff8a4a), cc(0xc0451e)), glow = Color(0x88ff6a36)),
+    CompObj("UY Scuti", "Red Hypergiant", "2.36 billion km", 2_360_000_000.0, CompKind.STAR, listOf(cc(0xffe2bc), cc(0xff8a4a), cc(0xc0451e)), glow = Color(0x88ff6a36)),
+    CompObj("Stephenson 2-18", "Red Hypergiant", "2.99 billion km", 2_990_000_000.0, CompKind.STAR, listOf(cc(0xffd8b0), cc(0xff7440), cc(0xbf3418)), glow = Color(0x88ff5a30)),
+    CompObj("M87*", "Supermassive Black Hole", "≈ 38 billion km", 38_000_000_000.0, CompKind.HOLE, listOf(Color.Black, Color.Black, Color.Black), glow = Color(0x99ffb060)),
     CompObj("TON 618", "Supermassive Black Hole", "≈ 390 billion km", 390_000_000_000.0, CompKind.HOLE, listOf(Color.Black, Color.Black, Color.Black), glow = Color(0x99ffb060)),
+    // ── nebulae & star clusters (light-years) ──
+    CompObj("Helix Nebula", "Planetary Nebula", "2.5 light-years", 2.365e13, CompKind.NEBULA, listOf(cc(0x66e0d0), cc(0x3aa0c0), cc(0xc04a6a)), glow = Color(0x4466e0d0)),
+    CompObj("Orion Nebula", "Emission Nebula", "24 light-years", 2.271e14, CompKind.NEBULA, listOf(cc(0xff9ec0), cc(0xc060a0), cc(0x50b0c0)), glow = Color(0x44ff80b0)),
+    CompObj("Pleiades", "Open Star Cluster", "43 light-years", 4.068e14, CompKind.CLUSTER, listOf(cc(0xcfe0ff), cc(0x9fc0ff), cc(0x6f90d0)), glow = Color(0x3399c0ff)),
+    CompObj("Omega Centauri", "Globular Cluster", "172 light-years", 1.627e15, CompKind.CLUSTER, listOf(cc(0xfff0d0), cc(0xffd9a0), cc(0xd0a060)), glow = Color(0x33ffd9a0)),
+    CompObj("Carina Nebula", "Emission Nebula", "300 light-years", 2.838e15, CompKind.NEBULA, listOf(cc(0xffb080), cc(0xd06040), cc(0x804060)), glow = Color(0x44ff8050)),
+    CompObj("Tarantula Nebula", "Star-forming Nebula", "930 light-years", 8.799e15, CompKind.NEBULA, listOf(cc(0xc090ff), cc(0xe070b0), cc(0x6080e0)), glow = Color(0x44b080ff)),
+    // ── galaxies ──
+    CompObj("Large Magellanic Cloud", "Satellite Galaxy", "14,000 light-years", 1.3245e17, CompKind.GALAXY, listOf(cc(0xbfe0ff), cc(0x88b0e0), cc(0xff9ec0)), glow = Color(0x335a8aff)),
+    CompObj("Milky Way", "Barred Spiral Galaxy", "105,000 light-years", 1.0e18, CompKind.GALAXY, listOf(cc(0xfff2d0), cc(0xc0d8ff), cc(0x6a86c0)), glow = Color(0x33aac0ff)),
+    CompObj("Andromeda", "Spiral Galaxy", "220,000 light-years", 2.081e18, CompKind.GALAXY, listOf(cc(0xffe9c8), cc(0xbcd2ff), cc(0x6f8ad0)), glow = Color(0x339fb8ff)),
+    CompObj("IC 1101", "Giant Elliptical Galaxy", "≈ 2 million ly", 1.892e19, CompKind.GALAXY, listOf(cc(0xffe6c0), cc(0xffcf9a), cc(0xc08a5a)), glow = Color(0x33ffcf9a)),
+    // ── groups, clusters & superclusters (cosmic web) ──
+    CompObj("Local Group", "Galaxy Group", "≈ 10 million ly", 9.461e19, CompKind.WEB, listOf(cc(0xbcd0ff), cc(0x8090c0), cc(0x303a60))),
+    CompObj("Virgo Cluster", "Galaxy Cluster", "≈ 15 million ly", 1.419e20, CompKind.WEB, listOf(cc(0xc6d6ff), cc(0x8090c0), cc(0x303a60))),
+    CompObj("Alcyoneus", "Giant Radio Galaxy", "≈ 16 million ly", 1.514e20, CompKind.GALAXY, listOf(cc(0xcfe0ff), cc(0x8fb0ff), cc(0x5a70d0)), glow = Color(0x447090ff)),
+    CompObj("Coma Cluster", "Galaxy Cluster", "≈ 25 million ly", 2.365e20, CompKind.WEB, listOf(cc(0xccd8ff), cc(0x8090c0), cc(0x303a60))),
+    CompObj("Virgo Supercluster", "Supercluster", "≈ 110 million ly", 1.041e21, CompKind.WEB, listOf(cc(0xb8ccff), cc(0x7888c0), cc(0x2a3458))),
+    CompObj("Laniakea", "Supercluster", "≈ 520 million ly", 4.92e21, CompKind.WEB, listOf(cc(0xc0d4ff), cc(0x7888c0), cc(0x2a3458))),
+    CompObj("Sloan Great Wall", "Galaxy Filament", "≈ 1.37 billion ly", 1.296e22, CompKind.WEB, listOf(cc(0xb0c4ff), cc(0x6f80b8), cc(0x242c50))),
+    CompObj("Hercules–Corona Borealis", "Largest Known Structure", "≈ 10 billion ly", 9.461e22, CompKind.WEB, listOf(cc(0xc8d6ff), cc(0x7888c0), cc(0x2a3458))),
+    // ── everything ──
+    CompObj("Observable Universe", "Everything There Is", "≈ 93 billion ly", 8.799e23, CompKind.UNIVERSE, listOf(cc(0xa9c0ff), cc(0x6678c0), cc(0x141a40))),
 )
 
-// On-screen radius of the focused object as a fraction of width, by kind: planets
-// stay modest so 2–3 similar worlds share the frame, stars/holes dominate the view.
-private fun CompObj.screenRFrac(): Float = when (kind) {
-    CompKind.PLANET -> 0.20f
-    CompKind.STAR -> 0.31f
-    CompKind.HOLE -> 0.28f
-}
+// how many previous objects to keep in frame alongside the current (largest) one
+private const val LINEUP_K = 4
 
-// Cumulative world-space centres (km) with a generous gap between neighbours.
+// Cumulative world-space centres (km). Objects sit edge-to-edge with a small gap
+// scaled to the SMALLER neighbour, so tiny worlds nestle right up against the giants
+// and stay visible beside them instead of being flung far off in world space.
 private val COMP_X: DoubleArray = run {
     val n = COMP_OBJECTS.size
     val x = DoubleArray(n)
     for (i in 1 until n) {
         val rPrev = COMP_OBJECTS[i - 1].diaKm / 2.0
         val rCur = COMP_OBJECTS[i].diaKm / 2.0
-        x[i] = x[i - 1] + rPrev + 0.35 * max(rPrev, rCur) + rCur
+        x[i] = x[i - 1] + rPrev + 0.5 * min(rPrev, rCur) + rCur
     }
     x
 }
 
+private fun objR(i: Int): Double = COMP_OBJECTS[i].diaKm / 2.0
+
+// The frame is anchored on the lead (largest, right-most) object and stretches back
+// to take in its previous LINEUP_K neighbours.
+private fun leadRight(l: Int): Double = COMP_X[l] + objR(l)
+private fun backLeft(l: Int): Double {
+    val b = (l - LINEUP_K).coerceAtLeast(0)
+    return COMP_X[b] - objR(b)
+}
+private fun frameExtent(l: Int): Double = (leadRight(l) - backLeft(l)).coerceAtLeast(1.0)
+
 // ───────────────────────── the screen ─────────────────────────
 
-private const val STEP_DUR = 2.6f          // seconds spent gliding between two neighbours
-private const val END_HOLD = 1.8f          // pause on the final object before looping
+private const val STEP_DUR = 4.4f          // seconds spent gliding between two neighbours
+private const val END_HOLD = 2.2f          // pause on the final object before looping
 
 @Composable
 fun ComparisonScreen() {
     val n = COMP_OBJECTS.size
-    val travel = (n - 1) * STEP_DUR
-    val loop = travel + END_HOLD
 
+    // clock advances always (ambient twinkle + black-hole shimmer); pos is the
+    // navigation position in step-space [0, n-1] and only auto-advances while playing
     var clock by remember { mutableFloatStateOf(0f) }
+    var pos by remember { mutableFloatStateOf(0f) }
+    var paused by remember { mutableStateOf(false) }
+    var endHold by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(Unit) {
         var last = withFrameNanos { it }
         while (true) {
             val now = withFrameNanos { it }
-            clock = (clock + (now - last) / 1_000_000_000f) % loop
+            val dt = (now - last) / 1_000_000_000f
             last = now
-            // touch a derived value so the loop keeps requesting frames
+            clock += dt
+            if (!paused) {
+                if (pos >= n - 1f) {
+                    // hold on the final object, then fade-loop back to the start
+                    endHold += dt
+                    if (endHold >= END_HOLD) { pos = 0f; endHold = 0f }
+                } else {
+                    pos = (pos + dt / STEP_DUR).coerceAtMost(n - 1f)
+                    endHold = 0f
+                }
+            }
         }
     }
 
-    val pRaw = clock / STEP_DUR
-    val base = floor(pRaw).toInt().coerceIn(0, n - 2)
-    val fracLin = (pRaw - base).coerceIn(0f, 1f)
-    val frac = easeInOut(fracLin)
-    // gentle global fade at the loop seam
-    val fadeIn = (clock / 0.6f).coerceIn(0f, 1f)
-    val fadeOut = ((loop - clock) / 0.7f).coerceIn(0f, 1f)
-    val globalAlpha = fadeIn * fadeOut
+    // looping ambient music while this page is on screen; pauses with the app and with
+    // the tap-to-pause state, and is released when the page leaves
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val music = remember { MediaPlayer.create(context, R.raw.music1)?.apply { isLooping = true } }
+    DisposableEffect(lifecycleOwner) {
+        music?.start()
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> music?.takeIf { it.isPlaying }?.pause()
+                Lifecycle.Event.ON_RESUME -> if (!paused) music?.start()
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            music?.stop()
+            music?.release()
+        }
+    }
+    // mirror the tap-to-pause state onto the music
+    LaunchedEffect(paused) {
+        if (paused) music?.takeIf { it.isPlaying }?.pause() else music?.start()
+    }
+
+    // gentle fade at the loop seam only while auto-playing; held steady when paused
+    val fadeIn = (pos / 0.3f).coerceIn(0f, 1f)
+    val fadeOut = if (pos >= n - 1f) ((END_HOLD - endHold) / 0.5f).coerceIn(0f, 1f) else 1f
+    val globalAlpha = if (paused) 1f else min(fadeIn, fadeOut)
 
     val measurer = rememberTextMeasurer()
     val stars = remember {
@@ -136,7 +217,24 @@ fun ComparisonScreen() {
         List(110) { floatArrayOf(rnd(), rnd(), 0.3f + rnd() * 1.7f, 0.2f + rnd() * 0.5f, rnd() * 6.28f) }
     }
 
-    Box(Modifier.fillMaxSize().background(Color(0xFF03030A))) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color(0xFF03030A))
+            // tap anywhere to pause / resume the fly-through
+            .pointerInput(Unit) { detectTapGestures { paused = !paused } }
+            // swipe to scrub: a leftward swipe scans ahead to bigger objects, a
+            // rightward swipe rewinds to the previously compared ones. Grabbing it pauses.
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(
+                    onDragStart = { paused = true; endHold = 0f },
+                    onHorizontalDrag = { change, dragAmount ->
+                        change.consume()
+                        pos = (pos - dragAmount / (size.width * 0.45f)).coerceIn(0f, n - 1f)
+                    },
+                )
+            },
+    ) {
         // static twinkling backdrop
         Canvas(Modifier.fillMaxSize()) {
             stars.forEach { st ->
@@ -152,105 +250,70 @@ fun ComparisonScreen() {
         Canvas(Modifier.fillMaxSize().alpha(globalAlpha)) {
             val w = size.width
             val h = size.height
-            val anchorX = w * 0.40f
             val cy = h * 0.45f
-            // on-screen radius of the focused object, easing between the two neighbours'
-            // preferred sizes so planets show 2–3 per frame and stars swell to fill it
-            val targetR = w * (COMP_OBJECTS[base].screenRFrac() +
-                (COMP_OBJECTS[base + 1].screenRFrac() - COMP_OBJECTS[base].screenRFrac()) * frac)
+            val rightAnchor = w * 0.90f               // the lead object's right edge sits here
+            val frameW = w * 0.80f                    // span filled by the lead + LINEUP_K back
 
-            // interpolate focus radius in log space → smooth, continuous zoom
-            val rBase = COMP_OBJECTS[base].diaKm / 2.0
-            val rNext = COMP_OBJECTS[base + 1].diaKm / 2.0
-            val rFocus = exp(ln(rBase) + (ln(rNext) - ln(rBase)) * frac)
-            val s = targetR / rFocus                 // px per km
-            val xFocus = COMP_X[base] + (COMP_X[base + 1] - COMP_X[base]) * frac
+            // The lead (largest, right-most) object advances with `pos`; the frame is
+            // anchored on its right edge and zoomed to also take in its previous
+            // LINEUP_K neighbours, so a giant arrives on the right with the few objects
+            // before it trailing off to the left at true relative scale.
+            val l0 = floor(pos).toInt().coerceIn(0, n - 1)
+            val l1 = (l0 + 1).coerceAtMost(n - 1)
+            val fr = easeInOut((pos - l0).coerceIn(0f, 1f))
+            val s0 = frameW / frameExtent(l0)
+            val s1 = frameW / frameExtent(l1)
+            val s = exp(ln(s0) + (ln(s1) - ln(s0)) * fr)          // log-interp zoom, px per km
+            val leadR = leadRight(l0) + (leadRight(l1) - leadRight(l0)) * fr
 
-            // draw a small window of neighbours, largest first so the focus stays on top
-            val lo = (base - 1).coerceAtLeast(0)
-            val hi = (base + 2).coerceAtMost(n - 1)
+            // draw the lead and its trailing neighbours, largest first so the smaller
+            // ones stay on top and visible
+            val lo = (l0 - LINEUP_K).coerceAtLeast(0)
+            val hi = l1
             val window = (lo..hi).sortedByDescending { COMP_OBJECTS[it].diaKm }
             window.forEach { i ->
                 val o = COMP_OBJECTS[i]
                 val sr = (o.diaKm / 2.0 * s).toFloat()
                 if (sr < 0.4f) return@forEach
-                val sx = (anchorX + (COMP_X[i] - xFocus) * s).toFloat()
+                val sx = (rightAnchor + (COMP_X[i] - leadR) * s).toFloat()
                 if (sx - sr > w + 40f || sx + sr < -40f) return@forEach
                 val ctr = Offset(sx, cy)
                 when (o.kind) {
                     CompKind.PLANET -> drawPlanet(ctr, sr, o.colors, o.ring)
                     CompKind.STAR -> drawStar(ctr, sr, o.colors, o.glow)
                     CompKind.HOLE -> drawHole(ctr, sr, clock)
+                    CompKind.NEBULA -> drawNebula(ctr, sr, o.colors, clock)
+                    CompKind.CLUSTER -> drawCluster(ctr, sr, o.colors)
+                    CompKind.GALAXY -> drawGalaxy(ctr, sr, o.colors, o.glow)
+                    CompKind.WEB -> drawWeb(ctr, sr, WEB_PTS, WEB_EDGES, o.colors[0])
+                    CompKind.UNIVERSE -> drawUniverse(ctr, sr)
                 }
 
-                // labels: size under every visible body; name + classification above the
-                // ones the header isn't already naming (i.e. the off-focus neighbours)
-                val labelAlpha = ((sr - 11f) / 34f).coerceIn(0f, 1f) * ((w * 0.72f - sr) / (w * 0.22f)).coerceIn(0f, 1f)
+                // labels: name + classification sit directly above each body, diameter
+                // below it — the lead object's name reads large, the trailing neighbours
+                // smaller. Fade with on-screen size so the tiny trailing bodies don't
+                // crowd the frame with labels, and fade near the edges as they slide off.
+                val sizeFade = ((sr - w * 0.035f) / (w * 0.04f)).coerceIn(0f, 1f)
+                val edgeFade = (sx / (w * 0.14f)).coerceIn(0f, 1f) *
+                    ((w - sx) / (w * 0.14f)).coerceIn(0f, 1f)
+                val labelAlpha = sizeFade * edgeFade
                 if (labelAlpha > 0.02f) {
-                    val showHead = i != base && i != base + 1
-                    drawObjLabel(measurer, o.name, o.sub, o.sizeText, sx, cy, sr, labelAlpha, w, h, showHead)
+                    drawObjLabel(measurer, o.name, o.sub, o.sizeText, sx, cy, sr, labelAlpha, w, h)
                 }
             }
         }
 
-        // header: eyebrow + the focused object's name, cross-fading to the next
-        Column(
-            Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 14.dp).alpha(globalAlpha),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            androidx.compose.material3.Text(
-                "SIZE COMPARISON",
-                style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Bold, fontSize = 13.sp, letterSpacing = 0.4.em, color = Color(0xFF9fc2ff)),
-            )
-            Spacer(Modifier.height(8.dp))
-            Box(contentAlignment = Alignment.TopCenter) {
-                CompHeaderName(COMP_OBJECTS[base], 1f - fracLin)
-                CompHeaderName(COMP_OBJECTS[base + 1], fracLin)
-            }
-        }
-
-        // progress dots, one per object, sitting above the bottom nav
-        val activeIndex = if (fracLin > 0.5f) base + 1 else base
-        Row(
-            Modifier.align(Alignment.BottomCenter).padding(bottom = 96.dp).alpha(globalAlpha),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            repeat(n) { i ->
-                val on = i == activeIndex
-                Box(
-                    Modifier
-                        .padding(horizontal = 4.dp)
-                        .size(if (on) 8.dp else 5.dp)
-                        .clip(CircleShape)
-                        .background(if (on) Color.White else Color.White.copy(alpha = 0.28f)),
-                )
-            }
-        }
+        // persistent hint at the bottom, reflecting the current play/pause state
+        androidx.compose.material3.Text(
+            if (paused) "❙❙  tap to resume  ·  swipe to explore" else "tap to pause  ·  swipe to explore",
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 92.dp),
+            style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Normal, fontSize = 12.sp, letterSpacing = 0.06.em, color = Color.White.copy(alpha = 0.5f)),
+        )
     }
 }
 
 private fun easeInOut(t: Float): Float =
     if (t < 0.5f) 4f * t * t * t else (t - 1f) * (2f * t - 2f) * (2f * t - 2f) + 1f
-
-// the focused object's name + classification, used by the cross-fading header
-@Composable
-private fun CompHeaderName(o: CompObj, alpha: Float) {
-    Column(
-        Modifier.alpha(alpha),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        androidx.compose.material3.Text(
-            o.name,
-            style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Light, fontSize = 32.sp, color = Color.White),
-        )
-        Spacer(Modifier.height(2.dp))
-        androidx.compose.material3.Text(
-            o.sub,
-            style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Normal, fontSize = 13.sp, letterSpacing = 0.05.em, color = Color(0xFF9fc2ff)),
-        )
-    }
-}
 
 // ───────────────────────── object painters ─────────────────────────
 
@@ -313,30 +376,206 @@ private fun DrawScope.drawHole(c: Offset, r: Float, t: Float) {
     drawCircle(cc(0xfff2d6).copy(alpha = shimmer), radius = r * 1.04f, center = c, style = Stroke(width = max(1.5f, r * 0.03f)))
 }
 
+// ───────────────────── procedural point clouds (deterministic) ─────────────────────
+
+private fun seeded(seed: Long): () -> Float {
+    var s = seed
+    return { s = (s * 9301 + 49297) % 233280; (s / 233280f) }
+}
+
+// nebula: overlapping translucent blobs [x, y, size, colourIndex] + embedded stars
+private val NEBULA_BLOBS: List<FloatArray> = run {
+    val rnd = seeded(5150)
+    List(10) {
+        val a = rnd() * 6.2832f; val d = rnd() * 0.55f
+        floatArrayOf(cos(a) * d, sin(a) * d, 0.45f + rnd() * 0.55f, (rnd() * 3f))
+    }
+}
+private val NEBULA_STARS: List<FloatArray> = run {
+    val rnd = seeded(424242)
+    List(26) {
+        val a = rnd() * 6.2832f; val d = rnd() * 0.9f
+        floatArrayOf(cos(a) * d, sin(a) * d, 0.4f + rnd() * 0.6f)
+    }
+}
+
+// star cluster: a swarm denser toward the core [x, y, brightness]
+private val CLUSTER_PTS: List<FloatArray> = run {
+    val rnd = seeded(7777)
+    List(150) {
+        val a = rnd() * 6.2832f
+        val d = rnd() * rnd()                     // bias toward centre
+        floatArrayOf(cos(a) * d, sin(a) * d, 0.4f + rnd() * 0.6f)
+    }
+}
+
+// galaxy: stars strung along two log-spiral arms [x, y, brightness]
+private val GALAXY_PTS: List<FloatArray> = run {
+    val rnd = seeded(2024)
+    val pts = ArrayList<FloatArray>()
+    for (arm in 0..1) {
+        val base = arm * 3.14159f
+        for (k in 0 until 120) {
+            val tk = k / 120f
+            val rr = 0.10f + tk * 0.90f
+            val ang = base + tk * 6.0f + (rnd() - 0.5f) * 0.30f
+            val rj = rr + (rnd() - 0.5f) * 0.10f
+            pts.add(floatArrayOf(cos(ang) * rj, sin(ang) * rj, 0.3f + rnd() * 0.7f))
+        }
+    }
+    pts
+}
+
+// cosmic web: galaxies gathered into clumps [x, y, brightness], plus filament edges
+private fun webNodes(seed: Long, clumps: Int): List<FloatArray> {
+    val rnd = seeded(seed)
+    val pts = ArrayList<FloatArray>()
+    repeat(clumps) {
+        val cxp = (rnd() * 2 - 1) * 0.72f; val cyp = (rnd() * 2 - 1) * 0.72f
+        repeat(4 + (rnd() * 7).toInt()) {
+            val x = (cxp + (rnd() - 0.5f) * 0.32f).coerceIn(-0.96f, 0.96f)
+            val y = (cyp + (rnd() - 0.5f) * 0.32f).coerceIn(-0.96f, 0.96f)
+            pts.add(floatArrayOf(x, y, 0.4f + rnd() * 0.6f))
+        }
+    }
+    return pts
+}
+private fun webEdges(pts: List<FloatArray>, maxD2: Float): List<IntArray> {
+    val e = ArrayList<IntArray>()
+    for (i in pts.indices) for (j in i + 1 until pts.size) {
+        val dx = pts[i][0] - pts[j][0]; val dy = pts[i][1] - pts[j][1]
+        if (dx * dx + dy * dy < maxD2) e.add(intArrayOf(i, j))
+    }
+    return e
+}
+private val WEB_PTS = webNodes(909090, 7)
+private val WEB_EDGES = webEdges(WEB_PTS, 0.10f)
+private val UNIVERSE_PTS = webNodes(13131, 16)
+private val UNIVERSE_EDGES = webEdges(UNIVERSE_PTS, 0.07f)
+
+// ───────────────────── large-scale painters ─────────────────────
+
+private fun DrawScope.drawNebula(c: Offset, r: Float, colors: List<Color>, t: Float) {
+    val pulse = 0.9f + 0.1f * sin(t * 0.6f)
+    NEBULA_BLOBS.forEach { b ->
+        val bc = Offset(c.x + b[0] * r, c.y + b[1] * r)
+        val br = b[2] * r * pulse
+        val col = colors[b[3].toInt().coerceIn(0, colors.size - 1)]
+        drawCircle(
+            brush = Brush.radialGradient(0f to col.copy(alpha = 0.28f), 1f to Color.Transparent, center = bc, radius = br),
+            radius = br, center = bc,
+        )
+    }
+    val sr = (0.006f * r).coerceAtLeast(0.6f)
+    NEBULA_STARS.forEach { p ->
+        drawCircle(Color.White, radius = sr, center = Offset(c.x + p[0] * r, c.y + p[1] * r), alpha = p[2])
+    }
+}
+
+private fun DrawScope.drawCluster(c: Offset, r: Float, colors: List<Color>) {
+    drawCircle(
+        brush = Brush.radialGradient(0f to colors[0].copy(alpha = 0.20f), 1f to Color.Transparent, center = c, radius = r),
+        radius = r, center = c,
+    )
+    val dot = (0.011f * r).coerceAtLeast(0.6f)
+    CLUSTER_PTS.forEach { p ->
+        val col = if (p[2] > 0.85f) colors[0] else Color.White
+        drawCircle(col, radius = dot, center = Offset(c.x + p[0] * r, c.y + p[1] * r), alpha = p[2])
+    }
+}
+
+private fun DrawScope.drawGalaxy(c: Offset, r: Float, colors: List<Color>, glow: Color) {
+    rotate(degrees = -24f, pivot = c) {
+        // flattened disk haze
+        drawOval(
+            brush = Brush.radialGradient(0f to glow.copy(alpha = 0.32f), 1f to Color.Transparent, center = c, radius = r),
+            topLeft = Offset(c.x - r, c.y - r * 0.42f), size = Size(r * 2f, r * 0.84f),
+        )
+        val dot = (0.010f * r).coerceAtLeast(0.6f)
+        GALAXY_PTS.forEach { p ->
+            val pc = Offset(c.x + p[0] * r, c.y + p[1] * r * 0.42f)
+            val col = if (p[2] > 0.8f) Color.White else colors[1]
+            drawCircle(col, radius = dot, center = pc, alpha = p[2] * 0.9f)
+        }
+    }
+    // bright bulge
+    drawCircle(
+        brush = Brush.radialGradient(0f to Color.White, 0.35f to colors[0], 1f to Color.Transparent, center = c, radius = r * 0.34f),
+        radius = r * 0.34f, center = c,
+    )
+}
+
+private fun DrawScope.drawWeb(c: Offset, r: Float, pts: List<FloatArray>, edges: List<IntArray>, tint: Color) {
+    val lw = (0.004f * r).coerceAtLeast(0.5f)
+    edges.forEach { e ->
+        drawLine(
+            tint.copy(alpha = 0.12f),
+            Offset(c.x + pts[e[0]][0] * r, c.y + pts[e[0]][1] * r),
+            Offset(c.x + pts[e[1]][0] * r, c.y + pts[e[1]][1] * r),
+            strokeWidth = lw,
+        )
+    }
+    val dot = (0.013f * r).coerceAtLeast(0.7f)
+    pts.forEach { p ->
+        val pc = Offset(c.x + p[0] * r, c.y + p[1] * r)
+        drawCircle(tint.copy(alpha = p[2]), radius = dot, center = pc)
+        drawCircle(Color.White.copy(alpha = p[2] * 0.6f), radius = dot * 0.45f, center = pc)
+    }
+}
+
+private fun DrawScope.drawUniverse(c: Offset, r: Float) {
+    drawCircle(
+        brush = Brush.radialGradient(0f to Color(0xFF0c1030), 0.85f to Color(0xCC0a0f24), 1f to Color(0x66556aff), center = c, radius = r),
+        radius = r, center = c,
+    )
+    drawWeb(c, r * 0.95f, UNIVERSE_PTS, UNIVERSE_EDGES, Color(0xFFa9c0ff))
+    drawCircle(Color(0x88aac0ff), radius = r, center = c, style = Stroke(width = (0.008f * r).coerceAtLeast(1f)))
+}
+
 private val LABEL_NAME = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.SemiBold, fontSize = 17.sp, letterSpacing = 0.02.em, color = Color.White)
 private val LABEL_SUB = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Normal, fontSize = 12.sp, letterSpacing = 0.04.em, color = Color(0xFFb8c6e0))
 private val LABEL_SIZE = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Light, fontSize = 15.sp, color = Color(0xFFffd9a0))
 
+// keep a centred label fully on screen; if it is wider than the screen, just centre it
+// (clamping would otherwise build an empty range and crash)
+private fun centeredX(cx: Float, half: Float, w: Float): Float {
+    val lo = half + 24f
+    val hi = w - half - 24f
+    return if (lo <= hi) cx.coerceIn(lo, hi) else w / 2f
+}
+
 private fun DrawScope.drawObjLabel(
     measurer: androidx.compose.ui.text.TextMeasurer,
     name: String, sub: String, sizeText: String,
-    cx: Float, cy: Float, sr: Float, alpha: Float, w: Float, h: Float, showHead: Boolean,
+    cx: Float, cy: Float, sr: Float, alpha: Float, w: Float, h: Float,
 ) {
-    // size, always sitting just below the body
-    val sl = measurer.measure(sizeText, LABEL_SIZE)
-    val sizeY = (cy + sr + 22f).coerceAtMost(h - 150f)
-    val sx = cx.coerceIn(sl.size.width / 2f + 24f, w - sl.size.width / 2f - 24f)
-    drawText(sl, topLeft = Offset(sx - sl.size.width / 2f, sizeY), alpha = alpha)
+    // type scales with the body so the focal object's name reads large while its
+    // smaller neighbours carry proportionally smaller names
+    val nameSp = (11f + sr * 0.085f).coerceIn(14f, 32f)
+    val subSp = (nameSp * 0.42f).coerceIn(10f, 14f)
+    val sizeSp = (nameSp * 0.6f).coerceIn(13f, 20f)
+    val nameStyle = LABEL_NAME.copy(fontSize = nameSp.sp)
+    val subStyle = LABEL_SUB.copy(fontSize = subSp.sp)
+    val sizeStyle = LABEL_SIZE.copy(fontSize = sizeSp.sp)
 
-    // name + classification, stacked just above the body (header names the focused pair)
-    if (showHead) {
-        val nl = measurer.measure(name, LABEL_NAME)
-        val ul = measurer.measure(sub, LABEL_SUB)
-        val halfMax = max(nl.size.width, ul.size.width) / 2f
-        val x = cx.coerceIn(halfMax + 24f, w - halfMax - 24f)
-        val subTop = (cy - sr - 12f - ul.size.height).coerceAtLeast(8f)
-        val nameTop = (subTop - 2f - nl.size.height).coerceAtLeast(8f)
-        drawText(nl, topLeft = Offset(x - nl.size.width / 2f, nameTop), alpha = alpha)
-        drawText(ul, topLeft = Offset(x - ul.size.width / 2f, subTop), alpha = alpha)
+    // diameter, sitting just below the body
+    val sl = measurer.measure(sizeText, sizeStyle)
+    val sizeY = (cy + sr + 20f).coerceAtMost(h - 150f)
+    val szx = centeredX(cx, sl.size.width / 2f, w)
+    drawText(sl, topLeft = Offset(szx - sl.size.width / 2f, sizeY), alpha = alpha)
+
+    // name + classification, stacked directly above the body; shrink a name that would
+    // overrun the screen (some structures have very long names) so it stays readable
+    var nl = measurer.measure(name, nameStyle)
+    if (nl.size.width > w - 32f) {
+        val shrunk = (nameSp * (w - 32f) / nl.size.width).coerceAtLeast(11f)
+        nl = measurer.measure(name, nameStyle.copy(fontSize = shrunk.sp))
     }
+    val ul = measurer.measure(sub, subStyle)
+    val halfMax = max(nl.size.width, ul.size.width) / 2f
+    val x = centeredX(cx, halfMax, w)
+    val subTop = (cy - sr - 14f - ul.size.height).coerceAtLeast(8f)
+    val nameTop = (subTop - 4f - nl.size.height).coerceAtLeast(8f)
+    drawText(nl, topLeft = Offset(x - nl.size.width / 2f, nameTop), alpha = alpha)
+    drawText(ul, topLeft = Offset(x - ul.size.width / 2f, subTop), alpha = alpha)
 }

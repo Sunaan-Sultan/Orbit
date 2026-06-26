@@ -43,7 +43,7 @@ val AC_FACTS: List<Fact> = listOf(
         "A Planet Next Door", "Earth-mass, in the habitable zone",
         "Proxima b is a roughly Earth-mass planet that laps its star every 11 days. Because Proxima is so dim, that tight orbit still sits in the habitable zone where liquid water is possible.",
         listOf("Mass" to "≈ 1.1× Earth", "Orbit" to "11.2 days", "Zone" to "Habitable"),
-        R.raw.music5
+        R.raw.music7
     ),
     acen(
         "ac_travel", "Getting There", 0xcdd6e0, SceneId.AC_TRAVEL, 9.4f, 5.8f,

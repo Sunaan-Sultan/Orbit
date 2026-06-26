@@ -36,7 +36,7 @@ val TRAPPIST_FACTS: List<Fact> = listOf(
         "A Year in Days", "Orbits of 1.5 to 19 days",
         "Because the planets hug their tiny star, their years are astonishingly short — from 1.5 days on the innermost world to about 19 days on the outermost.",
         listOf("Innermost year" to "1.5 days", "Outermost year" to "19 days", "Earth" to "365 days"),
-        R.raw.music4
+        R.raw.music7
     ),
     tp(
         "tp_hz", "Habitability", 0x5fae7a, SceneId.TP_HABITABLE, 5.5f,

@@ -53,7 +53,7 @@ val SPOTLIGHT_FACTS: List<Fact> = listOf(
         "Black Holes", "Where not even light escapes",
         "A black hole crams so much mass into so little space that nothing — not even light — can escape once it crosses the event horizon. The supermassive one at the heart of our galaxy, Sagittarius A*, weighs about 4 million Suns.",
         listOf("Escape speed" to "Faster than light", "Sagittarius A*" to "≈ 4 million Suns", "First imaged" to "2019 · M87*"),
-        R.raw.music6,
+        R.raw.music7,
     ),
     spot(
         "sp_wormhole", "Spacetime", 0x8fd6ff, SceneId.SP_WORMHOLE, 3.2f,

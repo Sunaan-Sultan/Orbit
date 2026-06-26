@@ -83,7 +83,7 @@ val SOL_FACTS: List<Fact> = listOf(
         "The Great Red Spot", "A storm wider than Earth",
         "Jupiter's Great Red Spot is a high-pressure storm observed for more than 350 years. It is wide enough to swallow the entire Earth, with winds tearing around its edge at hundreds of km/h.",
         listOf("Age observed" to "350+ years", "Width" to "> 1 Earth", "Edge winds" to "≈ 430 km/h"),
-        R.raw.music3
+        R.raw.music7
     ),
     sol(
         "diamondrain", "Worlds Up Close", 0x7fa8e6, SceneId.DIAMOND, 9f, 5f,

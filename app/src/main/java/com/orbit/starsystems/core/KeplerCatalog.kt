@@ -29,7 +29,7 @@ val KEPLER_FACTS: List<Fact> = listOf(
         "Eight Worlds, Packed Tight", "All squeezed inside Earth's orbit",
         "Every one of Kepler-90's eight planets orbits closer to its star than Earth does to the Sun. The entire system would fit within our own orbit, with the outermost world about where Earth sits.",
         listOf("Outermost planet" to "≈ 1.0 AU", "Inner six" to "Inside Mercury", "Earth" to "1.0 AU"),
-        R.raw.music3,
+        R.raw.music7,
     ),
     kep(
         "kep_ai", "Discovery", 0x7fd6c0, SceneId.KEP_AI, 5.5f,
