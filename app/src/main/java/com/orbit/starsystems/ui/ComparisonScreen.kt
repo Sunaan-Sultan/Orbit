@@ -40,6 +40,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.orbit.starsystems.R
+import com.orbit.starsystems.core.CompKind
+import com.orbit.starsystems.core.OrbitData
 import kotlin.math.cos
 import kotlin.math.exp
 import kotlin.math.floor
@@ -49,72 +51,11 @@ import kotlin.math.min
 import kotlin.math.sin
 
 // ───────────────────────── the objects, smallest → largest ─────────────────────────
+// Loaded from assets/comparison.json by OrbitData; CompKind / CompObj live in core/Models.
 
-private enum class CompKind { PLANET, STAR, HOLE, NEBULA, CLUSTER, GALAXY, WEB, UNIVERSE }
-
-private class CompObj(
-    val name: String,
-    val sub: String,                   // classification shown beneath the name
-    val sizeText: String,
-    val diaKm: Double,                 // true diameter, drives the scaling
-    val kind: CompKind,
-    val colors: List<Color>,
-    val glow: Color = Color.Transparent,
-    val ring: Color? = null,
-)
+private val COMP_OBJECTS = OrbitData.compObjects
 
 private fun cc(v: Long) = Color(v or 0xFF000000)
-
-private val COMP_OBJECTS = listOf(
-    CompObj("Ceres", "Dwarf Planet", "940 km", 940.0, CompKind.PLANET, listOf(cc(0xcfcabf), cc(0x8f897e), cc(0x423d35))),
-    CompObj("Pluto", "Dwarf Planet", "2,377 km", 2_377.0, CompKind.PLANET, listOf(cc(0xd9c3a5), cc(0xa07b5c), cc(0x4a3326))),
-    CompObj("The Moon", "Earth's Moon", "3,474 km", 3_474.0, CompKind.PLANET, listOf(cc(0xdadae0), cc(0x9a9aa2), cc(0x46464d))),
-    CompObj("Mercury", "Terrestrial Planet", "4,879 km", 4_879.0, CompKind.PLANET, listOf(cc(0xc9bdae), cc(0x8c8073), cc(0x40382e))),
-    CompObj("Titan", "Moon of Saturn", "5,150 km", 5_150.0, CompKind.PLANET, listOf(cc(0xe9b96e), cc(0xc8893a), cc(0x6e441a))),
-    CompObj("Ganymede", "Moon of Jupiter", "5,268 km", 5_268.0, CompKind.PLANET, listOf(cc(0xc9c0b0), cc(0x8f8473), cc(0x443e34))),
-    CompObj("Mars", "Terrestrial Planet", "6,779 km", 6_779.0, CompKind.PLANET, listOf(cc(0xe6915a), cc(0xb5552c), cc(0x5a2210))),
-    CompObj("Venus", "Terrestrial Planet", "12,104 km", 12_104.0, CompKind.PLANET, listOf(cc(0xf6e7c0), cc(0xd8b87a), cc(0x7a6234))),
-    CompObj("Earth", "Terrestrial Planet", "12,742 km", 12_742.0, CompKind.PLANET, listOf(cc(0x9fd6ff), cc(0x2f7fd0), cc(0x123a64))),
-    CompObj("Neptune", "Ice Giant", "49,244 km", 49_244.0, CompKind.PLANET, listOf(cc(0x9cc4ff), cc(0x3a6fd0), cc(0x16245f))),
-    CompObj("Uranus", "Ice Giant", "50,724 km", 50_724.0, CompKind.PLANET, listOf(cc(0xd2f0f0), cc(0x86c8cf), cc(0x356a72))),
-    CompObj("Saturn", "Gas Giant", "116,460 km", 116_460.0, CompKind.PLANET, listOf(cc(0xf0dcae), cc(0xd0a85e), cc(0x6e4e22)), ring = cc(0xc9b486)),
-    CompObj("Jupiter", "Gas Giant", "139,820 km", 139_820.0, CompKind.PLANET, listOf(cc(0xf0d8b0), cc(0xc89a64), cc(0x6e4426))),
-    CompObj("Proxima Centauri", "Red Dwarf Star", "≈ 214,000 km", 214_000.0, CompKind.STAR, listOf(cc(0xffcfa8), cc(0xff7a52), cc(0xb53a26)), glow = Color(0x77ff5a32)),
-    CompObj("The Sun", "Yellow Dwarf Star", "1.39 million km", 1_391_000.0, CompKind.STAR, listOf(cc(0xfff4d4), cc(0xffb24a), cc(0xff7a1e)), glow = Color(0x99ffae4a)),
-    CompObj("Sirius A", "Main-Sequence Star", "2.38 million km", 2_380_000.0, CompKind.STAR, listOf(cc(0xffffff), cc(0xcfe0ff), cc(0x7fa6da)), glow = Color(0x99a8c8ff)),
-    CompObj("Pollux", "Orange Giant", "12.2 million km", 12_200_000.0, CompKind.STAR, listOf(cc(0xffe6c0), cc(0xffb060), cc(0xc06a26)), glow = Color(0x88ffae5a)),
-    CompObj("Arcturus", "Red Giant", "35.3 million km", 35_300_000.0, CompKind.STAR, listOf(cc(0xffe0b0), cc(0xff9a52), cc(0xbf5226)), glow = Color(0x88ff8a44)),
-    CompObj("Rigel", "Blue Supergiant", "110 million km", 109_800_000.0, CompKind.STAR, listOf(cc(0xeaf2ff), cc(0xa8c8ff), cc(0x5a7fcf)), glow = Color(0x99a8c8ff)),
-    CompObj("Antares", "Red Supergiant", "946 million km", 946_000_000.0, CompKind.STAR, listOf(cc(0xffd0a8), cc(0xff6a44), cc(0xb02e1e)), glow = Color(0x88ff5028)),
-    CompObj("Betelgeuse", "Red Supergiant", "1.2 billion km", 1_234_000_000.0, CompKind.STAR, listOf(cc(0xffdcb6), cc(0xff7a4a), cc(0xb5331e)), glow = Color(0x88ff5a32)),
-    CompObj("UY Scuti", "Red Hypergiant", "2.36 billion km", 2_360_000_000.0, CompKind.STAR, listOf(cc(0xffe2bc), cc(0xff8a4a), cc(0xc0451e)), glow = Color(0x88ff6a36)),
-    CompObj("Stephenson 2-18", "Red Hypergiant", "2.99 billion km", 2_990_000_000.0, CompKind.STAR, listOf(cc(0xffd8b0), cc(0xff7440), cc(0xbf3418)), glow = Color(0x88ff5a30)),
-    CompObj("M87*", "Supermassive Black Hole", "≈ 38 billion km", 38_000_000_000.0, CompKind.HOLE, listOf(Color.Black, Color.Black, Color.Black), glow = Color(0x99ffb060)),
-    CompObj("TON 618", "Supermassive Black Hole", "≈ 390 billion km", 390_000_000_000.0, CompKind.HOLE, listOf(Color.Black, Color.Black, Color.Black), glow = Color(0x99ffb060)),
-    // ── nebulae & star clusters (light-years) ──
-    CompObj("Helix Nebula", "Planetary Nebula", "2.5 light-years", 2.365e13, CompKind.NEBULA, listOf(cc(0x66e0d0), cc(0x3aa0c0), cc(0xc04a6a)), glow = Color(0x4466e0d0)),
-    CompObj("Orion Nebula", "Emission Nebula", "24 light-years", 2.271e14, CompKind.NEBULA, listOf(cc(0xff9ec0), cc(0xc060a0), cc(0x50b0c0)), glow = Color(0x44ff80b0)),
-    CompObj("Pleiades", "Open Star Cluster", "43 light-years", 4.068e14, CompKind.CLUSTER, listOf(cc(0xcfe0ff), cc(0x9fc0ff), cc(0x6f90d0)), glow = Color(0x3399c0ff)),
-    CompObj("Omega Centauri", "Globular Cluster", "172 light-years", 1.627e15, CompKind.CLUSTER, listOf(cc(0xfff0d0), cc(0xffd9a0), cc(0xd0a060)), glow = Color(0x33ffd9a0)),
-    CompObj("Carina Nebula", "Emission Nebula", "300 light-years", 2.838e15, CompKind.NEBULA, listOf(cc(0xffb080), cc(0xd06040), cc(0x804060)), glow = Color(0x44ff8050)),
-    CompObj("Tarantula Nebula", "Star-forming Nebula", "930 light-years", 8.799e15, CompKind.NEBULA, listOf(cc(0xc090ff), cc(0xe070b0), cc(0x6080e0)), glow = Color(0x44b080ff)),
-    // ── galaxies ──
-    CompObj("Large Magellanic Cloud", "Satellite Galaxy", "14,000 light-years", 1.3245e17, CompKind.GALAXY, listOf(cc(0xbfe0ff), cc(0x88b0e0), cc(0xff9ec0)), glow = Color(0x335a8aff)),
-    CompObj("Milky Way", "Barred Spiral Galaxy", "105,000 light-years", 1.0e18, CompKind.GALAXY, listOf(cc(0xfff2d0), cc(0xc0d8ff), cc(0x6a86c0)), glow = Color(0x33aac0ff)),
-    CompObj("Andromeda", "Spiral Galaxy", "220,000 light-years", 2.081e18, CompKind.GALAXY, listOf(cc(0xffe9c8), cc(0xbcd2ff), cc(0x6f8ad0)), glow = Color(0x339fb8ff)),
-    CompObj("IC 1101", "Giant Elliptical Galaxy", "≈ 2 million ly", 1.892e19, CompKind.GALAXY, listOf(cc(0xffe6c0), cc(0xffcf9a), cc(0xc08a5a)), glow = Color(0x33ffcf9a)),
-    // ── groups, clusters & superclusters (cosmic web) ──
-    CompObj("Local Group", "Galaxy Group", "≈ 10 million ly", 9.461e19, CompKind.WEB, listOf(cc(0xbcd0ff), cc(0x8090c0), cc(0x303a60))),
-    CompObj("Virgo Cluster", "Galaxy Cluster", "≈ 15 million ly", 1.419e20, CompKind.WEB, listOf(cc(0xc6d6ff), cc(0x8090c0), cc(0x303a60))),
-    CompObj("Alcyoneus", "Giant Radio Galaxy", "≈ 16 million ly", 1.514e20, CompKind.GALAXY, listOf(cc(0xcfe0ff), cc(0x8fb0ff), cc(0x5a70d0)), glow = Color(0x447090ff)),
-    CompObj("Coma Cluster", "Galaxy Cluster", "≈ 25 million ly", 2.365e20, CompKind.WEB, listOf(cc(0xccd8ff), cc(0x8090c0), cc(0x303a60))),
-    CompObj("Virgo Supercluster", "Supercluster", "≈ 110 million ly", 1.041e21, CompKind.WEB, listOf(cc(0xb8ccff), cc(0x7888c0), cc(0x2a3458))),
-    CompObj("Laniakea", "Supercluster", "≈ 520 million ly", 4.92e21, CompKind.WEB, listOf(cc(0xc0d4ff), cc(0x7888c0), cc(0x2a3458))),
-    CompObj("Sloan Great Wall", "Galaxy Filament", "≈ 1.37 billion ly", 1.296e22, CompKind.WEB, listOf(cc(0xb0c4ff), cc(0x6f80b8), cc(0x242c50))),
-    CompObj("Hercules–Corona Borealis", "Largest Known Structure", "≈ 10 billion ly", 9.461e22, CompKind.WEB, listOf(cc(0xc8d6ff), cc(0x7888c0), cc(0x2a3458))),
-    // ── everything ──
-    CompObj("Observable Universe", "Everything There Is", "≈ 93 billion ly", 8.799e23, CompKind.UNIVERSE, listOf(cc(0xa9c0ff), cc(0x6678c0), cc(0x141a40))),
-)
 
 // how many previous objects to keep in frame alongside the current (largest) one
 private const val LINEUP_K = 4

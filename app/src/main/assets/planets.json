@@ -1,0 +1,82 @@
+[
+  {
+    "name": "MERCURY",
+    "d": 0.383,
+    "au": 0.39,
+    "colors": [
+      "d8ccba",
+      "9c9078",
+      "4f4738"
+    ]
+  },
+  {
+    "name": "VENUS",
+    "d": 0.949,
+    "au": 0.72,
+    "colors": [
+      "f6e6c2",
+      "dcb37e",
+      "9a7440"
+    ]
+  },
+  {
+    "name": "EARTH",
+    "d": 1.000,
+    "au": 1.00,
+    "colors": [
+      "9cc4ec",
+      "3d72b8",
+      "1a3360"
+    ]
+  },
+  {
+    "name": "MARS",
+    "d": 0.532,
+    "au": 1.52,
+    "colors": [
+      "e8915c",
+      "b5462a",
+      "5f2012"
+    ]
+  },
+  {
+    "name": "JUPITER",
+    "d": 10.97,
+    "au": 5.20,
+    "colors": [
+      "ecd8b4",
+      "c8a072",
+      "8f6a40"
+    ]
+  },
+  {
+    "name": "SATURN",
+    "d": 9.140,
+    "au": 9.54,
+    "colors": [
+      "f0e0b2",
+      "d8bd82",
+      "a07f4e"
+    ]
+  },
+  {
+    "name": "URANUS",
+    "d": 3.980,
+    "au": 19.19,
+    "colors": [
+      "d2eff0",
+      "9ac8cb",
+      "5a8d91"
+    ]
+  },
+  {
+    "name": "NEPTUNE",
+    "d": 3.860,
+    "au": 30.07,
+    "colors": [
+      "8fb0e6",
+      "3a5fb0",
+      "1f386e"
+    ]
+  }
+]

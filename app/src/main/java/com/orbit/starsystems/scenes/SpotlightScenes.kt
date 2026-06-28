@@ -1045,3 +1045,192 @@ fun BoxScope.SpMilkyWay(t: Float, duration: Float) = SceneFade(t, duration) {
     Head(headline("Home to a hundred\nbillion ", "stars", "."), 78f, 246f, e2)
     BottomLine(1648f, reveal(t, 5.5f), body("Our Sun is just one star in a spiral ", "100,000 light-years", " wide — one lap takes 225 million years."))
 }
+
+// ───────────────────── The Kuiper Belt — a frozen ring past Neptune ─────────────────────
+
+/** A deterministic scatter of icy bodies filling the belt: angle, radius-fraction, size, alpha. */
+private val KUIPER_DOTS: List<FloatArray> = run {
+    var s = 0x51ED2C
+    fun rnd(): Float { s = s * 1664525 + 1013904223; return ((s ushr 9) and 0xFFFF) / 65535f }
+    List(170) {
+        floatArrayOf(rnd() * SP_TAU, 0.60f + rnd() * 0.40f, 1.1f + rnd() * 2.3f, 0.30f + rnd() * 0.5f)
+    }
+}
+
+@Composable
+fun BoxScope.SpKuiper(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xa9d6e0)
+    val cx = 540f; val cy = 1020f
+    val maxRu = 430f
+    val tilt = 0.40f
+    val spin = t * 0.05f
+
+    // the distant Sun at the centre — just a warm point with a soft halo
+    RadialDisc(
+        cx, cy, 120f,
+        arrayOf(0f to Color(0x66ffd9a0), 0.4f to Color(0x1Affb060), 0.8f to Color(0x00000000), 1f to Color(0x00000000)),
+        0.5f, 0.5f, 0.5f,
+    )
+
+    val appear = reveal(t, 0.5f, dur = 0.9f).opacity
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        val maxR = maxRu * k
+        scale(1f, tilt, pivot = ctr) {
+            drawCircle(Color.White, radius = 7f * k, center = ctr)
+            drawCircle(c(0xffe6b0), radius = 13f * k, center = ctr, alpha = 0.6f)
+
+            // Neptune's orbit — the inner edge of the belt
+            drawCircle(c(0x6fa6d0).copy(alpha = 0.5f), radius = maxR * 0.52f, center = ctr, style = Stroke(width = 2f * k))
+
+            // the belt itself — a wide ring of icy specks
+            KUIPER_DOTS.forEach { d ->
+                val ang = d[0] + spin
+                val r = d[1] * maxR
+                val pos = Offset(ctr.x + cos(ang) * r, ctr.y + sin(ang) * r)
+                val twinkle = 0.7f + 0.3f * sin(t * 1.6f + d[0] * 6f)
+                drawCircle(c(0xcfeaf2), radius = d[2] * k, center = pos, alpha = (d[3] * twinkle).coerceIn(0f, 1f))
+            }
+        }
+    }
+
+    // Pluto — a highlighted member of the belt
+    val pa = reveal(t, 3.0f)
+    val pAng = 2.3f; val pR = 0.82f * maxRu
+    val px = cx + cos(pAng) * pR; val py = cy + sin(pAng) * pR * tilt
+    Sphere(26f, listOf(c(0xe7d3b4), c(0xb08560), c(0x55392a)), glow = Color(0x55c9a87a), modifier = Modifier.offset((px - 13f).dp, (py - 13f).dp))
+    CenterLabel(px, py + 22f, pa.opacity) { Text("PLUTO", style = spLabel(15f, accent)) }
+
+    Eyebrow("Past the last planet", accent, 200f, e1)
+    Head(headline("A frozen ring\nbeyond ", "Neptune", "."), 84f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Thousands of icy worlds drift here — leftovers from the ", "birth of the solar system", "."))
+}
+
+// ───────────────────── Saturn's hexagon — a six-sided polar storm ─────────────────────
+
+@Composable
+fun BoxScope.SpHexagon(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xe8d6a6)
+    val cx = 540f; val cy = 1040f
+    val R = 300f
+    val grow = animate(0.2f, 1f, 0.4f, 1.8f, Easing.easeOutCubic)(t)
+    val spin = t * 0.18f
+
+    // Saturn's golden cloud-tops as the backdrop
+    RadialDisc(
+        cx, cy, 520f,
+        arrayOf(0f to c(0xf0dcae), 0.5f to c(0xd0a85e), 0.85f to c(0x8a6230), 1f to c(0x6e4e22)),
+        0.42f, 0.4f, 0.62f,
+    )
+
+    val appear = reveal(t, 0.6f, dur = 0.9f).opacity
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        fun hexPath(rad: Float, rot: Float): Path {
+            val p = Path()
+            for (i in 0..6) {
+                val a = rot + i * (SP_TAU / 6f) - SP_TAU / 4f
+                val x = ctr.x + cos(a) * rad; val y = ctr.y + sin(a) * rad
+                if (i == 0) p.moveTo(x, y) else p.lineTo(x, y)
+            }
+            p.close()
+            return p
+        }
+        // nested hexagonal jet streams
+        val rings = 5
+        for (i in 0 until rings) {
+            val f = (rings - i).toFloat() / rings
+            val rad = R * k * grow * f
+            val a = 0.18f + 0.5f * (1f - f)
+            drawPath(hexPath(rad, spin), c(0xfff0c8).copy(alpha = a), style = Stroke(width = (5f - 3f * (1f - f)).coerceAtLeast(1.5f) * k))
+        }
+        // the central cyclone eye
+        val eyeR = R * 0.42f * k * grow
+        drawCircle(
+            brush = Brush.radialGradient(
+                0f to c(0x6e3a14), 0.5f to c(0xb5722e).copy(alpha = 0.7f), 1f to Color(0x00000000),
+                center = ctr, radius = eyeR.coerceAtLeast(1f),
+            ),
+            radius = eyeR.coerceAtLeast(1f), center = ctr,
+        )
+        // swirling streaks inside the eye
+        val streaks = 9
+        for (i in 0 until streaks) {
+            val a0 = spin * 2.2f + i * (SP_TAU / streaks)
+            val r0 = R * 0.10f * k * grow; val r1 = R * 0.40f * k * grow
+            val p = Path()
+            var rr = r0; var aa = a0; var first = true
+            while (rr <= r1) {
+                val x = ctr.x + cos(aa) * rr; val y = ctr.y + sin(aa) * rr
+                if (first) { p.moveTo(x, y); first = false } else p.lineTo(x, y)
+                aa += 0.25f; rr += (r1 - r0) / 18f
+            }
+            drawPath(p, c(0xffe6b0).copy(alpha = 0.4f), style = Stroke(width = 2.5f * k, cap = StrokeCap.Round))
+        }
+    }
+
+    Eyebrow("Saturn's north pole", accent, 200f, e1)
+    Head(headline("A six-sided\n", "storm", "."), 88f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("A hexagon of racing cloud, wider than ", "two Earths", ", crowns Saturn's pole."))
+}
+
+// ───────────────────── Rogue planet — a starless world adrift ─────────────────────
+
+/** A cold, sparse starfield: x-frac, y-frac, size, alpha. */
+private val ROGUE_STARS: List<FloatArray> = run {
+    var s = 0x2BAD17
+    fun rnd(): Float { s = s * 1664525 + 1013904223; return ((s ushr 9) and 0xFFFF) / 65535f }
+    List(130) { floatArrayOf(rnd(), rnd(), 0.8f + rnd() * 2.4f, 0.3f + rnd() * 0.55f) }
+}
+
+@Composable
+fun BoxScope.SpRogue(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0x7f8cff)
+    val cy = 1060f
+    val px = interpolate(listOf(0.5f, 12f), listOf(300f, 760f), Easing.linear)(t)
+    val bob = sin(t * 0.5f) * 18f
+
+    // a cold, sparse starfield
+    Canvas(Modifier.fillMaxSize()) {
+        ROGUE_STARS.forEach { st ->
+            val tw = 0.6f + 0.4f * sin(t * 1.4f + st[0] * 30f)
+            drawCircle(
+                c(0xcfe0ff),
+                radius = st[2] * (size.width / 1080f),
+                center = Offset(st[0] * size.width, st[1] * size.height),
+                alpha = (st[3] * tw).coerceIn(0f, 1f),
+            )
+        }
+    }
+
+    val appear = reveal(t, 0.6f, dur = 1.0f).opacity
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
+        val k = size.width / 1080f
+        val ctr = Offset(px * k, (cy + bob) * k)
+        val r = 150f * k
+        // the planet body — almost black, lit by nothing
+        drawCircle(
+            brush = Brush.radialGradient(
+                0f to c(0x2a2f4a), 0.6f to c(0x14172a), 1f to c(0x070810),
+                center = Offset(ctr.x - r * 0.3f, ctr.y - r * 0.3f), radius = r * 1.4f,
+            ),
+            radius = r, center = ctr,
+        )
+        // a thin rim of distant starlight catching one edge
+        drawArc(
+            color = c(0x9fb0ff).copy(alpha = 0.6f),
+            startAngle = 35f, sweepAngle = 120f, useCenter = false,
+            topLeft = Offset(ctr.x - r, ctr.y - r), size = Size(r * 2f, r * 2f),
+            style = Stroke(width = 4f * k, cap = StrokeCap.Round),
+        )
+    }
+
+    Eyebrow("A world without a sun", accent, 200f, e1)
+    Head(headline("Adrift in the\n", "endless dark", "."), 84f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Cast out of its system, a rogue planet wanders alone in ", "perpetual night", "."))
+}

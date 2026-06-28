@@ -1,0 +1,152 @@
+[
+  {
+    "id": "ac_triple",
+    "cat": "The System",
+    "accent": "ffd34a",
+    "scene": "AC_TRIPLE",
+    "hero": 4.8,
+    "title": "Three Suns",
+    "sub": "A bound triple-star system",
+    "blurb": "Alpha Centauri is really three stars held together by gravity: a Sun-like pair, A and B, orbiting close together, and faint red Proxima Centauri drifting thousands of AU farther out.",
+    "stats": [
+      [
+        "Stars in system",
+        "3"
+      ],
+      [
+        "Inner pair",
+        "A + B"
+      ],
+      [
+        "Proxima distance",
+        "≈ 13,000 AU"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "ac_waltz",
+    "cat": "The System",
+    "accent": "ff9e4a",
+    "scene": "AC_WALTZ",
+    "hero": 5.0,
+    "title": "An 80-Year Waltz",
+    "sub": "A and B orbit each other",
+    "blurb": "The two bright stars, A and B, circle their shared centre of mass roughly every 79 years — sweeping from about 11 AU apart (Saturn-like) out to 36 AU (beyond Neptune) and back again.",
+    "stats": [
+      [
+        "Orbital period",
+        "≈ 79 years"
+      ],
+      [
+        "Closest",
+        "11 AU"
+      ],
+      [
+        "Farthest",
+        "36 AU"
+      ]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "ac_twin",
+    "cat": "The Stars",
+    "accent": "ffd34a",
+    "scene": "AC_TWIN",
+    "hero": 5.8,
+    "title": "A Solar Twin",
+    "sub": "Alpha Cen A ≈ our Sun",
+    "blurb": "Alpha Centauri A is almost a carbon copy of our Sun — a yellow G-type star of similar size, colour and age. Its partner B is a slightly smaller, cooler orange star.",
+    "stats": [
+      [
+        "Alpha Cen A",
+        "G2 · Sun-like"
+      ],
+      [
+        "Radius",
+        "1.08× Sun"
+      ],
+      [
+        "Companion B",
+        "K1 · orange"
+      ]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "ac_proxima",
+    "cat": "The Stars",
+    "accent": "e0744a",
+    "scene": "AC_PROXIMA",
+    "hero": 5.0,
+    "title": "Proxima Centauri",
+    "sub": "A small, flaring red dwarf",
+    "blurb": "Proxima Centauri is a red dwarf only about a seventh the Sun's width and far cooler — yet it unleashes powerful flares that can briefly brighten it many times over.",
+    "stats": [
+      [
+        "Type",
+        "Red dwarf (M5.5)"
+      ],
+      [
+        "Width",
+        "≈ 1/7 of Sun"
+      ],
+      [
+        "Surface",
+        "≈ 3,000°C"
+      ]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "ac_proximab",
+    "cat": "Worlds",
+    "accent": "7fb0e6",
+    "scene": "AC_PROXIMAB",
+    "hero": 5.4,
+    "title": "A Planet Next Door",
+    "sub": "Earth-mass, in the habitable zone",
+    "blurb": "Proxima b is a roughly Earth-mass planet that laps its star every 11 days. Because Proxima is so dim, that tight orbit still sits in the habitable zone where liquid water is possible.",
+    "stats": [
+      [
+        "Mass",
+        "≈ 1.1× Earth"
+      ],
+      [
+        "Orbit",
+        "11.2 days"
+      ],
+      [
+        "Zone",
+        "Habitable"
+      ]
+    ],
+    "music": "music7"
+  },
+  {
+    "id": "ac_travel",
+    "cat": "Getting There",
+    "accent": "cdd6e0",
+    "scene": "AC_TRAVEL",
+    "hero": 5.8,
+    "title": "So Near, So Far",
+    "sub": "4.24 light-years away",
+    "blurb": "Even as our closest stellar neighbours, they're staggeringly far: our fastest probes would need around 73,000 years to arrive. A laser-pushed nanocraft might one day cut that to about 20.",
+    "stats": [
+      [
+        "Distance",
+        "4.24 light-years"
+      ],
+      [
+        "Fastest probe",
+        "≈ 73,000 yrs"
+      ],
+      [
+        "Laser sail concept",
+        "≈ 20 yrs"
+      ]
+    ],
+    "music": "music6"
+  }
+]

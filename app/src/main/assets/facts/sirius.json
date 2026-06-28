@@ -1,0 +1,152 @@
+[
+  {
+    "id": "sir_bright",
+    "cat": "In Our Sky",
+    "accent": "8fc0ff",
+    "scene": "SIR_BRIGHTEST",
+    "hero": 5.5,
+    "title": "The Brightest Star",
+    "sub": "Brighter than any other in the night sky",
+    "blurb": "Sirius is the brightest star in Earth's night sky, shining at apparent magnitude −1.46 — almost twice as bright as the next-brightest star, Canopus. Its brilliance owes as much to its closeness as to its true power.",
+    "stats": [
+      [
+        "Apparent magnitude",
+        "−1.46"
+      ],
+      [
+        "Next brightest",
+        "Canopus (−0.74)"
+      ],
+      [
+        "Constellation",
+        "Canis Major"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "sir_binary",
+    "cat": "The System",
+    "accent": "8fc0ff",
+    "scene": "SIR_BINARY",
+    "hero": 5.0,
+    "title": "Not One Star, But Two",
+    "sub": "A bright star with a white-dwarf partner",
+    "blurb": "Sirius is a binary: brilliant Sirius A and the faint white dwarf Sirius B orbit each other every 50 years. The companion was predicted from a wobble in 1844 and first seen in 1862.",
+    "stats": [
+      [
+        "Stars",
+        "2 (A + B)"
+      ],
+      [
+        "Orbital period",
+        "≈ 50 years"
+      ],
+      [
+        "B discovered",
+        "1862"
+      ]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "sir_hotter",
+    "cat": "The Star",
+    "accent": "8fc0ff",
+    "scene": "SIR_HOTTER",
+    "hero": 5.5,
+    "title": "Bigger, Hotter, Brighter",
+    "sub": "Sirius A outshines the Sun",
+    "blurb": "Sirius A is about twice the Sun's mass and 1.7 times its radius, with a blue-white surface near 9,900°C. All told it radiates roughly 25 times more light than the Sun.",
+    "stats": [
+      [
+        "Mass",
+        "2.0× Sun"
+      ],
+      [
+        "Radius",
+        "1.7× Sun"
+      ],
+      [
+        "Luminosity",
+        "25× Sun"
+      ]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "sir_dwarf",
+    "cat": "The Star",
+    "accent": "cfe0ff",
+    "scene": "SIR_WHITEDWARF",
+    "hero": 5.5,
+    "title": "A Sun the Size of Earth",
+    "sub": "Sirius B is a dense white dwarf",
+    "blurb": "Sirius B packs about a full solar mass into a sphere the size of Earth. The result is staggering density — a teaspoon of its matter would weigh as much as a small car.",
+    "stats": [
+      [
+        "Mass",
+        "≈ 1 solar mass"
+      ],
+      [
+        "Size",
+        "≈ Earth"
+      ],
+      [
+        "Density",
+        "≈ 5 t / teaspoon"
+      ]
+    ],
+    "music": "music7"
+  },
+  {
+    "id": "sir_dog",
+    "cat": "Sky Lore",
+    "accent": "8fc0ff",
+    "scene": "SIR_DOGSTAR",
+    "hero": 5.5,
+    "title": "The Dog Star",
+    "sub": "Keeper of the calendar",
+    "blurb": "As the brightest star of Canis Major, the Great Dog, Sirius gives us the term \"dog days.\" Its dawn rising once heralded the annual flooding of the Nile in ancient Egypt.",
+    "stats": [
+      [
+        "Nickname",
+        "The Dog Star"
+      ],
+      [
+        "Constellation",
+        "Canis Major"
+      ],
+      [
+        "Marked",
+        "The Nile flood"
+      ]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "sir_distance",
+    "cat": "Getting There",
+    "accent": "8fc0ff",
+    "scene": "SIR_DISTANCE",
+    "hero": 6.0,
+    "title": "8.6 Light-Years Away",
+    "sub": "A close cosmic neighbour",
+    "blurb": "At 8.6 light-years, Sirius is one of the Sun's nearest neighbours. The light reaching your eyes tonight set out from Sirius more than eight years ago.",
+    "stats": [
+      [
+        "Distance",
+        "8.6 light-years"
+      ],
+      [
+        "In km",
+        "≈ 81 trillion"
+      ],
+      [
+        "Light travel",
+        "8.6 years"
+      ]
+    ],
+    "music": "music6"
+  }
+]

@@ -28,22 +28,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.orbit.starsystems.core.AC_FACTS
-import com.orbit.starsystems.core.KEPLER_FACTS
-import com.orbit.starsystems.core.SOL_FACTS
+import com.orbit.starsystems.core.FEATURED_SYSTEMS
+import com.orbit.starsystems.core.FeaturedSystem
 import com.orbit.starsystems.core.SYSTEMS
-import com.orbit.starsystems.core.SIRIUS_FACTS
 import com.orbit.starsystems.core.SceneId
-import com.orbit.starsystems.core.TRAPPIST_FACTS
+import com.orbit.starsystems.core.factsForSys
 
 @Composable
-fun SystemsList(
-    onOpenSol: () -> Unit,
-    onOpenAcen: () -> Unit,
-    onOpenTrappist: () -> Unit,
-    onOpenSirius: () -> Unit,
-    onOpenKepler: () -> Unit,
-) {
+fun SystemsList(onOpenSystem: (String) -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
@@ -65,36 +57,13 @@ fun SystemsList(
             )
         }
 
-        FeaturedSystem(
-            scene = SceneId.SUN, dur = 9.4f, hero = 6.6f,
-            pill = "Our system", pillColor = Color(0xFFFF9E34),
-            title = "Sol", subtitle = "The Solar System · ${SOL_FACTS.size} facts",
-            onClick = onOpenSol,
-        )
-        FeaturedSystem(
-            scene = SceneId.AC_TRIPLE, dur = 9.4f, hero = 4.8f,
-            pill = "Nearest neighbour", pillColor = Color(0xFFFFCF8A),
-            title = "Alpha Centauri", subtitle = "Triple-star system · ${AC_FACTS.size} facts",
-            onClick = onOpenAcen,
-        )
-        FeaturedSystem(
-            scene = SceneId.TP_INTRO, dur = 9.4f, hero = 5.5f,
-            pill = "Seven worlds", pillColor = Color(0xFFE0744A),
-            title = "TRAPPIST-1", subtitle = "Seven Earth-size worlds · ${TRAPPIST_FACTS.size} facts",
-            onClick = onOpenTrappist,
-        )
-        FeaturedSystem(
-            scene = SceneId.SIR_BRIGHTEST, dur = 9.4f, hero = 5.5f,
-            pill = "The brightest star", pillColor = Color(0xFF8FC0FF),
-            title = "Sirius", subtitle = "Brightest star in our sky · ${SIRIUS_FACTS.size} facts",
-            onClick = onOpenSirius,
-        )
-        FeaturedSystem(
-            scene = SceneId.KEP_EIGHT, dur = 9.4f, hero = 5.5f,
-            pill = "Eight worlds", pillColor = Color(0xFFA9C2FF),
-            title = "Kepler-90", subtitle = "A rival to our Solar System · ${KEPLER_FACTS.size} facts",
-            onClick = onOpenKepler,
-        )
+        FEATURED_SYSTEMS.forEach { sys ->
+            FeaturedCard(
+                sys = sys,
+                factCount = factsForSys(sys.sysId).size,
+                onClick = { onOpenSystem(sys.sysId) },
+            )
+        }
 
         Row(
             Modifier.padding(start = 22.dp, end = 22.dp, top = 30.dp, bottom = 8.dp),
@@ -135,16 +104,18 @@ fun SystemsList(
 }
 
 @Composable
-private fun FeaturedSystem(
-    scene: SceneId,
-    dur: Float,
-    hero: Float,
-    pill: String,
-    pillColor: Color,
-    title: String,
-    subtitle: String,
+private fun FeaturedCard(
+    sys: FeaturedSystem,
+    factCount: Int,
     onClick: () -> Unit,
 ) {
+    val scene: SceneId = sys.scene
+    val dur = sys.dur
+    val hero = sys.hero
+    val pill = sys.pill
+    val pillColor = sys.pillColor
+    val title = sys.title
+    val subtitle = "${sys.tagline} · $factCount facts"
     Box(Modifier.padding(start = 22.dp, end = 22.dp, top = 16.dp, bottom = 2.dp)) {
         Box(
             Modifier

@@ -1,0 +1,604 @@
+[
+  {
+    "name": "Ceres",
+    "sub": "Dwarf Planet",
+    "sizeText": "940 km",
+    "diaKm": 940,
+    "kind": "PLANET",
+    "colors": [
+      "cfcabf",
+      "8f897e",
+      "423d35"
+    ]
+  },
+  {
+    "name": "Eris",
+    "sub": "Dwarf Planet",
+    "sizeText": "2,326 km",
+    "diaKm": 2326,
+    "kind": "PLANET",
+    "colors": [
+      "e8e4dc",
+      "b0aaa0",
+      "4e4a44"
+    ]
+  },
+  {
+    "name": "Pluto",
+    "sub": "Dwarf Planet",
+    "sizeText": "2,377 km",
+    "diaKm": 2377,
+    "kind": "PLANET",
+    "colors": [
+      "d9c3a5",
+      "a07b5c",
+      "4a3326"
+    ]
+  },
+  {
+    "name": "The Moon",
+    "sub": "Earth's Moon",
+    "sizeText": "3,474 km",
+    "diaKm": 3474,
+    "kind": "PLANET",
+    "colors": [
+      "dadae0",
+      "9a9aa2",
+      "46464d"
+    ]
+  },
+  {
+    "name": "Callisto",
+    "sub": "Moon of Jupiter",
+    "sizeText": "4,821 km",
+    "diaKm": 4821,
+    "kind": "PLANET",
+    "colors": [
+      "b8aa96",
+      "807162",
+      "3a342c"
+    ]
+  },
+  {
+    "name": "Mercury",
+    "sub": "Terrestrial Planet",
+    "sizeText": "4,879 km",
+    "diaKm": 4879,
+    "kind": "PLANET",
+    "colors": [
+      "c9bdae",
+      "8c8073",
+      "40382e"
+    ]
+  },
+  {
+    "name": "Titan",
+    "sub": "Moon of Saturn",
+    "sizeText": "5,150 km",
+    "diaKm": 5150,
+    "kind": "PLANET",
+    "colors": [
+      "e9b96e",
+      "c8893a",
+      "6e441a"
+    ]
+  },
+  {
+    "name": "Ganymede",
+    "sub": "Moon of Jupiter",
+    "sizeText": "5,268 km",
+    "diaKm": 5268,
+    "kind": "PLANET",
+    "colors": [
+      "c9c0b0",
+      "8f8473",
+      "443e34"
+    ]
+  },
+  {
+    "name": "Mars",
+    "sub": "Terrestrial Planet",
+    "sizeText": "6,779 km",
+    "diaKm": 6779,
+    "kind": "PLANET",
+    "colors": [
+      "e6915a",
+      "b5552c",
+      "5a2210"
+    ]
+  },
+  {
+    "name": "Venus",
+    "sub": "Terrestrial Planet",
+    "sizeText": "12,104 km",
+    "diaKm": 12104,
+    "kind": "PLANET",
+    "colors": [
+      "f6e7c0",
+      "d8b87a",
+      "7a6234"
+    ]
+  },
+  {
+    "name": "Earth",
+    "sub": "Terrestrial Planet",
+    "sizeText": "12,742 km",
+    "diaKm": 12742,
+    "kind": "PLANET",
+    "colors": [
+      "9fd6ff",
+      "2f7fd0",
+      "123a64"
+    ]
+  },
+  {
+    "name": "Neptune",
+    "sub": "Ice Giant",
+    "sizeText": "49,244 km",
+    "diaKm": 49244,
+    "kind": "PLANET",
+    "colors": [
+      "9cc4ff",
+      "3a6fd0",
+      "16245f"
+    ]
+  },
+  {
+    "name": "Uranus",
+    "sub": "Ice Giant",
+    "sizeText": "50,724 km",
+    "diaKm": 50724,
+    "kind": "PLANET",
+    "colors": [
+      "d2f0f0",
+      "86c8cf",
+      "356a72"
+    ]
+  },
+  {
+    "name": "Saturn",
+    "sub": "Gas Giant",
+    "sizeText": "116,460 km",
+    "diaKm": 116460,
+    "kind": "PLANET",
+    "colors": [
+      "f0dcae",
+      "d0a85e",
+      "6e4e22"
+    ],
+    "ring": "c9b486"
+  },
+  {
+    "name": "Jupiter",
+    "sub": "Gas Giant",
+    "sizeText": "139,820 km",
+    "diaKm": 139820,
+    "kind": "PLANET",
+    "colors": [
+      "f0d8b0",
+      "c89a64",
+      "6e4426"
+    ]
+  },
+  {
+    "name": "Proxima Centauri",
+    "sub": "Red Dwarf Star",
+    "sizeText": "≈ 214,000 km",
+    "diaKm": 214000,
+    "kind": "STAR",
+    "colors": [
+      "ffcfa8",
+      "ff7a52",
+      "b53a26"
+    ],
+    "glow": "77ff5a32"
+  },
+  {
+    "name": "The Sun",
+    "sub": "Yellow Dwarf Star",
+    "sizeText": "1.39 million km",
+    "diaKm": 1391000,
+    "kind": "STAR",
+    "colors": [
+      "fff4d4",
+      "ffb24a",
+      "ff7a1e"
+    ],
+    "glow": "99ffae4a"
+  },
+  {
+    "name": "Sirius A",
+    "sub": "Main-Sequence Star",
+    "sizeText": "2.38 million km",
+    "diaKm": 2380000,
+    "kind": "STAR",
+    "colors": [
+      "ffffff",
+      "cfe0ff",
+      "7fa6da"
+    ],
+    "glow": "99a8c8ff"
+  },
+  {
+    "name": "Pollux",
+    "sub": "Orange Giant",
+    "sizeText": "12.2 million km",
+    "diaKm": 12200000,
+    "kind": "STAR",
+    "colors": [
+      "ffe6c0",
+      "ffb060",
+      "c06a26"
+    ],
+    "glow": "88ffae5a"
+  },
+  {
+    "name": "Arcturus",
+    "sub": "Red Giant",
+    "sizeText": "35.3 million km",
+    "diaKm": 35300000,
+    "kind": "STAR",
+    "colors": [
+      "ffe0b0",
+      "ff9a52",
+      "bf5226"
+    ],
+    "glow": "88ff8a44"
+  },
+  {
+    "name": "Aldebaran",
+    "sub": "Orange Giant",
+    "sizeText": "61 million km",
+    "diaKm": 61000000,
+    "kind": "STAR",
+    "colors": [
+      "ffddb0",
+      "ff9e52",
+      "bf5a24"
+    ],
+    "glow": "88ff8a44"
+  },
+  {
+    "name": "Rigel",
+    "sub": "Blue Supergiant",
+    "sizeText": "110 million km",
+    "diaKm": 109800000,
+    "kind": "STAR",
+    "colors": [
+      "eaf2ff",
+      "a8c8ff",
+      "5a7fcf"
+    ],
+    "glow": "99a8c8ff"
+  },
+  {
+    "name": "Deneb",
+    "sub": "Blue-White Supergiant",
+    "sizeText": "280 million km",
+    "diaKm": 280000000,
+    "kind": "STAR",
+    "colors": [
+      "eaf2ff",
+      "b8d0ff",
+      "6a8ad0"
+    ],
+    "glow": "99a8c8ff"
+  },
+  {
+    "name": "Antares",
+    "sub": "Red Supergiant",
+    "sizeText": "946 million km",
+    "diaKm": 946000000,
+    "kind": "STAR",
+    "colors": [
+      "ffd0a8",
+      "ff6a44",
+      "b02e1e"
+    ],
+    "glow": "88ff5028"
+  },
+  {
+    "name": "Betelgeuse",
+    "sub": "Red Supergiant",
+    "sizeText": "1.2 billion km",
+    "diaKm": 1234000000,
+    "kind": "STAR",
+    "colors": [
+      "ffdcb6",
+      "ff7a4a",
+      "b5331e"
+    ],
+    "glow": "88ff5a32"
+  },
+  {
+    "name": "UY Scuti",
+    "sub": "Red Hypergiant",
+    "sizeText": "2.36 billion km",
+    "diaKm": 2360000000,
+    "kind": "STAR",
+    "colors": [
+      "ffe2bc",
+      "ff8a4a",
+      "c0451e"
+    ],
+    "glow": "88ff6a36"
+  },
+  {
+    "name": "Stephenson 2-18",
+    "sub": "Red Hypergiant",
+    "sizeText": "2.99 billion km",
+    "diaKm": 2990000000,
+    "kind": "STAR",
+    "colors": [
+      "ffd8b0",
+      "ff7440",
+      "bf3418"
+    ],
+    "glow": "88ff5a30"
+  },
+  {
+    "name": "M87*",
+    "sub": "Supermassive Black Hole",
+    "sizeText": "≈ 38 billion km",
+    "diaKm": 38000000000,
+    "kind": "HOLE",
+    "colors": [
+      "000000",
+      "000000",
+      "000000"
+    ],
+    "glow": "99ffb060"
+  },
+  {
+    "name": "TON 618",
+    "sub": "Supermassive Black Hole",
+    "sizeText": "≈ 390 billion km",
+    "diaKm": 390000000000,
+    "kind": "HOLE",
+    "colors": [
+      "000000",
+      "000000",
+      "000000"
+    ],
+    "glow": "99ffb060"
+  },
+  {
+    "name": "Helix Nebula",
+    "sub": "Planetary Nebula",
+    "sizeText": "2.5 light-years",
+    "diaKm": 2.365e13,
+    "kind": "NEBULA",
+    "colors": [
+      "66e0d0",
+      "3aa0c0",
+      "c04a6a"
+    ],
+    "glow": "4466e0d0"
+  },
+  {
+    "name": "Orion Nebula",
+    "sub": "Emission Nebula",
+    "sizeText": "24 light-years",
+    "diaKm": 2.271e14,
+    "kind": "NEBULA",
+    "colors": [
+      "ff9ec0",
+      "c060a0",
+      "50b0c0"
+    ],
+    "glow": "44ff80b0"
+  },
+  {
+    "name": "Pleiades",
+    "sub": "Open Star Cluster",
+    "sizeText": "43 light-years",
+    "diaKm": 4.068e14,
+    "kind": "CLUSTER",
+    "colors": [
+      "cfe0ff",
+      "9fc0ff",
+      "6f90d0"
+    ],
+    "glow": "3399c0ff"
+  },
+  {
+    "name": "Omega Centauri",
+    "sub": "Globular Cluster",
+    "sizeText": "172 light-years",
+    "diaKm": 1.627e15,
+    "kind": "CLUSTER",
+    "colors": [
+      "fff0d0",
+      "ffd9a0",
+      "d0a060"
+    ],
+    "glow": "33ffd9a0"
+  },
+  {
+    "name": "Carina Nebula",
+    "sub": "Emission Nebula",
+    "sizeText": "300 light-years",
+    "diaKm": 2.838e15,
+    "kind": "NEBULA",
+    "colors": [
+      "ffb080",
+      "d06040",
+      "804060"
+    ],
+    "glow": "44ff8050"
+  },
+  {
+    "name": "Tarantula Nebula",
+    "sub": "Star-forming Nebula",
+    "sizeText": "930 light-years",
+    "diaKm": 8.799e15,
+    "kind": "NEBULA",
+    "colors": [
+      "c090ff",
+      "e070b0",
+      "6080e0"
+    ],
+    "glow": "44b080ff"
+  },
+  {
+    "name": "Large Magellanic Cloud",
+    "sub": "Satellite Galaxy",
+    "sizeText": "14,000 light-years",
+    "diaKm": 1.3245e17,
+    "kind": "GALAXY",
+    "colors": [
+      "bfe0ff",
+      "88b0e0",
+      "ff9ec0"
+    ],
+    "glow": "335a8aff"
+  },
+  {
+    "name": "Milky Way",
+    "sub": "Barred Spiral Galaxy",
+    "sizeText": "105,000 light-years",
+    "diaKm": 1.0e18,
+    "kind": "GALAXY",
+    "colors": [
+      "fff2d0",
+      "c0d8ff",
+      "6a86c0"
+    ],
+    "glow": "33aac0ff"
+  },
+  {
+    "name": "Andromeda",
+    "sub": "Spiral Galaxy",
+    "sizeText": "220,000 light-years",
+    "diaKm": 2.081e18,
+    "kind": "GALAXY",
+    "colors": [
+      "ffe9c8",
+      "bcd2ff",
+      "6f8ad0"
+    ],
+    "glow": "339fb8ff"
+  },
+  {
+    "name": "IC 1101",
+    "sub": "Giant Elliptical Galaxy",
+    "sizeText": "≈ 2 million ly",
+    "diaKm": 1.892e19,
+    "kind": "GALAXY",
+    "colors": [
+      "ffe6c0",
+      "ffcf9a",
+      "c08a5a"
+    ],
+    "glow": "33ffcf9a"
+  },
+  {
+    "name": "Local Group",
+    "sub": "Galaxy Group",
+    "sizeText": "≈ 10 million ly",
+    "diaKm": 9.461e19,
+    "kind": "WEB",
+    "colors": [
+      "bcd0ff",
+      "8090c0",
+      "303a60"
+    ]
+  },
+  {
+    "name": "Virgo Cluster",
+    "sub": "Galaxy Cluster",
+    "sizeText": "≈ 15 million ly",
+    "diaKm": 1.419e20,
+    "kind": "WEB",
+    "colors": [
+      "c6d6ff",
+      "8090c0",
+      "303a60"
+    ]
+  },
+  {
+    "name": "Alcyoneus",
+    "sub": "Giant Radio Galaxy",
+    "sizeText": "≈ 16 million ly",
+    "diaKm": 1.514e20,
+    "kind": "GALAXY",
+    "colors": [
+      "cfe0ff",
+      "8fb0ff",
+      "5a70d0"
+    ],
+    "glow": "447090ff"
+  },
+  {
+    "name": "Coma Cluster",
+    "sub": "Galaxy Cluster",
+    "sizeText": "≈ 25 million ly",
+    "diaKm": 2.365e20,
+    "kind": "WEB",
+    "colors": [
+      "ccd8ff",
+      "8090c0",
+      "303a60"
+    ]
+  },
+  {
+    "name": "Virgo Supercluster",
+    "sub": "Supercluster",
+    "sizeText": "≈ 110 million ly",
+    "diaKm": 1.041e21,
+    "kind": "WEB",
+    "colors": [
+      "b8ccff",
+      "7888c0",
+      "2a3458"
+    ]
+  },
+  {
+    "name": "Laniakea",
+    "sub": "Supercluster",
+    "sizeText": "≈ 520 million ly",
+    "diaKm": 4.92e21,
+    "kind": "WEB",
+    "colors": [
+      "c0d4ff",
+      "7888c0",
+      "2a3458"
+    ]
+  },
+  {
+    "name": "Sloan Great Wall",
+    "sub": "Galaxy Filament",
+    "sizeText": "≈ 1.37 billion ly",
+    "diaKm": 1.296e22,
+    "kind": "WEB",
+    "colors": [
+      "b0c4ff",
+      "6f80b8",
+      "242c50"
+    ]
+  },
+  {
+    "name": "Hercules–Corona Borealis",
+    "sub": "Largest Known Structure",
+    "sizeText": "≈ 10 billion ly",
+    "diaKm": 9.461e22,
+    "kind": "WEB",
+    "colors": [
+      "c8d6ff",
+      "7888c0",
+      "2a3458"
+    ]
+  },
+  {
+    "name": "Observable Universe",
+    "sub": "Everything There Is",
+    "sizeText": "≈ 93 billion ly",
+    "diaKm": 8.799e23,
+    "kind": "UNIVERSE",
+    "colors": [
+      "a9c0ff",
+      "6678c0",
+      "141a40"
+    ]
+  }
+]

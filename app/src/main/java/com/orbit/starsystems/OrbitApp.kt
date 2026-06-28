@@ -158,13 +158,7 @@ fun OrbitApp() {
                         if (sys != null) {
                             SystemExplore(sys = sys, onOpenFact = { openFact(it) }, onBack = { openSys = null })
                         } else {
-                            SystemsList(
-                                onOpenSol = { openSys = "sol" },
-                                onOpenAcen = { openSys = "acen" },
-                                onOpenTrappist = { openSys = "tr" },
-                                onOpenSirius = { openSys = "sir" },
-                                onOpenKepler = { openSys = "kep" },
-                            )
+                            SystemsList(onOpenSystem = { openSys = it })
                         }
                     }
                     "spotlight" -> SpotlightScreen(onOpen = { openFact(it) })

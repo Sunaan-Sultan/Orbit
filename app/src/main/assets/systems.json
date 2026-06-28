@@ -1,0 +1,186 @@
+{
+  "explorable": [
+    {
+      "id": "sol",
+      "factsFile": "facts/sol.json",
+      "meta": {
+        "label": "Sol",
+        "eyebrow": "Our system",
+        "eyebrowColor": "ff9e34",
+        "title": "The Solar System",
+        "blurb": "The Sun and its eight worlds — tap any fact to watch it unfold."
+      },
+      "featured": {
+        "scene": "SUN",
+        "dur": 9.4,
+        "hero": 6.6,
+        "pill": "Our system",
+        "pillColor": "ff9e34",
+        "title": "Sol",
+        "tagline": "The Solar System"
+      }
+    },
+    {
+      "id": "acen",
+      "factsFile": "facts/acen.json",
+      "meta": {
+        "label": "Alpha Centauri",
+        "eyebrow": "Nearest neighbour",
+        "eyebrowColor": "ffcf8a",
+        "title": "Alpha Centauri",
+        "blurb": "A triple-star system just over four light-years away — the closest stars to our Sun."
+      },
+      "featured": {
+        "scene": "AC_TRIPLE",
+        "dur": 9.4,
+        "hero": 4.8,
+        "pill": "Nearest neighbour",
+        "pillColor": "ffcf8a",
+        "title": "Alpha Centauri",
+        "tagline": "Triple-star system"
+      }
+    },
+    {
+      "id": "tr",
+      "factsFile": "facts/trappist.json",
+      "meta": {
+        "label": "TRAPPIST-1",
+        "eyebrow": "Seven worlds",
+        "eyebrowColor": "e0744a",
+        "title": "TRAPPIST-1",
+        "blurb": "A single ultracool dwarf circled by seven Earth-size planets, 39 light-years away."
+      },
+      "featured": {
+        "scene": "TP_INTRO",
+        "dur": 9.4,
+        "hero": 5.5,
+        "pill": "Seven worlds",
+        "pillColor": "e0744a",
+        "title": "TRAPPIST-1",
+        "tagline": "Seven Earth-size worlds"
+      }
+    },
+    {
+      "id": "sir",
+      "factsFile": "facts/sirius.json",
+      "meta": {
+        "label": "Sirius",
+        "eyebrow": "The brightest star",
+        "eyebrowColor": "8fc0ff",
+        "title": "Sirius",
+        "blurb": "The most brilliant star in our night sky — a hot blue-white sun with a dense white-dwarf companion, 8.6 light-years away."
+      },
+      "featured": {
+        "scene": "SIR_BRIGHTEST",
+        "dur": 9.4,
+        "hero": 5.5,
+        "pill": "The brightest star",
+        "pillColor": "8fc0ff",
+        "title": "Sirius",
+        "tagline": "Brightest star in our sky"
+      }
+    },
+    {
+      "id": "kep",
+      "factsFile": "facts/kepler.json",
+      "meta": {
+        "label": "Kepler-90",
+        "eyebrow": "Eight worlds",
+        "eyebrowColor": "a9c2ff",
+        "title": "Kepler-90",
+        "blurb": "A Sun-like star with eight known planets — the first system found to rival our own, 2,840 light-years away in Draco."
+      },
+      "featured": {
+        "scene": "KEP_EIGHT",
+        "dur": 9.4,
+        "hero": 5.5,
+        "pill": "Eight worlds",
+        "pillColor": "a9c2ff",
+        "title": "Kepler-90",
+        "tagline": "A rival to our Solar System"
+      }
+    }
+  ],
+  "locked": [
+    {
+      "name": "Kepler-186",
+      "dist": "580 light-years",
+      "desc": "First Earth-size world in a habitable zone",
+      "colors": [
+        "ffd9c2",
+        "e0987a",
+        "8f4a3a"
+      ]
+    },
+    {
+      "name": "Wolf 359",
+      "dist": "7.9 light-years",
+      "desc": "A dim red dwarf, one of the closest stars",
+      "colors": [
+        "ffd0b4",
+        "e07a52",
+        "8f3a26"
+      ]
+    },
+    {
+      "name": "Ross 128",
+      "dist": "11 light-years",
+      "desc": "A quiet red dwarf with a temperate world",
+      "colors": [
+        "ffcaa6",
+        "d96f48",
+        "843322"
+      ]
+    },
+    {
+      "name": "Tau Ceti",
+      "dist": "12 light-years",
+      "desc": "A Sun-like star with a family of super-Earths",
+      "colors": [
+        "fff0cc",
+        "ffcf73",
+        "b5853a"
+      ]
+    },
+    {
+      "name": "Teegarden's Star",
+      "dist": "12.5 light-years",
+      "desc": "An ancient dwarf with two Earth-mass planets",
+      "colors": [
+        "ffc9a0",
+        "d8643c",
+        "7a2c1c"
+      ]
+    },
+    {
+      "name": "Gliese 581",
+      "dist": "20 light-years",
+      "desc": "A red dwarf famed for its planetary system",
+      "colors": [
+        "ffd2b0",
+        "e0744a",
+        "8a3320"
+      ]
+    },
+    {
+      "name": "55 Cancri",
+      "dist": "41 light-years",
+      "desc": "A double star with a diamond super-Earth",
+      "colors": [
+        "fff2d8",
+        "ffd68a",
+        "c09a4a"
+      ]
+    },
+    {
+      "name": "LHS 1140",
+      "dist": "49 light-years",
+      "desc": "A red dwarf hosting a rocky water-world",
+      "colors": [
+        "ffcfae",
+        "d86c4a",
+        "803020"
+      ]
+    }
+  ]
+}

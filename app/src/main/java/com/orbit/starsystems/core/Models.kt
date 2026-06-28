@@ -19,6 +19,7 @@ enum class SceneId {
     // Spotlight — standalone facts
     SP_VOYAGER, SP_ISS, SP_STARSHIP, SP_SUN, SP_OLYMPUS, SP_BLACKHOLE, SP_WORMHOLE,
     SP_PULSAR, SP_NEUTRON, SP_SUPERNOVA, SP_MILKYWAY, SP_COMET, SP_ECLIPSE,
+    SP_KUIPER, SP_HEXAGON, SP_ROGUE,
 }
 
 /** A planet: diameter in Earth-diameters, mean distance in AU, and a 3-stop sphere palette. */
@@ -60,6 +61,33 @@ data class SysMeta(
     val eyebrowColor: Color,
     val title: String,
     val blurb: String,
+)
+
+/** A large card on the home screen that opens an explorable [sysId]. */
+data class FeaturedSystem(
+    val sysId: String,
+    val scene: SceneId,
+    val dur: Float,
+    val hero: Float,
+    val pill: String,
+    val pillColor: Color,
+    val title: String,
+    val tagline: String,
+)
+
+/** The kind of object on the scale-comparison fly-through (drives how it is drawn). */
+enum class CompKind { PLANET, STAR, HOLE, NEBULA, CLUSTER, GALAXY, WEB, UNIVERSE }
+
+/** A single object on the scale-comparison fly-through, sorted by true diameter. */
+data class CompObj(
+    val name: String,
+    val sub: String,                   // classification shown beneath the name
+    val sizeText: String,
+    val diaKm: Double,                 // true diameter, drives the scaling
+    val kind: CompKind,
+    val colors: List<Color>,
+    val glow: Color = Color.Transparent,
+    val ring: Color? = null,
 )
 
 /** Opaque colour from a 0xRRGGBB literal. */

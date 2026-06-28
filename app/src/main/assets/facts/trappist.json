@@ -1,0 +1,202 @@
+[
+  {
+    "id": "tp_seven",
+    "cat": "The System",
+    "accent": "e0744a",
+    "scene": "TP_INTRO",
+    "hero": 5.5,
+    "title": "Seven Earths",
+    "sub": "Seven rocky worlds, one tiny star",
+    "blurb": "TRAPPIST-1 hosts seven roughly Earth-sized planets orbiting a single ultracool red dwarf — the largest known family of rocky worlds around one star.",
+    "stats": [
+      [
+        "Planets",
+        "7"
+      ],
+      [
+        "All sized like",
+        "Earth"
+      ],
+      [
+        "Star",
+        "Ultracool red dwarf"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "tp_star",
+    "cat": "The Star",
+    "accent": "ff7338",
+    "scene": "TP_STAR",
+    "hero": 5.5,
+    "title": "A Star Like Jupiter",
+    "sub": "Barely bigger than a gas giant",
+    "blurb": "TRAPPIST-1 is just 12% the Sun's width and about 9% its mass — only a little larger than Jupiter. It is so cool it shines mostly in infrared light.",
+    "stats": [
+      [
+        "Width",
+        "12% of Sun"
+      ],
+      [
+        "Mass",
+        "9% of Sun"
+      ],
+      [
+        "Glows in",
+        "Infrared"
+      ]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "tp_compact",
+    "cat": "The System",
+    "accent": "e0915c",
+    "scene": "TP_MERCURY",
+    "hero": 5.5,
+    "title": "Smaller Than One Orbit",
+    "sub": "Fits inside Mercury's orbit",
+    "blurb": "Every TRAPPIST-1 planet orbits closer to its star than Mercury does to the Sun. The whole seven-world system would fit comfortably inside Mercury's orbit.",
+    "stats": [
+      [
+        "Outer planet",
+        "0.062 AU"
+      ],
+      [
+        "Mercury",
+        "0.39 AU"
+      ],
+      [
+        "Fits inside",
+        "Mercury's orbit"
+      ]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "tp_years",
+    "cat": "Time",
+    "accent": "e0744a",
+    "scene": "TP_ORBITS",
+    "hero": 5.0,
+    "title": "A Year in Days",
+    "sub": "Orbits of 1.5 to 19 days",
+    "blurb": "Because the planets hug their tiny star, their years are astonishingly short — from 1.5 days on the innermost world to about 19 days on the outermost.",
+    "stats": [
+      [
+        "Innermost year",
+        "1.5 days"
+      ],
+      [
+        "Outermost year",
+        "19 days"
+      ],
+      [
+        "Earth",
+        "365 days"
+      ]
+    ],
+    "music": "music7"
+  },
+  {
+    "id": "tp_hz",
+    "cat": "Habitability",
+    "accent": "5fae7a",
+    "scene": "TP_HABITABLE",
+    "hero": 5.5,
+    "title": "The Water Zone",
+    "sub": "Three planets could hold water",
+    "blurb": "Planets e, f and g orbit within the habitable zone, where temperatures could let liquid water pool on a rocky surface.",
+    "stats": [
+      [
+        "In the zone",
+        "e · f · g"
+      ],
+      [
+        "Could hold",
+        "Liquid water"
+      ],
+      [
+        "Best candidate",
+        "TRAPPIST-1e"
+      ]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "tp_locked",
+    "cat": "Worlds Up Close",
+    "accent": "ffb070",
+    "scene": "TP_TIDAL",
+    "hero": 5.0,
+    "title": "Permanent Day & Night",
+    "sub": "Tidally locked to the star",
+    "blurb": "The planets are likely tidally locked, keeping one face in eternal daylight and the other in endless night — with a ring of perpetual twilight in between.",
+    "stats": [
+      [
+        "Day side",
+        "Always lit"
+      ],
+      [
+        "Night side",
+        "Always dark"
+      ],
+      [
+        "Between",
+        "Perpetual twilight"
+      ]
+    ],
+    "music": "music6"
+  },
+  {
+    "id": "tp_sky",
+    "cat": "Worlds Up Close",
+    "accent": "9cc4ec",
+    "scene": "TP_SKY",
+    "hero": 5.0,
+    "title": "Worlds That Fill the Sky",
+    "sub": "Neighbours loom large overhead",
+    "blurb": "The planets are packed so closely that, from the surface of one, its neighbours can appear several times larger than our Moon looks from Earth.",
+    "stats": [
+      [
+        "Neighbour size",
+        "Several × Moon"
+      ],
+      [
+        "Spacing",
+        "Very tight"
+      ],
+      [
+        "View",
+        "Spectacular"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "tp_distance",
+    "cat": "Getting There",
+    "accent": "e0744a",
+    "scene": "TP_DISTANCE",
+    "hero": 6.0,
+    "title": "39 Light-Years Away",
+    "sub": "Close enough to study",
+    "blurb": "TRAPPIST-1 lies about 39 light-years away in Aquarius — near enough that telescopes can already probe its planets' atmospheres for signs of life.",
+    "stats": [
+      [
+        "Distance",
+        "39 light-years"
+      ],
+      [
+        "In km",
+        "≈ 370 trillion"
+      ],
+      [
+        "Constellation",
+        "Aquarius"
+      ]
+    ],
+    "music": "music2"
+  }
+]

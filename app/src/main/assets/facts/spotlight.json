@@ -1,0 +1,402 @@
+[
+  {
+    "id": "sp_voyager",
+    "cat": "Explorers",
+    "accent": "e8d6a6",
+    "scene": "SP_VOYAGER",
+    "hero": 4.6,
+    "title": "Voyager",
+    "sub": "The farthest we've ever reached",
+    "blurb": "Launched in 1977, the twin Voyager probes are the most distant human-made objects ever — now drifting through interstellar space, more than 24 billion km from home, still faintly calling back to Earth.",
+    "stats": [
+      [
+        "Launched",
+        "1977"
+      ],
+      [
+        "Distance",
+        "≈ 24 billion km"
+      ],
+      [
+        "Now in",
+        "Interstellar space"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "sp_sun",
+    "cat": "Our Star",
+    "accent": "ff9e34",
+    "scene": "SP_SUN",
+    "hero": 3.2,
+    "title": "The Sun",
+    "sub": "A furnace fusing 600M tonnes a second",
+    "blurb": "Our star is a ball of glowing plasma 1.39 million km across, holding 99.86% of all the mass in the solar system. Every second it fuses some 600 million tonnes of hydrogen into helium — the light and warmth of every world.",
+    "stats": [
+      [
+        "Diameter",
+        "1,391,000 km"
+      ],
+      [
+        "Earths across",
+        "109"
+      ],
+      [
+        "Fuses per second",
+        "≈ 600M tonnes"
+      ]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "sp_iss",
+    "cat": "In Orbit",
+    "accent": "9cc4ec",
+    "scene": "SP_ISS",
+    "hero": 4.6,
+    "title": "The Space Station",
+    "sub": "A laboratory circling the Earth",
+    "blurb": "The International Space Station is the largest structure humans have ever put in space — about the size of a football field. It races around Earth at 27,600 km/h, so its crew sees a sunrise or sunset every 45 minutes.",
+    "stats": [
+      [
+        "Altitude",
+        "≈ 408 km"
+      ],
+      [
+        "Speed",
+        "27,600 km/h"
+      ],
+      [
+        "Orbit",
+        "Every 90 min"
+      ]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "sp_starship",
+    "cat": "Future Flight",
+    "accent": "7fd6c0",
+    "scene": "SP_STARSHIP",
+    "hero": 4.4,
+    "title": "Starships to Come",
+    "sub": "The engines that might reach a star",
+    "blurb": "No craft yet built could cross to another star in a lifetime. Concepts — fusion rockets, ion drives, and vast light-sails pushed by lasers — imagine vehicles that could one day travel a tenth of the speed of light.",
+    "stats": [
+      [
+        "Concept top speed",
+        "≈ 10–20% light"
+      ],
+      [
+        "Powered by",
+        "Fusion / light-sail"
+      ],
+      [
+        "Nearest star",
+        "4.24 light-years"
+      ]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "sp_olympus",
+    "cat": "Landmarks",
+    "accent": "b5462a",
+    "scene": "SP_OLYMPUS",
+    "hero": 3.2,
+    "title": "Olympus Mons",
+    "sub": "22 km tall — 2.5× Everest",
+    "blurb": "Olympus Mons on Mars is the tallest known volcano in the solar system: about 22 km high, two and a half times the height of Everest, on a base roughly the size of Arizona. Low gravity and a still crust let it grow for millions of years.",
+    "stats": [
+      [
+        "Height",
+        "≈ 22 km"
+      ],
+      [
+        "vs Everest",
+        "≈ 2.5×"
+      ],
+      [
+        "Base width",
+        "≈ 600 km"
+      ]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "sp_blackhole",
+    "cat": "Extreme Gravity",
+    "accent": "ffb060",
+    "scene": "SP_BLACKHOLE",
+    "hero": 3.2,
+    "title": "Black Holes",
+    "sub": "Where not even light escapes",
+    "blurb": "A black hole crams so much mass into so little space that nothing — not even light — can escape once it crosses the event horizon. The supermassive one at the heart of our galaxy, Sagittarius A*, weighs about 4 million Suns.",
+    "stats": [
+      [
+        "Escape speed",
+        "Faster than light"
+      ],
+      [
+        "Sagittarius A*",
+        "≈ 4 million Suns"
+      ],
+      [
+        "First imaged",
+        "2019 · M87*"
+      ]
+    ],
+    "music": "music7"
+  },
+  {
+    "id": "sp_wormhole",
+    "cat": "Spacetime",
+    "accent": "8fd6ff",
+    "scene": "SP_WORMHOLE",
+    "hero": 3.2,
+    "title": "Wormholes",
+    "sub": "A theoretical shortcut through spacetime",
+    "blurb": "A wormhole — an Einstein-Rosen bridge — is a hypothetical tunnel joining two distant points in spacetime, a shortcut permitted by Einstein's equations. None has ever been observed, and holding one open would demand strange \"exotic\" matter.",
+    "stats": [
+      [
+        "Predicted by",
+        "General relativity"
+      ],
+      [
+        "Ever observed",
+        "Never"
+      ],
+      [
+        "Would need",
+        "Exotic matter"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "sp_pulsar",
+    "cat": "Dead Stars",
+    "accent": "9fe8ff",
+    "scene": "SP_PULSAR",
+    "hero": 3.0,
+    "title": "Pulsars",
+    "sub": "A city-sized star spinning hundreds of times a second",
+    "blurb": "When a giant star dies it can leave behind a neutron star — the densest object in the universe, an entire Sun crushed into a ball the size of a city. Some spin hundreds of times a second, sweeping beams of radio light past Earth like a cosmic lighthouse.",
+    "stats": [
+      [
+        "Size",
+        "≈ 20 km across"
+      ],
+      [
+        "Spin",
+        "Up to 700×/sec"
+      ],
+      [
+        "A teaspoon",
+        "≈ a billion tonnes"
+      ]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "sp_neutron",
+    "cat": "Dead Stars",
+    "accent": "b8c4ff",
+    "scene": "SP_NEUTRON",
+    "hero": 3.4,
+    "title": "Neutron Stars",
+    "sub": "A whole Sun crushed into a city",
+    "blurb": "When a giant star's core collapses it can crush the mass of an entire Sun into a sphere just 20 km across — the densest matter in the universe short of a black hole. A single teaspoon of it would weigh about a billion tonnes, and its surface gravity is billions of times Earth's.",
+    "stats": [
+      [
+        "Size",
+        "≈ 20 km across"
+      ],
+      [
+        "Mass",
+        "Up to ~2 Suns"
+      ],
+      [
+        "A teaspoon",
+        "≈ a billion tonnes"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "sp_supernova",
+    "cat": "Stellar Death",
+    "accent": "ffd36a",
+    "scene": "SP_SUPERNOVA",
+    "hero": 4.2,
+    "title": "Supernova",
+    "sub": "A dying star outshines a whole galaxy",
+    "blurb": "When a massive star runs out of fuel its core collapses and it detonates as a supernova — for a few weeks blazing brighter than its entire galaxy, and forging the heavy elements that go on to build planets and people.",
+    "stats": [
+      [
+        "Brightness",
+        "Billions of Suns"
+      ],
+      [
+        "Forges",
+        "Gold, iron, oxygen"
+      ],
+      [
+        "Leaves behind",
+        "Neutron star or black hole"
+      ]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "sp_milkyway",
+    "cat": "Our Galaxy",
+    "accent": "9fc2ff",
+    "scene": "SP_MILKYWAY",
+    "hero": 3.6,
+    "title": "The Milky Way",
+    "sub": "Our home — a hundred billion suns",
+    "blurb": "The Milky Way is our home galaxy: a vast spiral roughly 100,000 light-years across, holding a few hundred billion stars. Our Sun is just one of them, riding a quiet outer arm and taking about 225 million years to circle the galactic centre once.",
+    "stats": [
+      [
+        "Width",
+        "≈ 100,000 light-years"
+      ],
+      [
+        "Stars",
+        "100–400 billion"
+      ],
+      [
+        "One orbit",
+        "≈ 225 million yrs"
+      ]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "sp_comet",
+    "cat": "Wanderers",
+    "accent": "bfe8ff",
+    "scene": "SP_COMET",
+    "hero": 4.5,
+    "title": "Comets",
+    "sub": "Icy wanderers that grow tails near the Sun",
+    "blurb": "A comet is a chunk of ice and dust left over from the birth of the solar system. As it swings near the Sun it heats up and streams two glowing tails — always pointing away from the Sun — that can stretch tens of millions of kilometres.",
+    "stats": [
+      [
+        "Made of",
+        "Ice & dust"
+      ],
+      [
+        "Tail length",
+        "Tens of millions km"
+      ],
+      [
+        "Tail points",
+        "Away from the Sun"
+      ]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "sp_eclipse",
+    "cat": "Alignments",
+    "accent": "ffcaa0",
+    "scene": "SP_ECLIPSE",
+    "hero": 5.0,
+    "title": "Total Eclipse",
+    "sub": "The Moon perfectly hides the Sun",
+    "blurb": "By sheer cosmic coincidence the Moon and Sun look almost exactly the same size in our sky. When the Moon slips perfectly in front, day fades to dusk and the Sun's ghostly corona blazes into view for a few breathtaking minutes.",
+    "stats": [
+      [
+        "Coincidence",
+        "Both ≈ 0.5° wide"
+      ],
+      [
+        "Totality",
+        "Up to ~7.5 min"
+      ],
+      [
+        "Reveals",
+        "The Sun's corona"
+      ]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "sp_kuiper",
+    "cat": "The Far Reaches",
+    "accent": "a9d6e0",
+    "scene": "SP_KUIPER",
+    "hero": 3.0,
+    "title": "The Kuiper Belt",
+    "sub": "A frozen ring beyond Neptune",
+    "blurb": "Past Neptune lies the Kuiper Belt — a vast doughnut of icy worlds left over from the dawn of the solar system. Pluto is its most famous resident, but it holds thousands of frozen bodies and likely far more still uncharted.",
+    "stats": [
+      [
+        "Begins past",
+        "Neptune · 30 AU"
+      ],
+      [
+        "Extends to",
+        "≈ 50 AU"
+      ],
+      [
+        "Famous resident",
+        "Pluto"
+      ]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "sp_hexagon",
+    "cat": "Landmarks",
+    "accent": "e8d6a6",
+    "scene": "SP_HEXAGON",
+    "hero": 3.2,
+    "title": "Saturn's Hexagon",
+    "sub": "A six-sided storm at the north pole",
+    "blurb": "Crowning Saturn's north pole is a bizarre six-sided jet stream wider than two Earths — a stable hexagon of racing cloud that has held its shape for as long as we have watched, with a swirling cyclone at its heart.",
+    "stats": [
+      [
+        "Shape",
+        "Six-sided jet stream"
+      ],
+      [
+        "Width",
+        "≈ 30,000 km"
+      ],
+      [
+        "Wider than",
+        "Two Earths"
+      ]
+    ],
+    "music": "music6"
+  },
+  {
+    "id": "sp_rogue",
+    "cat": "Wanderers",
+    "accent": "7f8cff",
+    "scene": "SP_ROGUE",
+    "hero": 3.4,
+    "title": "Rogue Planets",
+    "sub": "Starless worlds adrift in the dark",
+    "blurb": "Not every planet circles a star. Cast out of their birth systems, rogue planets drift alone through interstellar space in perpetual night — and there may be billions of them wandering the galaxy, more than the stars themselves.",
+    "stats": [
+      [
+        "Orbits",
+        "No star at all"
+      ],
+      [
+        "Sky",
+        "Eternal darkness"
+      ],
+      [
+        "May outnumber",
+        "The stars"
+      ]
+    ],
+    "music": "music7"
+  }
+]

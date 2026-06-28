@@ -277,5 +277,8 @@ fun BoxScope.RenderScene(scene: SceneId, t: Float, duration: Float) {
         SceneId.SP_MILKYWAY -> SpMilkyWay(t, duration)
         SceneId.SP_COMET -> SpComet(t, duration)
         SceneId.SP_ECLIPSE -> SpEclipse(t, duration)
+        SceneId.SP_KUIPER -> SpKuiper(t, duration)
+        SceneId.SP_HEXAGON -> SpHexagon(t, duration)
+        SceneId.SP_ROGUE -> SpRogue(t, duration)
     }
 }

@@ -1,0 +1,127 @@
+[
+  {
+    "id": "kep_eight",
+    "cat": "The System",
+    "accent": "a9c2ff",
+    "scene": "KEP_EIGHT",
+    "hero": 5.5,
+    "title": "Eight Worlds, One Star",
+    "sub": "A rival to our own Solar System",
+    "blurb": "Kepler-90 is circled by eight known planets — the same number as our own Sun, and the first star found to match it. Together they make a true miniature solar system far across the galaxy.",
+    "stats": [
+      [
+        "Known planets",
+        "8"
+      ],
+      [
+        "Ties with",
+        "The Solar System"
+      ],
+      [
+        "Star type",
+        "Sun-like (G)"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "kep_sunlike",
+    "cat": "The Star",
+    "accent": "ffd35e",
+    "scene": "KEP_SUNLIKE",
+    "hero": 5.5,
+    "title": "A Sun Much Like Ours",
+    "sub": "Slightly bigger, slightly hotter",
+    "blurb": "Unlike the cool red dwarfs that host many known planets, Kepler-90 is a G-type star much like the Sun — about 20% larger and a little hotter, with a familiar yellow-white glow.",
+    "stats": [
+      [
+        "Type",
+        "G-type (like Sun)"
+      ],
+      [
+        "Radius",
+        "1.2× Sun"
+      ],
+      [
+        "Temperature",
+        "≈ 6,000 °C"
+      ]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "kep_crowded",
+    "cat": "The System",
+    "accent": "a9c2ff",
+    "scene": "KEP_CROWDED",
+    "hero": 5.5,
+    "title": "Eight Worlds, Packed Tight",
+    "sub": "All squeezed inside Earth's orbit",
+    "blurb": "Every one of Kepler-90's eight planets orbits closer to its star than Earth does to the Sun. The entire system would fit within our own orbit, with the outermost world about where Earth sits.",
+    "stats": [
+      [
+        "Outermost planet",
+        "≈ 1.0 AU"
+      ],
+      [
+        "Inner six",
+        "Inside Mercury"
+      ],
+      [
+        "Earth",
+        "1.0 AU"
+      ]
+    ],
+    "music": "music7"
+  },
+  {
+    "id": "kep_ai",
+    "cat": "Discovery",
+    "accent": "7fd6c0",
+    "scene": "KEP_AI",
+    "hero": 5.5,
+    "title": "Found by Artificial Intelligence",
+    "sub": "A neural network spotted the eighth planet",
+    "blurb": "Kepler-90i, the eighth planet, was too faint for people to notice. In 2017 a Google neural network trained to recognise the tiny dips of a transit found it hidden in the data — the first world discovered this way.",
+    "stats": [
+      [
+        "Planet",
+        "Kepler-90i"
+      ],
+      [
+        "Found",
+        "2017, by AI"
+      ],
+      [
+        "Method",
+        "Neural network"
+      ]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "kep_distance",
+    "cat": "Getting There",
+    "accent": "a9c2ff",
+    "scene": "KEP_DISTANCE",
+    "hero": 6.0,
+    "title": "2,840 Light-Years Away",
+    "sub": "Deep in the constellation Draco",
+    "blurb": "Kepler-90 lies about 2,840 light-years away in Draco — hundreds of times farther than our nearest stellar neighbours. The light we study from it tonight left long before recorded history.",
+    "stats": [
+      [
+        "Distance",
+        "2,840 light-years"
+      ],
+      [
+        "Constellation",
+        "Draco"
+      ],
+      [
+        "In km",
+        "≈ 27 quadrillion"
+      ]
+    ],
+    "music": "music5"
+  }
+]
