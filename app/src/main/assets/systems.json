@@ -99,19 +99,29 @@
         "title": "Kepler-90",
         "tagline": "A rival to our Solar System"
       }
+    },
+    {
+      "id": "k186",
+      "factsFile": "facts/kepler186.json",
+      "meta": {
+        "label": "Kepler-186",
+        "eyebrow": "Habitable zone",
+        "eyebrowColor": "ff9e6a",
+        "title": "Kepler-186",
+        "blurb": "A red-dwarf system 580 light-years away — home to Kepler-186f, the first Earth-size world found orbiting in the habitable zone."
+      },
+      "featured": {
+        "scene": "KP_HZ",
+        "dur": 9.4,
+        "hero": 5.5,
+        "pill": "Habitable zone",
+        "pillColor": "ff9e6a",
+        "title": "Kepler-186",
+        "tagline": "First Earth-size world"
+      }
     }
   ],
   "locked": [
-    {
-      "name": "Kepler-186",
-      "dist": "580 light-years",
-      "desc": "First Earth-size world in a habitable zone",
-      "colors": [
-        "ffd9c2",
-        "e0987a",
-        "8f4a3a"
-      ]
-    },
     {
       "name": "Wolf 359",
       "dist": "7.9 light-years",

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "kp_dwarf", "cat": "The Star", "accent": "ff8a5a", "scene": "KP_DWARF", "hero": 5.0,
+    "title": "A Smaller, Redder Sun", "sub": "A cool red dwarf, half the Sun's size",
+    "blurb": "Kepler-186 isn't a sun like ours — it's an M-dwarf, a small, cool star about half the Sun's size and mass that shines a dim, ember red. Stars like this are the most common in the galaxy, and they burn for far longer than our Sun ever will.",
+    "stats": [["Type", "Red dwarf (M1)"], ["Size", "≈ 0.54× Sun"], ["Lifespan", "Tens of billions of yrs"]],
+    "music": "music4"
+  },
+  {
+    "id": "kp_transit", "cat": "Discovery", "accent": "ffd36a", "scene": "KP_TRANSIT", "hero": 3.1,
+    "title": "Caught in Transit", "sub": "Found by the dip in its starlight",
+    "blurb": "We can't see Kepler-186's planets directly. Instead the Kepler telescope watched the star for years and caught the tiny, repeating dips in brightness as each world crossed in front of it — a fingerprint that reveals a planet's size and the length of its year.",
+    "stats": [["Method", "Transit dimming"], ["Found by", "Kepler telescope"], ["Brightness dip", "< 0.1%"]],
+    "music": "music3"
+  },
+  {
+    "id": "kp_hz", "cat": "Habitability", "accent": "6fcaa0", "scene": "KP_HZ", "hero": 5.5,
+    "title": "The First Earth in the Zone", "sub": "Kepler-186f, where water could pool",
+    "blurb": "Kepler-186f was the first Earth-size planet ever found orbiting in its star's habitable zone — the temperate band where a rocky world could hold liquid water. Only about 10% larger than Earth, it circles at the cool outer edge of that zone.",
+    "stats": [["Size", "≈ 1.1× Earth"], ["Zone", "Habitable (outer edge)"], ["Milestone", "First Earth-size in zone"]],
+    "music": "music5"
+  },
+  {
+    "id": "kp_sunset", "cat": "On the Surface", "accent": "ff7a52", "scene": "KP_SUNSET", "hero": 5.0,
+    "title": "A Sky of Endless Sunset", "sub": "Noon under a dim red sun",
+    "blurb": "From the surface of Kepler-186f, the star would look bigger but far dimmer than our Sun, bathing the world in a deep red light. High noon might glow no brighter than an hour after sunset on Earth — and any plants there may have evolved darker colours to drink in the feeble red light.",
+    "stats": [["Daylight", "Dim & reddened"], ["Noon brightness", "Like Earth's dusk"], ["Plants?", "Perhaps near-black"]],
+    "music": "music6"
+  },
+  {
+    "id": "kp_cygnus", "cat": "Getting There", "accent": "9fc2ff", "scene": "KP_CYGNUS", "hero": 6.0,
+    "title": "Hidden in the Swan", "sub": "580 light-years away in Cygnus",
+    "blurb": "Kepler-186 lies about 580 light-years away in the constellation Cygnus, the Swan. It is far too faint to see by eye — the light arriving in our telescopes tonight began its journey before the Middle Ages.",
+    "stats": [["Distance", "580 light-years"], ["Constellation", "Cygnus"], ["Light left", "≈ 1440 AD"]],
+    "music": "music2"
+  }
+]
