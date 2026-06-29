@@ -28,7 +28,7 @@ import com.orbit.starsystems.core.ALL_FACTS
 @Composable
 fun SavedScreen(saved: Set<String>, onOpen: (String) -> Unit) {
     val items = ALL_FACTS.filter { saved.contains(it.id) }
-    Column(Modifier.fillMaxSize().background(Color.Black).padding(bottom = 80.dp)) {
+    Column(Modifier.fillMaxSize().background(Color.Black)) {
         Column(
             Modifier.statusBarsPadding().padding(start = 22.dp, end = 22.dp, top = 26.dp, bottom = 16.dp),
         ) {
@@ -50,7 +50,7 @@ fun SavedScreen(saved: Set<String>, onOpen: (String) -> Unit) {
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(22.dp),
+                contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 22.dp, bottom = 102.dp),
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp),
             ) {

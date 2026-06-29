@@ -2,10 +2,12 @@ package com.orbit.starsystems
 
 import android.media.MediaPlayer
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -23,6 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +62,20 @@ fun OrbitApp() {
     var sheet by remember { mutableStateOf(false) }
     var toast by remember { mutableStateOf<String?>(null) }
     var viewed by remember { mutableStateOf(setOf<String>()) }
+    var barVisible by remember { mutableStateOf(true) }
+
+    // Hide the bottom bar when the content scrolls down, reveal it when scrolling up.
+    val barScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (available.y < -2f) barVisible = false
+                else if (available.y > 2f) barVisible = true
+                return Offset.Zero
+            }
+        }
+    }
+    // Always show the bar again when switching tabs.
+    LaunchedEffect(tab, openSys) { barVisible = true }
 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -151,7 +171,7 @@ fun OrbitApp() {
                 )
             }
         } else {
-            Box(Modifier.fillMaxSize()) {
+            Box(Modifier.fillMaxSize().nestedScroll(barScrollConnection)) {
                 when (tab) {
                     "systems" -> {
                         val sys = openSys
@@ -192,11 +212,17 @@ fun OrbitApp() {
         }
 
         if (factId == null) {
-            BottomNav(
-                tab = tab,
-                onSelect = { tab = it },
-                modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
-            )
+            AnimatedVisibility(
+                visible = barVisible,
+                enter = slideInVertically { it },
+                exit = slideOutVertically { it },
+                modifier = Modifier.align(Alignment.BottomCenter),
+            ) {
+                BottomNav(
+                    tab = tab,
+                    onSelect = { tab = it },
+                )
+            }
         }
     }
 }

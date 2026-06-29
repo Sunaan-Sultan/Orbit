@@ -21,7 +21,7 @@ import com.orbit.starsystems.core.SPOTLIGHT_FACTS
 /** A standalone tab of singular facts — spacecraft, our Sun, and landmarks — outside any one system. */
 @Composable
 fun SpotlightScreen(onOpen: (String) -> Unit) {
-    Column(Modifier.fillMaxSize().background(Color.Black).padding(bottom = 80.dp)) {
+    Column(Modifier.fillMaxSize().background(Color.Black)) {
         Column(
             Modifier.statusBarsPadding().padding(start = 22.dp, end = 22.dp, top = 26.dp, bottom = 8.dp),
         ) {
@@ -35,7 +35,7 @@ fun SpotlightScreen(onOpen: (String) -> Unit) {
         }
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 16.dp, bottom = 22.dp),
+            contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 16.dp, bottom = 102.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {

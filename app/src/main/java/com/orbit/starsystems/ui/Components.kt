@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -138,14 +139,16 @@ fun BottomNav(tab: String, onSelect: (String) -> Unit, modifier: Modifier = Modi
     Row(
         modifier
             .fillMaxWidth()
-            .height(64.dp)
+            // Paint the background first so it bleeds down through the navigation-bar
+            // inset — the system nav pane then matches the bar's colour.
             .background(Color(0xFF08080A).copy(alpha = 0.92f))
-            .border(width = 0.dp, color = Color.Transparent),
+            .navigationBarsPadding()
+            .height(64.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         items.forEach { (id, label) ->
             val on = tab == id
-            val color = if (on) Color.White else Color(0xFF6A6A6A)
+            val color = if (on) Color.White else Color(0xFFA0A0A0)
             val icon = if (id == "you") "profile" else id
             Column(
                 Modifier
