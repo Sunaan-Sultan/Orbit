@@ -398,5 +398,80 @@
       ]
     ],
     "music": "music7"
+  },
+  {
+    "id": "sp_aurora",
+    "cat": "Sky Shows",
+    "accent": "6ff0b0",
+    "scene": "SP_AURORA",
+    "hero": 4.0,
+    "title": "The Aurora",
+    "sub": "When the sky catches fire",
+    "blurb": "Charged particles streaming from the Sun race down Earth's magnetic field and slam into the upper atmosphere, making it glow. Oxygen lights up green and red, nitrogen blue and violet — vast rippling curtains dancing above the poles.",
+    "stats": [
+      [
+        "Altitude",
+        "100–300 km up"
+      ],
+      [
+        "Powered by",
+        "The solar wind"
+      ],
+      [
+        "Green from",
+        "Glowing oxygen"
+      ]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "sp_europa",
+    "cat": "Ocean Worlds",
+    "accent": "9fd6e6",
+    "scene": "SP_EUROPA",
+    "hero": 3.4,
+    "title": "Europa",
+    "sub": "An ocean beneath the ice",
+    "blurb": "Beneath Europa's cracked shell of ice lies a global ocean of liquid water — kept warm by Jupiter's tides. It may hold more than twice as much water as all of Earth's oceans combined, making this icy moon one of our best hopes for life beyond Earth.",
+    "stats": [
+      [
+        "Orbits",
+        "Jupiter"
+      ],
+      [
+        "Hidden ocean",
+        "≈ 2× Earth's water"
+      ],
+      [
+        "Kept liquid by",
+        "Tidal heating"
+      ]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "sp_quasar",
+    "cat": "Cosmic Beacons",
+    "accent": "ffb06a",
+    "scene": "SP_QUASAR",
+    "hero": 3.6,
+    "title": "Quasars",
+    "sub": "The brightest lights in the universe",
+    "blurb": "A quasar is a giant black hole at a galaxy's heart, gorging on gas that heats to millions of degrees and blazes brighter than every star in the galaxy combined. The most luminous can outshine a trillion Suns — beacons we see clear across the universe.",
+    "stats": [
+      [
+        "Engine",
+        "Supermassive black hole"
+      ],
+      [
+        "Brightness",
+        "Up to a trillion Suns"
+      ],
+      [
+        "Visible",
+        "Billions of light-years"
+      ]
+    ],
+    "music": "music6"
   }
 ]

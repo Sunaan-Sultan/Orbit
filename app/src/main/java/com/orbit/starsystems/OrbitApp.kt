@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.orbit.starsystems.core.ALL_FACTS
 import com.orbit.starsystems.core.factById
 import com.orbit.starsystems.core.factsForSys
+import com.orbit.starsystems.ui.BannerAd
 import com.orbit.starsystems.ui.BottomNav
 import com.orbit.starsystems.ui.ComparisonScreen
 import com.orbit.starsystems.ui.DetailSheet
@@ -105,8 +106,23 @@ fun OrbitApp() {
         saved = if (saved.contains(id)) saved - id else saved + id
     }
 
+    val activity = context as? android.app.Activity
+
+    // Route a navigation transition through the shared interstitial cap, then run
+    // [action]. maybeShowInterstitial() always calls back (immediately if no ad /
+    // no Activity / capped), so navigation is never blocked.
+    fun withAd(action: () -> Unit) {
+        if (activity != null) AdManager.maybeShowInterstitial(activity, action) else action()
+    }
+
     fun openFact(id: String) {
-        factId = id; paused = false; sheet = false; viewed = viewed + id
+        withAd { factId = id; paused = false; sheet = false; viewed = viewed + id }
+    }
+
+    // Leave the fact player, surfacing an interstitial at the shared cap.
+    fun exitPlayer() {
+        sheet = false
+        withAd { factId = null }
     }
 
     LaunchedEffect(toast) {
@@ -117,7 +133,7 @@ fun OrbitApp() {
     BackHandler(enabled = sheet || factId != null || openSys != null || tab != "systems") {
         when {
             sheet -> sheet = false
-            factId != null -> { sheet = false; factId = null }
+            factId != null -> exitPlayer()
             openSys != null -> openSys = null
             tab != "systems" -> tab = "systems"
         }
@@ -145,6 +161,9 @@ fun OrbitApp() {
                     if (factId != newFact.id) {
                         factId = newFact.id
                         viewed = viewed + newFact.id
+                        // Scrolling facts: surface an ad on the first swipe once
+                        // 60s have elapsed since the last one (time-based, not per-swipe).
+                        activity?.let { AdManager.maybeShowInterstitialAfter(it, 60_000L) {} }
                     }
                 }
             }
@@ -160,7 +179,7 @@ fun OrbitApp() {
                     paused = paused,
                     isActive = factId == f.id,
                     onTogglePause = { paused = !paused },
-                    onBack = { sheet = false; factId = null },
+                    onBack = { exitPlayer() },
                     onLearn = { sheet = true },
                     isSaved = saved.contains(f.id),
                     onToggleSave = {
@@ -178,7 +197,7 @@ fun OrbitApp() {
                         if (sys != null) {
                             SystemExplore(sys = sys, onOpenFact = { openFact(it) }, onBack = { openSys = null })
                         } else {
-                            SystemsList(onOpenSystem = { openSys = it })
+                            SystemsList(onOpenSystem = { sys -> withAd { openSys = sys } })
                         }
                     }
                     "spotlight" -> SpotlightScreen(onOpen = { openFact(it) })
@@ -212,16 +231,20 @@ fun OrbitApp() {
         }
 
         if (factId == null) {
-            AnimatedVisibility(
-                visible = barVisible,
-                enter = slideInVertically { it },
-                exit = slideOutVertically { it },
-                modifier = Modifier.align(Alignment.BottomCenter),
-            ) {
-                BottomNav(
-                    tab = tab,
-                    onSelect = { tab = it },
-                )
+            androidx.compose.foundation.layout.Column(Modifier.align(Alignment.BottomCenter)) {
+                // Banner only on the Compare tab. Take the nav-bar inset ourselves
+                // when the app bar is hidden (scrolled away).
+                if (tab == "compare") BannerAd(applyNavInset = !barVisible)
+                AnimatedVisibility(
+                    visible = barVisible,
+                    enter = slideInVertically { it },
+                    exit = slideOutVertically { it },
+                ) {
+                    BottomNav(
+                        tab = tab,
+                        onSelect = { tab = it },
+                    )
+                }
             }
         }
     }

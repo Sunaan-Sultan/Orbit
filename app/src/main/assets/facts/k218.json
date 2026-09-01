@@ -1,0 +1,227 @@
+[
+  {
+    "id": "k2_intro",
+    "cat": "The System",
+    "accent": "7fd6c0",
+    "scene": "K2_INTRO",
+    "hero": 4.0,
+    "title": "An Ocean-World Candidate",
+    "sub": "A sub-Neptune that just might hold water",
+    "blurb": "K2-18 is a dim red dwarf 124 light-years away, circled by K2-18 b — a world larger than Earth, sitting squarely in the habitable zone. After a string of headline discoveries it has become the most closely studied candidate for a planet that could carry an ocean.",
+    "stats": [
+      [
+        "Distance",
+        "124 light-years"
+      ],
+      [
+        "The planet",
+        "K2-18 b"
+      ],
+      [
+        "Status",
+        "Best-studied candidate"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "k2_dwarf",
+    "cat": "The Star",
+    "accent": "ff9e6a",
+    "scene": "K2_DWARF",
+    "hero": 3.5,
+    "title": "A Cool Red Dwarf",
+    "sub": "Smaller and dimmer than the Sun",
+    "blurb": "K2-18 is an M-type red dwarf — only about 40% the Sun's width and roughly half as hot. Such small, frugal stars burn so slowly they can shine for trillions of years, far longer than the Sun ever will.",
+    "stats": [
+      [
+        "Star type",
+        "Red dwarf (M)"
+      ],
+      [
+        "Size",
+        "0.41× the Sun"
+      ],
+      [
+        "Surface",
+        "≈ 3,500 °C"
+      ]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "k2_size",
+    "cat": "The World",
+    "accent": "9fd6e6",
+    "scene": "K2_SIZE",
+    "hero": 3.5,
+    "title": "Between Two Worlds",
+    "sub": "Bigger than Earth, smaller than Neptune",
+    "blurb": "K2-18 b is a sub-Neptune: about 2.6 times Earth's width and eight times its mass. Worlds in this in-between size — too big to be rocky, too small to be a gas giant — are the most common kind we have found, yet we have nothing like them at home.",
+    "stats": [
+      [
+        "Radius",
+        "2.6× Earth"
+      ],
+      [
+        "Mass",
+        "≈ 8.6× Earth"
+      ],
+      [
+        "Class",
+        "Sub-Neptune"
+      ]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "k2_hz",
+    "cat": "The World",
+    "accent": "7fd6c0",
+    "scene": "K2_HZ",
+    "hero": 4.0,
+    "title": "In the Habitable Zone",
+    "sub": "Where water could stay liquid",
+    "blurb": "Because its star is so dim, K2-18 b can huddle close — orbiting every 33 days — and still receive about as much warmth as Earth. That places it in the habitable zone, the band where a world could hold liquid water on its surface.",
+    "stats": [
+      [
+        "Year",
+        "≈ 33 days"
+      ],
+      [
+        "Orbit",
+        "≈ 0.16 AU"
+      ],
+      [
+        "Zone",
+        "Habitable"
+      ]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "k2_transit",
+    "cat": "Discovery",
+    "accent": "9cc4ec",
+    "scene": "K2_TRANSIT",
+    "hero": 4.0,
+    "title": "Caught in Transit",
+    "sub": "Found as it crossed its star",
+    "blurb": "K2-18 b was discovered in 2015 by NASA's repurposed Kepler telescope, on its K2 mission. Each time the planet passes in front of its star it blocks a tiny fraction of the light — a faint, repeating dip that betrays an unseen world.",
+    "stats": [
+      [
+        "Found",
+        "2015 · K2 mission"
+      ],
+      [
+        "Method",
+        "Transit dip"
+      ],
+      [
+        "Repeats",
+        "Every 33 days"
+      ]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "k2_spectrum",
+    "cat": "Discovery",
+    "accent": "c9b8d8",
+    "scene": "K2_SPECTRUM",
+    "hero": 4.0,
+    "title": "Reading the Starlight",
+    "sub": "Sniffing an atmosphere 124 light-years away",
+    "blurb": "When the planet transits, a little starlight filters through its atmosphere on the way to us. Each gas absorbs its own set of colours, stamping dark lines into the spectrum — so by splitting that light apart, we can read which molecules float in an alien sky.",
+    "stats": [
+      [
+        "Method",
+        "Spectroscopy"
+      ],
+      [
+        "Reads",
+        "Starlight through air"
+      ],
+      [
+        "Reveals",
+        "The gases present"
+      ]
+    ],
+    "music": "music6"
+  },
+  {
+    "id": "k2_water",
+    "cat": "Atmosphere",
+    "accent": "8fd6ff",
+    "scene": "K2_WATER",
+    "hero": 3.5,
+    "title": "Water in the Air",
+    "sub": "A first for a habitable-zone world",
+    "blurb": "In 2019 astronomers found the unmistakable fingerprint of water vapour in K2-18 b's atmosphere — the first time water had ever been detected around a planet in the habitable zone. It turned a faint dot into one of the most exciting worlds known.",
+    "stats": [
+      [
+        "Detected",
+        "2019"
+      ],
+      [
+        "Molecule",
+        "Water vapour (H₂O)"
+      ],
+      [
+        "Milestone",
+        "First in the habitable zone"
+      ]
+    ],
+    "music": "music7"
+  },
+  {
+    "id": "k2_hycean",
+    "cat": "Atmosphere",
+    "accent": "7fd6c0",
+    "scene": "K2_HYCEAN",
+    "hero": 3.5,
+    "title": "A Hycean World?",
+    "sub": "An ocean beneath a hydrogen sky",
+    "blurb": "In 2023 the JWST detected methane and carbon dioxide — but little ammonia — in K2-18 b's air, exactly what you might expect above a vast ocean cloaked in hydrogen. This \"Hycean\" picture is tantalising, but a tentative hint of life-linked gas remains hotly debated.",
+    "stats": [
+      [
+        "JWST found",
+        "Methane & CO₂"
+      ],
+      [
+        "The idea",
+        "A Hycean ocean world"
+      ],
+      [
+        "Status",
+        "Still debated"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "k2_distance",
+    "cat": "Getting There",
+    "accent": "9fd6e6",
+    "scene": "K2_DISTANCE",
+    "hero": 4.5,
+    "title": "124 Light-Years Away",
+    "sub": "In the constellation Leo",
+    "blurb": "K2-18 lies about 124 light-years away in the constellation Leo. The light we study from it tonight set out in the 1900s — so every measurement we make is a glimpse of the system as it was more than a century ago.",
+    "stats": [
+      [
+        "Distance",
+        "124 light-years"
+      ],
+      [
+        "Constellation",
+        "Leo"
+      ],
+      [
+        "In km",
+        "≈ 1.2 quadrillion"
+      ]
+    ],
+    "music": "music3"
+  }
+]

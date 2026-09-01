@@ -119,6 +119,26 @@
         "title": "Kepler-186",
         "tagline": "First Earth-size world"
       }
+    },
+    {
+      "id": "k218",
+      "factsFile": "facts/k218.json",
+      "meta": {
+        "label": "K2-18",
+        "eyebrow": "Ocean world?",
+        "eyebrowColor": "7fd6c0",
+        "title": "K2-18",
+        "blurb": "A red dwarf 124 light-years away, circled by K2-18 b — a sub-Neptune in the habitable zone and one of our best hopes for a world with water."
+      },
+      "featured": {
+        "scene": "K2_INTRO",
+        "dur": 9.4,
+        "hero": 5.0,
+        "pill": "Ocean world?",
+        "pillColor": "7fd6c0",
+        "title": "K2-18",
+        "tagline": "A possible ocean world"
+      }
     }
   ],
   "locked": [

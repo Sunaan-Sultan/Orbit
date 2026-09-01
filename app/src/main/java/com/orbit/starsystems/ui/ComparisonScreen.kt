@@ -8,6 +8,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.orbit.starsystems.AdManager
 import com.orbit.starsystems.R
 import com.orbit.starsystems.core.CompKind
 import com.orbit.starsystems.core.OrbitData
@@ -93,6 +95,7 @@ private const val END_HOLD = 2.2f          // pause on the final object before l
 @Composable
 fun ComparisonScreen() {
     val n = COMP_OBJECTS.size
+    val activity = LocalContext.current as? android.app.Activity
 
     // clock advances always (ambient twinkle + black-hole shimmer); pos is the
     // navigation position in step-space [0, n-1] and only auto-advances while playing
@@ -109,9 +112,20 @@ fun ComparisonScreen() {
             clock += dt
             if (!paused) {
                 if (pos >= n - 1f) {
-                    // hold on the final object, then fade-loop back to the start
+                    // hold on the final object, then — the fly-through is complete —
+                    // offer an interstitial (shared frequency cap, so not every loop)
+                    // and fade-loop back to the start once it's dismissed.
                     endHold += dt
-                    if (endHold >= END_HOLD) { pos = 0f; endHold = 0f }
+                    if (endHold >= END_HOLD) {
+                        if (activity != null) {
+                            paused = true // freeze on the final object behind the ad
+                            AdManager.maybeShowInterstitial(activity) {
+                                pos = 0f; endHold = 0f; paused = false
+                            }
+                        } else {
+                            pos = 0f; endHold = 0f
+                        }
+                    }
                 } else {
                     pos = (pos + dt / STEP_DUR).coerceAtMost(n - 1f)
                     endHold = 0f
@@ -244,10 +258,10 @@ fun ComparisonScreen() {
             }
         }
 
-        // persistent hint at the bottom, reflecting the current play/pause state
+        // persistent hint at the top, reflecting the current play/pause state
         androidx.compose.material3.Text(
-            if (paused) "❙❙  tap to resume  ·  swipe to explore" else "tap to pause  ·  swipe to explore",
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 92.dp),
+            if (paused) "❙❙  Tap to resume  ·  Swipe to explore" else "Tap to pause  ·  Swipe to explore",
+            modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 16.dp),
             style = TextStyle(fontFamily = OrbitFont, fontWeight = FontWeight.Normal, fontSize = 12.sp, letterSpacing = 0.06.em, color = Color.White.copy(alpha = 0.5f)),
         )
     }

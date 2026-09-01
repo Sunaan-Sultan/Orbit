@@ -1234,3 +1234,237 @@ fun BoxScope.SpRogue(t: Float, duration: Float) = SceneFade(t, duration) {
     Head(headline("Adrift in the\n", "endless dark", "."), 84f, 246f, e2)
     BottomLine(1648f, reveal(t, 5.5f), body("Cast out of its system, a rogue planet wanders alone in ", "perpetual night", "."))
 }
+
+// ───────────────────── Aurora — solar wind paints the sky ─────────────────────
+
+/** High-altitude pinprick stars above the curtains: x-frac, y-frac (upper sky only), size, alpha. */
+private val AURORA_STARS: List<FloatArray> = run {
+    var s = 0x5C1A7B
+    fun rnd(): Float { s = s * 1664525 + 1013904223; return ((s ushr 9) and 0xFFFF) / 65535f }
+    List(110) { floatArrayOf(rnd(), rnd() * 0.62f, 0.8f + rnd() * 2.2f, 0.3f + rnd() * 0.5f) }
+}
+
+@Composable
+fun BoxScope.SpAurora(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0x6ff0b0)
+    val appear = reveal(t, 0.5f, dur = 1.2f).opacity
+
+    // faint high-altitude starfield
+    Canvas(Modifier.fillMaxSize()) {
+        val k = size.width / 1080f
+        AURORA_STARS.forEach { st ->
+            val tw = 0.6f + 0.4f * sin(t * 1.3f + st[0] * 40f)
+            drawCircle(
+                c(0xdfe9ff), radius = st[2] * k,
+                center = Offset(st[0] * size.width, st[1] * size.height),
+                alpha = (st[3] * tw).coerceIn(0f, 1f),
+            )
+        }
+    }
+
+    // Earth's curved limb glowing at the horizon (a huge disc centred far below)
+    Canvas(Modifier.fillMaxSize()) {
+        val k = size.width / 1080f
+        val lr = 1500f * k
+        val lc = Offset(540f * k, 1180f * k + lr)
+        drawCircle(
+            brush = Brush.radialGradient(0f to c(0x0c1838), 0.7f to c(0x0a1430), 1f to c(0x060a1c), center = lc, radius = lr),
+            radius = lr, center = lc,
+        )
+        // thin atmospheric rim catching the aurora's glow
+        drawCircle(accent.copy(alpha = 0.45f), radius = lr + 5f * k, center = lc, style = Stroke(width = 6f * k))
+    }
+
+    // shimmering aurora curtains rising off the horizon
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
+        val k = size.width / 1080f
+        for (ci in 0 until 3) {
+            val baseX = (300f + ci * 250f) * k
+            val hue = when (ci) { 0 -> c(0x4fe6a0); 1 -> c(0x7ff0c0); else -> c(0x9a86f0) }
+            val rays = 26
+            for (ri in 0 until rays) {
+                val f = ri / (rays - 1f)
+                val sway = sin(t * 0.8f + ci * 1.3f + f * 3.0f) * 70f * k
+                val x = baseX + (f - 0.5f) * 230f * k + sway
+                val topY = (360f + sin(t * 0.6f + f * 5f + ci) * 60f) * k
+                val botY = (1170f + sin(t * 0.5f + f * 4f) * 40f) * k
+                val shimmer = (0.35f + 0.45f * sin(t * 2.2f + ri * 0.6f + ci * 2f)).coerceIn(0.05f, 0.85f)
+                drawLine(
+                    brush = Brush.verticalGradient(
+                        0f to Color.Transparent,
+                        0.5f to hue.copy(alpha = 0.06f + 0.08f * shimmer),
+                        1f to hue.copy(alpha = 0.7f * shimmer),
+                        startY = topY, endY = botY,
+                    ),
+                    start = Offset(x, topY), end = Offset(x, botY),
+                    strokeWidth = 11f * k, cap = StrokeCap.Round,
+                )
+            }
+        }
+    }
+
+    Eyebrow("The northern lights", accent, 200f, e1)
+    Head(headline("The sky\ncatches ", "fire", "."), 88f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Solar wind strikes the air high above the poles and the night glows in ", "rippling curtains", "."))
+}
+
+// ───────────────────── Europa — an ocean beneath the ice ─────────────────────
+
+/** Surface lineae as great-circle chords: start angle, end angle, inward bow (0..1). */
+private val EUROPA_CRACKS: List<FloatArray> = run {
+    var s = 0x7A1C9F
+    fun rnd(): Float { s = s * 1664525 + 1013904223; return ((s ushr 9) and 0xFFFF) / 65535f }
+    List(16) { floatArrayOf(rnd() * SP_TAU, rnd() * SP_TAU, 0.05f + rnd() * 0.38f) }
+}
+
+@Composable
+fun BoxScope.SpEuropa(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0x9fd6e6)
+    val cracks = reveal(t, 1.1f, dur = 1.4f).opacity
+
+    // a sparse, cold starfield
+    Canvas(Modifier.fillMaxSize()) {
+        ROGUE_STARS.forEach { st ->
+            val tw = 0.6f + 0.4f * sin(t * 1.2f + st[1] * 28f)
+            drawCircle(
+                c(0xcfe0ff), radius = st[2] * 0.8f * (size.width / 1080f),
+                center = Offset(st[0] * size.width, st[1] * size.height),
+                alpha = (st[3] * tw * 0.7f).coerceIn(0f, 1f),
+            )
+        }
+    }
+
+    // Jupiter looming, partly off the top-right corner
+    val jup = reveal(t, 0.4f, dur = 1.2f).opacity
+    At(640f, -180f, jup) {
+        Sphere(560f, listOf(c(0xf2e4c4), c(0xcea06a), c(0x95643a)), glow = Color(0x44e0b070))
+    }
+
+    // Europa — a bright shell of ice, lit from the upper-left
+    val cx = 470f; val cy = 1060f; val r = 230f
+    Canvas(Modifier.fillMaxSize()) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        val rk = r * k
+        drawCircle(
+            brush = Brush.radialGradient(
+                0f to c(0xf4f8ff), 0.5f to c(0xd2dde9), 0.85f to c(0x93a1b6), 1f to c(0x5d6b80),
+                center = Offset(ctr.x - rk * 0.32f, ctr.y - rk * 0.34f), radius = rk * 1.35f,
+            ),
+            radius = rk, center = ctr,
+        )
+
+        // reddish-brown lineae streaking the surface (great-circle chords, bowed inward to stay on the disc)
+        EUROPA_CRACKS.forEach { ck ->
+            val p0 = Offset(ctr.x + cos(ck[0]) * rk, ctr.y + sin(ck[0]) * rk)
+            val p1 = Offset(ctr.x + cos(ck[1]) * rk, ctr.y + sin(ck[1]) * rk)
+            val mid = Offset((p0.x + p1.x) / 2f, (p0.y + p1.y) / 2f)
+            // unit vector from the chord midpoint toward the disc centre
+            val dx = ctr.x - mid.x; val dy = ctr.y - mid.y
+            val len = sqrt(dx * dx + dy * dy).coerceAtLeast(1f)
+            val ux = dx / len; val uy = dy / len
+            val bow = ck[2] * rk
+            val path = Path()
+            val steps = 16
+            for (i in 0..steps) {
+                val s = i / steps.toFloat()
+                val push = bow * sin((s * 3.1415927f))
+                val x = p0.x + (p1.x - p0.x) * s + ux * push
+                val y = p0.y + (p1.y - p0.y) * s + uy * push
+                if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+            }
+            drawPath(path, c(0xb5623f).copy(alpha = 0.7f * cracks), style = Stroke(width = 3f * k, cap = StrokeCap.Round))
+            drawPath(path, c(0x7a3a24).copy(alpha = 0.35f * cracks), style = Stroke(width = 6f * k, cap = StrokeCap.Round))
+        }
+
+        // a soft terminator shadow on the far side
+        drawArc(
+            color = Color(0x33000814),
+            startAngle = 25f, sweepAngle = 130f, useCenter = true,
+            topLeft = Offset(ctr.x - rk, ctr.y - rk), size = Size(rk * 2f, rk * 2f),
+        )
+    }
+
+    Eyebrow("Europa · moon of Jupiter", accent, 200f, e1)
+    Head(headline("An ocean\nbeneath the ", "ice", "."), 84f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Under a frozen shell hides a global sea holding ", "more water than all of Earth's oceans", "."))
+}
+
+// ───────────────────── Quasar — the brightest beacons ─────────────────────
+
+@Composable
+fun BoxScope.SpQuasar(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xffb06a)
+    val cx = 540f; val cy = 980f
+    val grow = animate(0.15f, 1f, 0.4f, 2.0f, Easing.easeOutCubic)(t)
+    val pulse = 0.85f + 0.15f * sin(t * 2.4f)
+
+    Canvas(Modifier.fillMaxSize()) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+
+        // faint host galaxy the quasar outshines
+        drawCircle(
+            brush = Brush.radialGradient(0f to c(0x4a3a66).copy(alpha = 0.5f), 1f to Color.Transparent, center = ctr, radius = 470f * k),
+            radius = 470f * k, center = ctr, alpha = 0.7f * grow,
+        )
+
+        // twin relativistic jets, shooting from the core (drawn behind the disc)
+        for (dir in intArrayOf(-1, 1)) {
+            val len = (560f + 50f * sin(t * 1.5f)) * k * grow
+            val baseW = 16f * k; val tipW = 78f * k
+            val tipY = ctr.y + dir * len
+            val jet = Path().apply {
+                moveTo(ctr.x - baseW, ctr.y)
+                lineTo(ctr.x + baseW, ctr.y)
+                lineTo(ctr.x + tipW, tipY)
+                lineTo(ctr.x - tipW, tipY)
+                close()
+            }
+            drawPath(
+                jet,
+                brush = Brush.linearGradient(
+                    listOf(c(0xddf0ff).copy(alpha = 0.85f), c(0x6fb4ff).copy(alpha = 0.35f), Color.Transparent),
+                    start = ctr, end = Offset(ctr.x, tipY),
+                ),
+            )
+            // bright spine down the centre of each jet
+            drawLine(
+                c(0xeaf6ff).copy(alpha = 0.9f * pulse), start = ctr, end = Offset(ctr.x, tipY),
+                strokeWidth = 4f * k, cap = StrokeCap.Round,
+            )
+        }
+
+        // accretion disc — a hot, tilted ring of in-falling gas
+        rotate(-24f, pivot = ctr) {
+            val dw = 360f * k * grow; val dh = 120f * k * grow
+            drawOval(
+                color = c(0xffca6a).copy(alpha = 0.5f),
+                topLeft = Offset(ctr.x - dw, ctr.y - dh), size = Size(dw * 2f, dh * 2f),
+                style = Stroke(width = 26f * k),
+            )
+            drawOval(
+                color = c(0xfff0d0).copy(alpha = 0.85f),
+                topLeft = Offset(ctr.x - dw * 0.72f, ctr.y - dh * 0.72f), size = Size(dw * 1.44f, dh * 1.44f),
+                style = Stroke(width = 12f * k),
+            )
+        }
+
+        // central bloom + the black hole and its photon ring
+        val coreR = 150f * k * grow
+        drawCircle(
+            brush = Brush.radialGradient(0f to c(0xffffff).copy(alpha = pulse), 0.4f to c(0xffd79a).copy(alpha = 0.6f * pulse), 1f to Color.Transparent, center = ctr, radius = coreR.coerceAtLeast(1f)),
+            radius = coreR.coerceAtLeast(1f), center = ctr,
+        )
+        val bhR = 30f * k * grow
+        drawCircle(c(0x05070f), radius = bhR.coerceAtLeast(1f), center = ctr)
+        drawCircle(c(0xfff2d8).copy(alpha = pulse), radius = (bhR + 5f * k).coerceAtLeast(1f), center = ctr, style = Stroke(width = 4f * k))
+    }
+
+    Eyebrow("Quasars · galactic beacons", accent, 200f, e1)
+    Head(headline("The brightest\nlights in the ", "universe", "."), 80f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("A giant black hole feeds, blazing ", "brighter than entire galaxies", " — seen clear across the cosmos."))
+}
