@@ -139,6 +139,46 @@
         "title": "K2-18",
         "tagline": "A possible ocean world"
       }
+    },
+    {
+      "id": "55c",
+      "factsFile": "facts/cancri.json",
+      "meta": {
+        "label": "55 Cancri",
+        "eyebrow": "Molten world",
+        "eyebrowColor": "ffc24a",
+        "title": "55 Cancri",
+        "blurb": "A naked-eye double star 41 light-years away with five known planets — among them 55 Cancri e, a super-Earth drowned in an ocean of magma."
+      },
+      "featured": {
+        "scene": "CN_LAVA",
+        "dur": 9.4,
+        "hero": 5.2,
+        "pill": "Molten world",
+        "pillColor": "ffc24a",
+        "title": "55 Cancri",
+        "tagline": "A super-Earth made of lava"
+      }
+    },
+    {
+      "id": "bar",
+      "factsFile": "facts/barnard.json",
+      "meta": {
+        "label": "Barnard's Star",
+        "eyebrow": "The runaway",
+        "eyebrowColor": "f4794a",
+        "title": "Barnard's Star",
+        "blurb": "The closest single star to the Sun — an ancient red dwarf racing across our sky, with four sub-Earth worlds packed into a single week."
+      },
+      "featured": {
+        "scene": "BR_RUNAWAY",
+        "dur": 9.4,
+        "hero": 5.0,
+        "pill": "The runaway",
+        "pillColor": "f4794a",
+        "title": "Barnard's Star",
+        "tagline": "The fastest star in our sky"
+      }
     }
   ],
   "locked": [
@@ -190,16 +230,6 @@
         "ffd2b0",
         "e0744a",
         "8a3320"
-      ]
-    },
-    {
-      "name": "55 Cancri",
-      "dist": "41 light-years",
-      "desc": "A double star with a diamond super-Earth",
-      "colors": [
-        "fff2d8",
-        "ffd68a",
-        "c09a4a"
       ]
     },
     {

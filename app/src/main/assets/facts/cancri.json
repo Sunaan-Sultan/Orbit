@@ -1,0 +1,178 @@
+[
+  {
+    "id": "cn_intro",
+    "cat": "The System",
+    "accent": "ffc24a",
+    "scene": "CN_INTRO",
+    "hero": 4.2,
+    "title": "The Copernicus System",
+    "sub": "A naked-eye star with five worlds",
+    "blurb": "55 Cancri is a quiet double star 41 light-years away in the constellation Cancer. Five planets circle its brighter sun — a family so notable that the star was formally named Copernicus in 2015, with its worlds named after the astronomers who first turned lenses on the sky.",
+    "stats": [
+      ["Distance", "41 light-years"],
+      ["Known planets", "Five"],
+      ["Named", "Copernicus, 2015"]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "cn_family",
+    "cat": "The System",
+    "accent": "ffd48a",
+    "scene": "CN_FAMILY",
+    "hero": 4.6,
+    "title": "The First Family of Five",
+    "sub": "A full planetary system, found piece by piece",
+    "blurb": "The worlds arrived one at a time: a hot Jupiter in 1996, then three more, and in 2007 a fifth — making 55 Cancri the first star beyond the Sun known to hold five planets. They crowd inward from a distant giant to a scorched world hugging the star.",
+    "stats": [
+      ["First found", "1996"],
+      ["Fifth world", "2007"],
+      ["Spread", "0.015 to 5.5 AU"]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "cn_giant",
+    "cat": "The System",
+    "accent": "e8a86a",
+    "scene": "CN_GIANT",
+    "hero": 4.0,
+    "title": "A Jupiter of Its Own",
+    "sub": "A giant on a wide, patient orbit",
+    "blurb": "Far out at about 5.5 AU rides 55 Cancri d, a gas giant several times Jupiter's mass taking roughly fourteen years to round its star. When it was found in 2002 it was the first exoplanet known on an orbit as roomy as our own Jupiter's.",
+    "stats": [
+      ["Orbit", "≈ 5.5 AU"],
+      ["Year", "≈ 14 Earth years"],
+      ["Mass", "Several × Jupiter"]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "cn_binary",
+    "cat": "The Star",
+    "accent": "ffd27a",
+    "scene": "CN_BINARY",
+    "hero": 4.0,
+    "title": "A Sun and a Distant Ember",
+    "sub": "Two stars, a thousand AU apart",
+    "blurb": "55 Cancri A is a yellow star a little cooler and smaller than the Sun. Bound to it, but a thousand times further off than Earth is from the Sun, drifts a faint red dwarf — a companion so remote it takes millennia to complete a single lap.",
+    "stats": [
+      ["Primary", "Yellow dwarf (G8)"],
+      ["Companion", "Red dwarf"],
+      ["Separation", "≈ 1,000 AU"]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "cn_naked",
+    "cat": "The Star",
+    "accent": "cfd8ff",
+    "scene": "CN_NAKED",
+    "hero": 4.4,
+    "title": "You Can See It Yourself",
+    "sub": "One of the few planet-hosting stars visible unaided",
+    "blurb": "At magnitude 5.95 the star sits just inside the reach of the unaided eye. Under a truly dark sky, away from town lights, you can pick out that faint spark in Cancer and know that five worlds are circling it.",
+    "stats": [
+      ["Brightness", "Magnitude 5.95"],
+      ["Eye limit", "≈ Magnitude 6.5"],
+      ["Needs", "A dark sky"]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "cn_lava",
+    "cat": "The Lava World",
+    "accent": "ff6a3a",
+    "scene": "CN_LAVA",
+    "hero": 3.6,
+    "title": "A World of Molten Rock",
+    "sub": "55 Cancri e, hot enough to melt stone",
+    "blurb": "The innermost planet, 55 Cancri e, orbits so close that its daylit face reaches around 2,400 °C — far past the melting point of rock. Astronomers picture a super-Earth glowing beneath an ocean of magma, its surface never cooling enough to harden.",
+    "stats": [
+      ["Day side", "≈ 2,400 °C"],
+      ["Radius", "1.9× Earth"],
+      ["Surface", "Likely magma"]
+    ],
+    "music": "music6"
+  },
+  {
+    "id": "cn_year",
+    "cat": "The Lava World",
+    "accent": "ff9a4a",
+    "scene": "CN_YEAR",
+    "hero": 4.0,
+    "title": "A Year in Eighteen Hours",
+    "sub": "A whole orbit before your next sunrise",
+    "blurb": "55 Cancri e races around its star in about 17.7 hours, skimming a mere 0.015 AU above it — one twenty-fifth of Mercury's distance from the Sun. Fall asleep tonight and the planet will have lived a full year by the time you wake.",
+    "stats": [
+      ["Year", "≈ 17.7 hours"],
+      ["Orbit", "0.015 AU"],
+      ["Per Earth year", "≈ 495 of its years"]
+    ],
+    "music": "music7"
+  },
+  {
+    "id": "cn_tidal",
+    "cat": "The Lava World",
+    "accent": "ffb07a",
+    "scene": "CN_TIDAL",
+    "hero": 3.8,
+    "title": "One Face, Forever",
+    "sub": "Endless day on one side, endless night on the other",
+    "blurb": "Held by its star's grip, 55 Cancri e almost certainly keeps one hemisphere turned starward for good. That side blazes white-hot while the far side sits in permanent darkness — yet it stays strangely warm, as though heat were being ferried across.",
+    "stats": [
+      ["Rotation", "Tidally locked"],
+      ["Day side", "Molten, ≈ 2,400 °C"],
+      ["Night side", "Dark but warm"]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "cn_diamond",
+    "cat": "The Lava World",
+    "accent": "cfe6ff",
+    "scene": "CN_DIAMOND",
+    "hero": 4.2,
+    "title": "The Diamond Planet",
+    "sub": "A dazzling idea that did not quite hold",
+    "blurb": "In 2012 researchers suggested that a carbon-rich 55 Cancri e might hide a mantle of diamond beneath its crust, and the world made headlines. A sharper reading of the star's chemistry later found far less carbon than assumed — a beautiful hypothesis undone by better data.",
+    "stats": [
+      ["Proposed", "2012"],
+      ["The claim", "A diamond mantle"],
+      ["Today", "Thought unlikely"]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "cn_atmos",
+    "cat": "Atmosphere",
+    "accent": "9fd6c0",
+    "scene": "CN_ATMOS",
+    "hero": 4.0,
+    "title": "Air Above the Magma",
+    "sub": "A blanket bubbling up from an ocean of lava",
+    "blurb": "In 2024 the JWST found the best evidence yet that this lava world holds an atmosphere — one rich in carbon monoxide and carbon dioxide, likely venting straight out of the magma below. It is the strongest sign we have of air on a rocky world beyond our own.",
+    "stats": [
+      ["Found", "2024 · JWST"],
+      ["Gases", "CO and CO₂"],
+      ["Source", "The magma ocean"]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "cn_distance",
+    "cat": "Getting There",
+    "accent": "9cc4ec",
+    "scene": "CN_DISTANCE",
+    "hero": 4.6,
+    "title": "41 Light-Years Away",
+    "sub": "Close enough to study, far beyond reach",
+    "blurb": "55 Cancri lies about 41 light-years off in the constellation Cancer — near enough that our telescopes can weigh its planets and taste their air, yet so far that the light arriving tonight set out before anyone had found a single planet around another star.",
+    "stats": [
+      ["Distance", "41 light-years"],
+      ["Constellation", "Cancer"],
+      ["In km", "≈ 390 trillion"]
+    ],
+    "music": "music4"
+  }
+]

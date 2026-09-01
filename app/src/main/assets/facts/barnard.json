@@ -1,0 +1,226 @@
+[
+  {
+    "id": "br_intro",
+    "cat": "The Star",
+    "accent": "f4794a",
+    "scene": "BR_INTRO",
+    "hero": 4.2,
+    "title": "Our Nearest Neighbour Alone",
+    "sub": "The closest single star to the Sun",
+    "blurb": "Six light-years away in Ophiuchus burns a small red dwarf. Only the three suns of Alpha Centauri lie closer — which makes Barnard's Star the nearest star that stands on its own, and, as of 2025, a star with four small worlds to call its own.",
+    "stats": [
+      ["Distance", "5.96 light-years"],
+      ["Type", "Red dwarf (M4V)"],
+      ["Known planets", "Four"]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "br_dwarf",
+    "cat": "The Star",
+    "accent": "e8703c",
+    "scene": "BR_DWARF",
+    "hero": 4.0,
+    "title": "A Sixth of a Sun",
+    "sub": "Small, cool, and desperately faint",
+    "blurb": "Barnard's Star carries about 16% of the Sun's mass inside 19% of its width — barely above the line where a star can burn hydrogen at all. It sheds roughly a three-hundredth of the Sun's light, most of it infrared, from a surface only about 3,200 K hot.",
+    "stats": [
+      ["Mass", "0.16 × Sun"],
+      ["Radius", "0.19 × Sun"],
+      ["Light output", "≈ 1/300 of the Sun"]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "br_dim",
+    "cat": "The Star",
+    "accent": "b9a2ff",
+    "scene": "BR_DIM",
+    "hero": 4.4,
+    "title": "Too Faint to See",
+    "sub": "Second-closest, and still invisible",
+    "blurb": "For all its nearness, Barnard's Star shines at magnitude 9.5 — some sixteen times fainter than the dimmest star an unaided eye can catch. You need binoculars at the very least, which is why nobody picked it out until 1916.",
+    "stats": [
+      ["Brightness", "Magnitude 9.5"],
+      ["Eye limit", "Magnitude 6.5"],
+      ["Found", "1916 · E. E. Barnard"]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "br_ancient",
+    "cat": "The Star",
+    "accent": "ffc98a",
+    "scene": "BR_ANCIENT",
+    "hero": 4.6,
+    "title": "Older Than the Sun",
+    "sub": "A relic from the young galaxy",
+    "blurb": "Its metal-poor chemistry and its plunging path through the galaxy mark Barnard's Star as one of the old ones — perhaps ten billion years old, more than twice the Sun's age. It was already ancient when the Earth was still a disc of dust.",
+    "stats": [
+      ["Age", "≈ 10 billion years"],
+      ["The Sun", "4.6 billion years"],
+      ["Population", "Metal-poor halo star"]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "br_flare",
+    "cat": "The Star",
+    "accent": "ffd15a",
+    "scene": "BR_FLARE",
+    "hero": 3.8,
+    "title": "The Old Star Still Erupts",
+    "sub": "A quiet dwarf caught mid-flare",
+    "blurb": "Ancient red dwarfs are supposed to have settled down. In 1998 astronomers watched Barnard's Star throw out a flare that briefly doubled its brightness, and ultraviolet eyes have caught more since — hard news for anything trying to hold onto an atmosphere nearby.",
+    "stats": [
+      ["Seen", "1998"],
+      ["Peak", "Brightness roughly doubled"],
+      ["Duration", "Minutes"]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "br_runaway",
+    "cat": "The Runaway",
+    "accent": "ff8a52",
+    "scene": "BR_RUNAWAY",
+    "hero": 4.0,
+    "title": "The Fastest Star in Our Sky",
+    "sub": "Nothing else moves like it",
+    "blurb": "Every star drifts, but Barnard's Star bolts. It shifts 10.4 arcseconds a year against the background — the largest proper motion of any star we know, and the reason it has been called Barnard's Runaway Star ever since 1916.",
+    "stats": [
+      ["Proper motion", "10.4″ per year"],
+      ["Rank", "Fastest known"],
+      ["Also called", "Barnard's Runaway Star"]
+    ],
+    "music": "music6"
+  },
+  {
+    "id": "br_moon",
+    "cat": "The Runaway",
+    "accent": "d8c4a8",
+    "scene": "BR_MOON",
+    "hero": 4.2,
+    "title": "A Moon-Width in a Lifetime",
+    "sub": "Fast for a star, slow for a person",
+    "blurb": "Ten arcseconds a year sounds furious until you measure it against the full Moon, which spans about half a degree. At its pace Barnard's Star needs some 180 years to cross that little disc — a crossing it began before photography could record it.",
+    "stats": [
+      ["To cross the Moon", "≈ 180 years"],
+      ["Full Moon", "≈ 0.5 degrees"],
+      ["Since 1916", "About two-thirds across"]
+    ],
+    "music": "music7"
+  },
+  {
+    "id": "br_approach",
+    "cat": "The Runaway",
+    "accent": "7fc8e8",
+    "scene": "BR_APPROACH",
+    "hero": 4.4,
+    "title": "It Is Coming Closer",
+    "sub": "Nearest of all, around the year 11,800",
+    "blurb": "Barnard's Star is falling toward us at about 110 kilometres a second. In roughly ten thousand years it will pass within 3.75 light-years and briefly become the closest star to the Sun — nearer than Proxima Centauri is today — before sweeping away again.",
+    "stats": [
+      ["Closing speed", "≈ 110 km/s"],
+      ["Closest approach", "≈ 11,800 CE"],
+      ["Distance then", "3.75 light-years"]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "br_phantom",
+    "cat": "The Planets",
+    "accent": "9aa8c4",
+    "scene": "BR_PHANTOM",
+    "hero": 4.0,
+    "title": "The Planets That Were Not",
+    "sub": "A decade-long wobble that turned out to be the telescope",
+    "blurb": "From 1963 Peter van de Kamp reported a wobble in the star's path and claimed one, then two, Jupiter-like planets. Others could not see it. By 1973 the culprit was found: the wobble tracked adjustments made to his own telescope, not any world.",
+    "stats": [
+      ["Claimed", "1963"],
+      ["The claim", "Jupiter-mass planets"],
+      ["Undone", "1973"]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "br_found",
+    "cat": "The Planets",
+    "accent": "8fe0b4",
+    "scene": "BR_FOUND",
+    "hero": 4.2,
+    "title": "A Real World at Last",
+    "sub": "Found in 2024, after sixty years of false starts",
+    "blurb": "Reading the star's light for shifts of barely thirty centimetres a second, the ESPRESSO spectrograph in Chile picked out a genuine tug: Barnard b, a world roughly a third of Earth's mass, whipping around the star every 3.15 days.",
+    "stats": [
+      ["Announced", "2024 · ESPRESSO"],
+      ["Mass", "≈ 0.3 × Earth"],
+      ["Year", "3.15 days"]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "br_four",
+    "cat": "The Planets",
+    "accent": "ffb066",
+    "scene": "BR_FOUR",
+    "hero": 4.6,
+    "title": "Four Worlds Smaller Than Earth",
+    "sub": "A whole system inside a week",
+    "blurb": "In 2025 a second instrument confirmed that first planet and turned up three more. Barnard b, c, d and e each weigh a fifth to a third of Earth, and every one completes its orbit in between two and seven days — the entire system fits inside a single week.",
+    "stats": [
+      ["Planets", "Four"],
+      ["Masses", "0.19 to 0.34 × Earth"],
+      ["Years", "2.3 to 6.7 days"]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "br_roast",
+    "cat": "The Planets",
+    "accent": "ff6a4a",
+    "scene": "BR_ROAST",
+    "hero": 3.8,
+    "title": "All Four Sit Too Close",
+    "sub": "The temperate band lies far beyond them",
+    "blurb": "A star this cool keeps its habitable zone tucked in tight — but Barnard's four worlds huddle tighter still, orbiting well inside even that. All of them are too warm for liquid water to last, so if a temperate world circles this star, we have not found it yet.",
+    "stats": [
+      ["Outermost orbit", "≈ 0.04 AU"],
+      ["Barnard b", "≈ 125 °C"],
+      ["In the temperate zone", "None"]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "br_daedalus",
+    "cat": "Getting There",
+    "accent": "a8c4e8",
+    "scene": "BR_DAEDALUS",
+    "hero": 4.4,
+    "title": "The Starship Aimed Here",
+    "sub": "Project Daedalus chose this star",
+    "blurb": "Through the 1970s the British Interplanetary Society designed Daedalus, a fusion-driven probe meant to prove on paper that interstellar flight was possible. The target they picked was Barnard's Star — a fifty-year crossing at an eighth of the speed of light.",
+    "stats": [
+      ["Designed", "1973 to 1978"],
+      ["Cruise speed", "≈ 12% of light speed"],
+      ["Crossing", "≈ 50 years"]
+    ],
+    "music": "music6"
+  },
+  {
+    "id": "br_distance",
+    "cat": "Getting There",
+    "accent": "9cc4ec",
+    "scene": "BR_DISTANCE",
+    "hero": 4.6,
+    "title": "Six Light-Years Away",
+    "sub": "Second on the list of nearest stars",
+    "blurb": "Only Alpha Centauri's three suns lie between us and Barnard's Star. Its light takes just under six years to reach us — the nearest thing to a next-door star that we can study entirely on its own, and still 56 trillion kilometres out of reach.",
+    "stats": [
+      ["Distance", "5.96 light-years"],
+      ["Constellation", "Ophiuchus"],
+      ["In km", "≈ 56 trillion"]
+    ],
+    "music": "music7"
+  }
+]
