@@ -38,6 +38,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.orbit.starsystems.core.ALL_FACTS
+import com.orbit.starsystems.core.OrbitPrefs
 import com.orbit.starsystems.core.factById
 import com.orbit.starsystems.core.factsForSys
 import com.orbit.starsystems.ui.BannerAd
@@ -59,11 +60,16 @@ fun OrbitApp() {
     var openSys by remember { mutableStateOf<String?>(null) }
     var factId by remember { mutableStateOf<String?>(null) }
     var paused by remember { mutableStateOf(false) }
-    var saved by remember { mutableStateOf(setOf("moon")) }
+    var saved by remember { mutableStateOf(OrbitPrefs.saved) }
     var sheet by remember { mutableStateOf(false) }
     var toast by remember { mutableStateOf<String?>(null) }
-    var viewed by remember { mutableStateOf(setOf<String>()) }
+    var viewed by remember { mutableStateOf(OrbitPrefs.viewed) }
     var barVisible by remember { mutableStateOf(true) }
+
+    // Mirror the collection and seen-list back to disk whenever they change, so both
+    // survive the process. The first run of each is a no-op write of what was just read.
+    LaunchedEffect(saved) { OrbitPrefs.saved = saved }
+    LaunchedEffect(viewed) { OrbitPrefs.viewed = viewed }
 
     // Hide the bottom bar when the content scrolls down, reveal it when scrolling up.
     val barScrollConnection = remember {
@@ -203,7 +209,11 @@ fun OrbitApp() {
                     "spotlight" -> SpotlightScreen(onOpen = { openFact(it) })
                     "compare" -> ComparisonScreen()
                     "saved" -> SavedScreen(saved = saved, onOpen = { openFact(it) })
-                    "you" -> ProfileScreen(savedCount = saved.size, viewed = viewed.size)
+                    "you" -> ProfileScreen(
+                        savedCount = saved.size,
+                        viewed = viewed.size,
+                        onClearSaved = { saved = emptySet(); toast = "Saved collection cleared" },
+                    )
                 }
             }
         }

@@ -104,6 +104,69 @@ private fun DrawScope.drawIcon(name: String, color: Color, filled: Boolean, sw: 
             drawCircle(color, radius = 2.6f, center = Offset(7.5f, 14f), style = Stroke(width = sw))
             drawCircle(color, radius = 5.4f, center = Offset(16f, 12f), style = Stroke(width = sw))
         }
+        "star" -> {
+            // Five-point rating star.
+            val p = Path().apply {
+                moveTo(12f, 3f); lineTo(14.6f, 9.2f); lineTo(21f, 9.8f); lineTo(16.2f, 14.1f)
+                lineTo(17.6f, 20.5f); lineTo(12f, 17.1f); lineTo(6.4f, 20.5f); lineTo(7.8f, 14.1f)
+                lineTo(3f, 9.8f); lineTo(9.4f, 9.2f); close()
+            }
+            if (filled) drawPath(p, color)
+            else drawPath(p, color, style = Stroke(width = sw, join = StrokeJoin.Round, cap = StrokeCap.Round))
+        }
+        "share" -> {
+            // Three nodes joined by two links — the platform share glyph.
+            strokePath(color, sw) {
+                moveTo(8.6f, 10.8f); lineTo(15.4f, 7.2f)
+                moveTo(8.6f, 13.2f); lineTo(15.4f, 16.8f)
+            }
+            drawCircle(color, radius = 2.6f, center = Offset(6f, 12f), style = Stroke(width = sw))
+            drawCircle(color, radius = 2.6f, center = Offset(18f, 6f), style = Stroke(width = sw))
+            drawCircle(color, radius = 2.6f, center = Offset(18f, 18f), style = Stroke(width = sw))
+        }
+        "mail" -> {
+            drawPath(
+                Path().apply { addRoundRectCompat(3f, 5.5f, 18f, 13f, 2.5f) },
+                color, style = Stroke(width = sw, join = StrokeJoin.Round),
+            )
+            // The flap, inset so it reads as a fold rather than touching the corners.
+            strokePath(color, sw) { moveTo(4.5f, 7.5f); lineTo(12f, 13f); lineTo(19.5f, 7.5f) }
+        }
+        "refresh" -> {
+            // Open circular arrow: a gap at the top-right holds the arrowhead.
+            drawArc(
+                color = color,
+                startAngle = -50f, sweepAngle = 300f, useCenter = false,
+                topLeft = Offset(4f, 4f),
+                size = androidx.compose.ui.geometry.Size(16f, 16f),
+                style = Stroke(width = sw, cap = StrokeCap.Round),
+            )
+            strokePath(color, sw) {
+                moveTo(14.4f, 3.4f); lineTo(18.3f, 6.1f); lineTo(15.2f, 9.4f)
+            }
+        }
+        "info" -> {
+            drawCircle(color, radius = 9f, center = Offset(12f, 12f), style = Stroke(width = sw))
+            drawCircle(color, radius = 1.05f, center = Offset(12f, 7.8f))
+            strokePath(color, sw) { moveTo(12f, 11f); lineTo(12f, 16.6f) }
+        }
+        "trash" -> {
+            strokePath(color, sw) {
+                moveTo(4f, 7f); lineTo(20f, 7f)
+                moveTo(10f, 4.2f); lineTo(14f, 4.2f)
+            }
+            drawPath(
+                // Tapered bin so the silhouette isn't a plain rectangle.
+                Path().apply {
+                    moveTo(6.2f, 7f); lineTo(17.8f, 7f); lineTo(16.6f, 20f); lineTo(7.4f, 20f); close()
+                },
+                color, style = Stroke(width = sw, join = StrokeJoin.Round),
+            )
+            strokePath(color, sw * 0.85f) {
+                moveTo(10.3f, 10.5f); lineTo(10.6f, 16.8f)
+                moveTo(13.7f, 10.5f); lineTo(13.4f, 16.8f)
+            }
+        }
         "spotlight" -> {
             // Four-point sparkle: a large star with a small companion.
             val big = Path().apply {
