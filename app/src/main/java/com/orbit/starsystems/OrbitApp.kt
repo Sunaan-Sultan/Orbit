@@ -52,6 +52,7 @@ import com.orbit.starsystems.ui.SavedScreen
 import com.orbit.starsystems.ui.SpotlightScreen
 import com.orbit.starsystems.ui.SystemExplore
 import com.orbit.starsystems.ui.SystemsList
+import com.orbit.starsystems.ui.WhatsNewSheet
 import kotlinx.coroutines.delay
 
 @Composable
@@ -65,6 +66,7 @@ fun OrbitApp() {
     var toast by remember { mutableStateOf<String?>(null) }
     var viewed by remember { mutableStateOf(OrbitPrefs.viewed) }
     var barVisible by remember { mutableStateOf(true) }
+    var whatsNew by remember { mutableStateOf(false) }
 
     // Mirror the collection and seen-list back to disk whenever they change, so both
     // survive the process. The first run of each is a no-op write of what was just read.
@@ -86,6 +88,13 @@ fun OrbitApp() {
 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    // Show the release notes once, on the first launch after an update. consumeWhatsNew
+    // records the version as it answers, so re-running this (e.g. after a rotation)
+    // returns false rather than showing the sheet again.
+    LaunchedEffect(Unit) {
+        whatsNew = OrbitPrefs.consumeWhatsNew(AppActions.versionCode(context))
+    }
     // Menu music disabled
     // DisposableEffect(factId == null, lifecycleOwner) {
     //     if (factId != null) return@DisposableEffect onDispose {}
@@ -218,6 +227,16 @@ fun OrbitApp() {
             }
         }
 
+        WhatsNewSheet(
+            open = whatsNew,
+            onClose = { whatsNew = false },
+            onOpenSystem = { sys ->
+                whatsNew = false
+                tab = "systems"
+                openSys = sys
+            },
+        )
+
         DetailSheet(
             fact = curFact,
             open = sheet,
@@ -240,7 +259,9 @@ fun OrbitApp() {
             }
         }
 
-        if (factId == null) {
+        // The what's-new sheet is modal: without this the bar draws over it and stays
+        // tappable behind the scrim.
+        if (factId == null && !whatsNew) {
             androidx.compose.foundation.layout.Column(Modifier.align(Alignment.BottomCenter)) {
                 // Banner only on the Compare tab. Take the nav-bar inset ourselves
                 // when the app bar is hidden (scrolled away).

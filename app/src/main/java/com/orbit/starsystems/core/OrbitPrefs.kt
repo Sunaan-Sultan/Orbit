@@ -20,6 +20,7 @@ object OrbitPrefs {
     private const val KEY_STREAK = "streak_days"
     private const val KEY_LAST_OPEN = "last_open_day"
     private const val KEY_FIRST_OPEN = "first_open_day"
+    private const val KEY_LAST_VERSION = "last_seen_version"
 
     private const val MILLIS_PER_DAY = 86_400_000L
 
@@ -28,11 +29,15 @@ object OrbitPrefs {
 
     private var prefs: SharedPreferences? = null
 
+    /** Whether [init] found no existing data, i.e. this is the app's very first launch. */
+    private var freshInstall = false
+
     /** Idempotent — safe to call from every Activity.onCreate. */
     fun init(context: Context) {
         if (prefs != null) return
         val p = context.applicationContext.getSharedPreferences(FILE, Context.MODE_PRIVATE)
         prefs = p
+        freshInstall = !p.contains(KEY_FIRST_OPEN)
         // Seed the first-run values only when the keys are absent, so a user who clears
         // their collection doesn't get "moon" handed back on the next launch.
         p.edit().apply {
@@ -74,6 +79,22 @@ object OrbitPrefs {
         if (last == today) return
         val next = if (last == today - 1) p.getInt(KEY_STREAK, 0) + 1 else 1
         p.edit().putInt(KEY_STREAK, next).putLong(KEY_LAST_OPEN, today).apply()
+    }
+
+    /**
+     * True exactly once after the app is updated: an existing install whose recorded
+     * version is behind [current]. Records [current] either way, so a second call in the
+     * same install returns false and the notice can't reappear.
+     *
+     * A build from before version tracking existed has no recorded version, so it reads
+     * as an upgrade — which is what makes the notice show on the first update after this
+     * release. A genuinely fresh install is excluded: nothing is "new" to a new user.
+     */
+    fun consumeWhatsNew(current: Long): Boolean {
+        val p = prefs ?: return false
+        val recorded = p.getLong(KEY_LAST_VERSION, Long.MIN_VALUE)
+        if (recorded != current) p.edit().putLong(KEY_LAST_VERSION, current).apply()
+        return !freshInstall && recorded < current
     }
 
     /**

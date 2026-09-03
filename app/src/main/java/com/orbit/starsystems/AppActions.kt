@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -30,28 +31,36 @@ object AppActions {
     private fun playUrl(context: Context) =
         "https://play.google.com/store/apps/details?id=${context.packageName}"
 
-    /**
-     * "2.4 (24)", read off the *installed* package rather than BuildConfig so it always
-     * describes the APK actually running.
-     */
-    fun versionLabel(context: Context): String = runCatching {
-        val pm = context.packageManager
-        val info = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            pm.getPackageInfo(context.packageName, PackageManager.PackageInfoFlags.of(0L))
-        } else {
-            @Suppress("DEPRECATION")
-            pm.getPackageInfo(context.packageName, 0)
-        }
-        val code = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    /** The installed build's versionCode, or 0 if the package can't be read. */
+    fun versionCode(context: Context): Long = packageInfo(context)?.let { info ->
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             info.longVersionCode
         } else {
             @Suppress("DEPRECATION")
             info.versionCode.toLong()
         }
-        "${info.versionName} ($code)"
+    } ?: 0L
+
+    /**
+     * "2.4 (24)", read off the *installed* package rather than BuildConfig so it always
+     * describes the APK actually running.
+     */
+    fun versionLabel(context: Context): String {
+        val info = packageInfo(context) ?: return "—"
+        return "${info.versionName} (${versionCode(context)})"
+    }
+
+    private fun packageInfo(context: Context): PackageInfo? = runCatching {
+        val pm = context.packageManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pm.getPackageInfo(context.packageName, PackageManager.PackageInfoFlags.of(0L))
+        } else {
+            @Suppress("DEPRECATION")
+            pm.getPackageInfo(context.packageName, 0)
+        }
     }.getOrElse {
-        Log.w(TAG, "Could not read package version: ${it.message}")
-        "—"
+        Log.w(TAG, "Could not read package info: ${it.message}")
+        null
     }
 
     /**
