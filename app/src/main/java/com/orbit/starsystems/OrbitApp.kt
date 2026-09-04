@@ -57,7 +57,7 @@ import com.orbit.starsystems.ui.WhatsNewSheet
 import kotlinx.coroutines.delay
 
 @Composable
-fun OrbitApp() {
+fun SpaceFactsApp() {
     var tab by remember { mutableStateOf("systems") }
     var openSys by remember { mutableStateOf<String?>(null) }
     var factId by remember { mutableStateOf<String?>(null) }

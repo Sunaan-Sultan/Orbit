@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
                             ?: AppActions.openPlayListing(this)
                     },
                 )
-                Gate.ALLOWED -> OrbitApp()
+                Gate.ALLOWED -> SpaceFactsApp()
             }
         }
     }
@@ -165,7 +165,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private companion object {
-        const val TAG = "OrbitUpdate"
+        const val TAG = "SpaceFactsUpdate"
         const val CHECK_TIMEOUT_MS = 2_500L
     }
 }

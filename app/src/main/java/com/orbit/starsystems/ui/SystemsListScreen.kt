@@ -48,7 +48,7 @@ fun SystemsList(onOpenSystem: (String) -> Unit) {
                 .statusBarsPadding()
                 .padding(start = 22.dp, end = 22.dp, top = 28.dp, bottom = 8.dp),
         ) {
-            Text("ORBIT", style = ts(12f, FontWeight.Bold, Mute, 0.34f))
+            Text("SPACE FACTS", style = ts(12f, FontWeight.Bold, Mute, 0.34f))
             Text("Star systems", style = ts(34f, FontWeight.Bold, Color.White, -0.02f), modifier = Modifier.padding(top = 6.dp))
             Text(
                 "Worlds beyond worlds — explored one system at a time.",

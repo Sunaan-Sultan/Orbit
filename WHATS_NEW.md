@@ -1,6 +1,6 @@
-# What's New — Orbit
+# What's New — Space Facts
 
-Release notes for **Orbit** (`com.orbit.starsystems`).
+Release notes for **Space Facts** (`com.orbit.starsystems`).
 
 Current version in source: **2.7** (versionCode 27) — see `app/build.gradle.kts`.
 
@@ -19,7 +19,7 @@ Current version in source: **2.7** (versionCode 27) — see `app/build.gradle.kt
 
 - **Source links on every fact** — the Learn More sheet now has a **Read the source** button that opens the exact page a fact came from, in a reader inside the app. Tap the corner icon to hand it off to your browser.
 - The source credit under each fact now names its real source instead of a fixed "NASA / ESA" label.
-- **All eleven systems are sourced** — 110 of Orbit's 111 facts carry a verified link, checked against the page's own wording. The one exception is Wolf 359's *Our Sun, Seen From There*, where no published page states the figures; that fact keeps the old credit line and shows no button.
+- **All eleven systems are sourced** — 110 of Space Facts' 111 facts carry a verified link, checked against the page's own wording. The one exception is Wolf 359's *Our Sun, Seen From There*, where no published page states the figures; that fact keeps the old credit line and shows no button.
 
 ### Play Store copy
 
@@ -29,7 +29,7 @@ Don't just take our word for it.
 Every fact now has a Read the source button in Learn More — it opens the exact NASA or Wikipedia page the fact came from, right inside the app.
 
 • All eleven systems sourced — 110 facts linked to a page we checked
-• Read without leaving Orbit, or hand off to your browser
+• Read without leaving Space Facts, or hand off to your browser
 • Each fact now credits its real source
 ```
 
