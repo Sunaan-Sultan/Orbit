@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
         // Count this launch towards the daily streak before the UI reads it.
         OrbitPrefs.recordOpen()
         MobileAds.initialize(this) {}
-       // AdManager.loadInterstitial(this)
+        AdManager.loadInterstitial(this)
 
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkForImmediateUpdate()
