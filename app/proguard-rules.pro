@@ -19,3 +19,16 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+
+-keepclassmembers enum com.orbit.starsystems.core.** {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+    <fields>;
+}
+
+-keep class * extends androidx.room.RoomDatabase {
+    <init>();
+}
