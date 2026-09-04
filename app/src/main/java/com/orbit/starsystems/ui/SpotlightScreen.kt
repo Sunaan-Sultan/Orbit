@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,15 +31,16 @@ fun SpotlightScreen(onOpen: (String) -> Unit) {
                 modifier = Modifier.padding(top = 12.dp),
             )
         }
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+        LazyColumn(
             contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 16.dp, bottom = 102.dp),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(SPOTLIGHT_FACTS.size) { i ->
-                FactCard(SPOTLIGHT_FACTS[i], onClick = { onOpen(SPOTLIGHT_FACTS[i].id) })
+                val fact = SPOTLIGHT_FACTS[i]
+                FactListCard(fact = fact, onClick = { onOpen(fact.id) })
             }
         }
     }
 }
+
+

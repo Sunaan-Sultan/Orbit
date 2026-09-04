@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -129,6 +130,61 @@ fun FactCard(fact: Fact, onClick: () -> Unit, modifier: Modifier = Modifier, wid
                 ),
             )
         }
+    }
+}
+
+/** A list card showing a frozen scene thumbnail, category, title, subtitle, and right arrow chevron. */
+@Composable
+fun FactListCard(
+    fact: Fact,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White.copy(alpha = 0.04f))
+            .border(1.dp, fact.accent.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick)
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(76.dp)
+                .clip(RoundedCornerShape(12.dp)),
+        ) {
+            MiniStage(fact.scene, fact.dur, fact.hero, active = false, paused = true, modifier = Modifier.fillMaxSize())
+        }
+        Spacer(Modifier.width(14.dp))
+        Column(
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(
+                fact.cat.uppercase(),
+                style = ts(10.5f, FontWeight.SemiBold, fact.accent, 0.1f),
+            )
+            Text(
+                fact.title,
+                style = ts(16.5f, FontWeight.Bold, Color.White),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(top = 2.dp),
+            )
+            if (fact.sub.isNotEmpty()) {
+                Text(
+                    fact.sub,
+                    style = ts(12.5f, color = Mute),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+            }
+        }
+        Spacer(Modifier.width(8.dp))
+        Ico("chevR", size = 18.dp, color = fact.accent)
+        Spacer(Modifier.width(4.dp))
     }
 }
 

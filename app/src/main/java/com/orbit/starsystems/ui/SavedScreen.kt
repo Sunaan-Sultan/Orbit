@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,13 +46,14 @@ fun SavedScreen(saved: Set<String>, onOpen: (String) -> Unit) {
                 Text("Tap the bookmark on any fact to keep it here.", style = ts(14f, color = Dim, lineHeight = 21f), modifier = Modifier.padding(top = 8.dp))
             }
         } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
+            LazyColumn(
                 contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 22.dp, bottom = 102.dp),
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(items.size) { i -> FactCard(items[i], onClick = { onOpen(items[i].id) }) }
+                items(items.size) { i ->
+                    val item = items[i]
+                    FactListCard(fact = item, onClick = { onOpen(item.id) })
+                }
             }
         }
     }

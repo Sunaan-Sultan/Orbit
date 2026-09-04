@@ -75,12 +75,9 @@ fun SystemExplore(sys: String, onOpenFact: (String) -> Unit, onBack: () -> Unit)
                 }
                 Text("${inCat.size} ${if (inCat.size == 1) "fact" else "facts"}".uppercase(), style = ts(11f, FontWeight.SemiBold, Color(0xFF6A6A6A), 0.14f))
             }
-            Column(Modifier.padding(horizontal = 22.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                inCat.chunked(2).forEach { pair ->
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                        pair.forEach { f -> FactCard(f, onClick = { onOpenFact(f.id) }, modifier = Modifier.weight(1f)) }
-                        if (pair.size == 1) Spacer(Modifier.weight(1f))
-                    }
+            Column(Modifier.padding(horizontal = 22.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                inCat.forEach { f ->
+                    FactListCard(fact = f, onClick = { onOpenFact(f.id) })
                 }
             }
         }
