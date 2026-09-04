@@ -33,6 +33,7 @@ enum class SceneId {
     SP_VOYAGER, SP_ISS, SP_STARSHIP, SP_SUN, SP_OLYMPUS, SP_BLACKHOLE, SP_WORMHOLE,
     SP_PULSAR, SP_NEUTRON, SP_SUPERNOVA, SP_MILKYWAY, SP_COMET, SP_ECLIPSE,
     SP_KUIPER, SP_HEXAGON, SP_ROGUE, SP_AURORA, SP_EUROPA, SP_QUASAR,
+    SP_JWST, SP_ENCELADUS, SP_REDSPOT, SP_BETELGEUSE, SP_FRB,
 }
 
 /** A planet: diameter in Earth-diameters, mean distance in AU, and a 3-stop sphere palette. */

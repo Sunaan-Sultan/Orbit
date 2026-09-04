@@ -473,5 +473,130 @@
       ]
     ],
     "music": "music6"
+  },
+  {
+    "id": "sp_jwst",
+    "cat": "Explorers",
+    "accent": "f8c436",
+    "scene": "SP_JWST",
+    "hero": 4.2,
+    "title": "James Webb Telescope",
+    "sub": "Peering back to the cosmic dawn",
+    "blurb": "Stationed 1.5 million km from Earth at Sun-Earth L2, the Webb telescope's 6.5-meter golden mirror captures infrared light from the very first galaxies that formed after the Big Bang, revealing mysteries of early cosmic time.",
+    "stats": [
+      [
+        "Mirror",
+        "6.5 m Gold-coated"
+      ],
+      [
+        "Orbit",
+        "Sun-Earth L2"
+      ],
+      [
+        "Distance",
+        "1.5M km from Earth"
+      ]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "sp_enceladus",
+    "cat": "Ocean Worlds",
+    "accent": "a2e8ff",
+    "scene": "SP_ENCELADUS",
+    "hero": 3.4,
+    "title": "Enceladus Geysers",
+    "sub": "Erupting ice plumes into Saturn's rings",
+    "blurb": "Saturn's snow-white moon Enceladus shoots towering plumes of water ice, organic compounds, and salts hundreds of kilometers into space through fractures in its south pole—feeding Saturn's outer E ring from a warm subsurface ocean.",
+    "stats": [
+      [
+        "Orbits",
+        "Saturn"
+      ],
+      [
+        "Plume height",
+        "Hundreds of km"
+      ],
+      [
+        "Ocean depth",
+        "≈ 30–40 km"
+      ]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "sp_redspot",
+    "cat": "Landmarks",
+    "accent": "e65a38",
+    "scene": "SP_REDSPOT",
+    "hero": 3.2,
+    "title": "The Great Red Spot",
+    "sub": "A storm larger than Earth raging for centuries",
+    "blurb": "Jupiter's Great Red Spot is an anticyclonic storm wider than Earth that has been churning in the gas giant's southern atmosphere for over 350 years, with winds screaming along its rim at over 430 km/h.",
+    "stats": [
+      [
+        "Width",
+        "≈ 16,000 km"
+      ],
+      [
+        "Peak winds",
+        "430+ km/h"
+      ],
+      [
+        "Raging for",
+        "350+ years"
+      ]
+    ],
+    "music": "music6"
+  },
+  {
+    "id": "sp_betelgeuse",
+    "cat": "Stellar Death",
+    "accent": "ff6040",
+    "scene": "SP_BETELGEUSE",
+    "hero": 4.2,
+    "title": "Betelgeuse",
+    "sub": "A red supergiant on the brink of explosion",
+    "blurb": "Betelgeuse in Orion is a titan among stars: if placed at the center of our solar system, its glowing surface would swallow the orbits of Mercury, Venus, Earth, and Mars. Approaching the end of its life, it will detonate as a brilliant supernova.",
+    "stats": [
+      [
+        "Radius",
+        "≈ 700–1,000× Sun"
+      ],
+      [
+        "Distance",
+        "≈ 550 light-years"
+      ],
+      [
+        "Fate",
+        "Supernova"
+      ]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "sp_frb",
+    "cat": "Cosmic Beacons",
+    "accent": "c480ff",
+    "scene": "SP_FRB",
+    "hero": 3.6,
+    "title": "Fast Radio Bursts",
+    "sub": "Millisecond flashes of unimaginable power",
+    "blurb": "Fast Radio Bursts are intense, millisecond-long blasts of radio waves arriving from deep intergalactic space. In just a fraction of a second, a single FRB can discharge as much energy as our Sun generates over three full days.",
+    "stats": [
+      [
+        "Duration",
+        "A few milliseconds"
+      ],
+      [
+        "Energy",
+        "3 days of Sun"
+      ],
+      [
+        "Suspected origin",
+        "Magnetars"
+      ]
+    ],
+    "music": "music7"
   }
 ]

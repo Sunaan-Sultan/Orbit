@@ -128,6 +128,11 @@ object SourceManager {
         "spot.17" to "https://science.nasa.gov/sun/auroras/",
         "spot.18" to "https://science.nasa.gov/mission/europa-clipper/why-europa-evidence-for-an-ocean/",
         "spot.19" to "https://en.wikipedia.org/wiki/Quasar",
+        "spot.20" to "https://science.nasa.gov/mission/webb/",
+        "spot.21" to "https://science.nasa.gov/saturn/moons/enceladus/facts/",
+        "spot.22" to "https://science.nasa.gov/jupiter/facts/",
+        "spot.23" to "https://en.wikipedia.org/wiki/Betelgeuse",
+        "spot.24" to "https://en.wikipedia.org/wiki/Fast_radio_burst",
     )
 
     private val PUBLISHERS: Map<String, String> = mapOf(

@@ -334,5 +334,10 @@ fun BoxScope.RenderScene(scene: SceneId, t: Float, duration: Float) {
         SceneId.SP_AURORA -> SpAurora(t, duration)
         SceneId.SP_EUROPA -> SpEuropa(t, duration)
         SceneId.SP_QUASAR -> SpQuasar(t, duration)
+        SceneId.SP_JWST -> SpJwst(t, duration)
+        SceneId.SP_ENCELADUS -> SpEnceladus(t, duration)
+        SceneId.SP_REDSPOT -> SpRedSpot(t, duration)
+        SceneId.SP_BETELGEUSE -> SpBetelgeuse(t, duration)
+        SceneId.SP_FRB -> SpFrb(t, duration)
     }
 }

@@ -1468,3 +1468,334 @@ fun BoxScope.SpQuasar(t: Float, duration: Float) = SceneFade(t, duration) {
     Head(headline("The brightest\nlights in the ", "universe", "."), 80f, 246f, e2)
     BottomLine(1648f, reveal(t, 5.5f), body("A giant black hole feeds, blazing ", "brighter than entire galaxies", " — seen clear across the cosmos."))
 }
+
+// ───────────────────── James Webb Space Telescope ─────────────────────
+
+@Composable
+fun BoxScope.SpJwst(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xf8c436)
+    val cx = 540f; val cy = 1020f
+    val driftY = sin(t * 0.9f) * 12f
+    val appear = reveal(t, 0.5f, dur = 1.2f).opacity
+
+    // Deep infrared cosmic background
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, (cy + driftY) * k)
+
+        // Faint infrared galaxy blooms
+        drawCircle(
+            brush = Brush.radialGradient(0f to c(0x5a2d18).copy(alpha = 0.45f), 1f to Color.Transparent, center = ctr, radius = 500f * k),
+            radius = 500f * k, center = ctr,
+        )
+
+        // 5-layered diamond sunshield
+        rotate(-12f, pivot = ctr) {
+            val sw = 320f * k; val sh = 140f * k
+            for (layer in 0 until 5) {
+                val offset = (layer * 9f - 18f) * k
+                val shieldPath = Path().apply {
+                    moveTo(ctr.x, ctr.y - sh + offset)
+                    lineTo(ctr.x + sw, ctr.y + offset)
+                    lineTo(ctr.x, ctr.y + sh + offset)
+                    lineTo(ctr.x - sw, ctr.y + offset)
+                    close()
+                }
+                val col = if (layer == 0) c(0xd46894).copy(alpha = 0.85f) else c(0x8a92a6).copy(alpha = 0.6f + layer * 0.08f)
+                drawPath(shieldPath, col)
+                drawPath(shieldPath, c(0xffe2f0), style = Stroke(width = 2f * k))
+            }
+
+            // Golden primary hexagonal mirror array
+            val hexR = 48f * k
+            val hexPositions = listOf(
+                Offset(0f, 0f), Offset(0f, -hexR * 1.732f), Offset(0f, hexR * 1.732f),
+                Offset(hexR * 1.5f, -hexR * 0.866f), Offset(hexR * 1.5f, hexR * 0.866f),
+                Offset(-hexR * 1.5f, -hexR * 0.866f), Offset(-hexR * 1.5f, hexR * 0.866f),
+                Offset(hexR * 1.5f, -hexR * 2.598f), Offset(hexR * 1.5f, hexR * 2.598f),
+                Offset(-hexR * 1.5f, -hexR * 2.598f), Offset(-hexR * 1.5f, hexR * 2.598f),
+                Offset(hexR * 3f, 0f), Offset(-hexR * 3f, 0f),
+                Offset(hexR * 3f, -hexR * 1.732f), Offset(hexR * 3f, hexR * 1.732f),
+                Offset(-hexR * 3f, -hexR * 1.732f), Offset(-hexR * 3f, hexR * 1.732f),
+            )
+            val mirrorCenter = Offset(ctr.x, ctr.y - 30f * k)
+            hexPositions.forEach { pos ->
+                if (pos.x != 0f || pos.y != 0f) { // leave central tile dark for the secondary tower
+                    val hCenter = Offset(mirrorCenter.x + pos.x, mirrorCenter.y + pos.y)
+                    val hexPath = Path()
+                    for (i in 0 until 6) {
+                        val ang = i * 60f * (SP_TAU / 360f)
+                        val px = hCenter.x + cos(ang) * (hexR * 0.94f)
+                        val py = hCenter.y + sin(ang) * (hexR * 0.94f)
+                        if (i == 0) hexPath.moveTo(px, py) else hexPath.lineTo(px, py)
+                    }
+                    hexPath.close()
+                    drawPath(
+                        hexPath,
+                        brush = Brush.linearGradient(
+                            listOf(c(0xfff076), c(0xd49214)),
+                            start = Offset(hCenter.x - hexR, hCenter.y - hexR),
+                            end = Offset(hCenter.x + hexR, hCenter.y + hexR),
+                        ),
+                    )
+                    drawPath(hexPath, c(0xfff7d0), style = Stroke(width = 1.5f * k))
+                }
+            }
+
+            // Secondary mirror tripod
+            val topP = Offset(mirrorCenter.x, mirrorCenter.y - 140f * k)
+            drawLine(c(0x2a2e3d), Offset(mirrorCenter.x - 90f * k, mirrorCenter.y + 60f * k), topP, strokeWidth = 3f * k)
+            drawLine(c(0x2a2e3d), Offset(mirrorCenter.x + 90f * k, mirrorCenter.y + 60f * k), topP, strokeWidth = 3f * k)
+            drawCircle(c(0x1a1e28), radius = 18f * k, center = topP)
+            drawCircle(c(0xffea92), radius = 12f * k, center = topP)
+
+            // Diffraction spikes
+            for (i in 0 until 6) {
+                val ang = i * 60f * (SP_TAU / 360f) + t * 0.1f
+                val dx = cos(ang) * 360f * k; val dy = sin(ang) * 360f * k
+                drawLine(
+                    brush = Brush.radialGradient(0f to c(0xfffae0).copy(alpha = 0.7f), 1f to Color.Transparent, center = topP, radius = 360f * k),
+                    start = topP, end = Offset(topP.x + dx, topP.y + dy), strokeWidth = 2.5f * k,
+                )
+            }
+        }
+    }
+
+    Eyebrow("James Webb Space Telescope", accent, 200f, e1)
+    Head(headline("Peering back to\n", "cosmic dawn", "."), 80f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Stationed at L2, Webb's golden mirrors capture light from the ", "first galaxies ever formed", "."))
+}
+
+// ───────────────────── Enceladus Geysers ─────────────────────
+
+@Composable
+fun BoxScope.SpEnceladus(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xa2e8ff)
+    val cx = 540f; val cy = 940f; val r = 180f
+    val appear = reveal(t, 0.5f, dur = 1.2f).opacity
+
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        val rk = r * k
+
+        // Saturn's faint outer E-ring sweeping in the background
+        drawArc(
+            color = c(0x5a9cd4).copy(alpha = 0.35f),
+            startAngle = 180f, sweepAngle = 180f, useCenter = false,
+            topLeft = Offset(ctr.x - 480f * k, ctr.y - 180f * k), size = Size(960f * k, 360f * k),
+            style = Stroke(width = 24f * k),
+        )
+
+        // Erupting geyser plumes from the south pole
+        for (p in 0 until 7) {
+            val px = (p - 3) * 22f * k
+            val sprayLen = (240f + sin(t * 2.5f + p * 1.1f) * 35f) * k
+            val plumePath = Path().apply {
+                moveTo(ctr.x + px - 6f * k, ctr.y + rk - 10f * k)
+                lineTo(ctr.x + px * 2.5f - 40f * k, ctr.y + rk + sprayLen)
+                lineTo(ctr.x + px * 2.5f + 40f * k, ctr.y + rk + sprayLen)
+                close()
+            }
+            drawPath(
+                plumePath,
+                brush = Brush.verticalGradient(
+                    listOf(c(0xeaf8ff).copy(alpha = 0.9f), c(0x7fd6ff).copy(alpha = 0.4f), Color.Transparent),
+                    startY = ctr.y + rk, endY = ctr.y + rk + sprayLen,
+                ),
+            )
+        }
+
+        // Enceladus — snow-white icy sphere
+        drawCircle(
+            brush = Brush.radialGradient(
+                0f to c(0xffffff), 0.6f to c(0xebf4ff), 0.88f to c(0xb8d4f0), 1f to c(0x7090b8),
+                center = Offset(ctr.x - rk * 0.35f, ctr.y - rk * 0.35f), radius = rk * 1.35f,
+            ),
+            radius = rk, center = ctr,
+        )
+
+        // Tiger stripe fractures glowing icy blue at the south pole
+        for (i in 0 until 4) {
+            val sx = ctr.x + (i - 1.5f) * 28f * k
+            val sy = ctr.y + rk * 0.72f
+            val stripePath = Path().apply {
+                moveTo(sx - 12f * k, sy - 8f * k)
+                lineTo(sx + 4f * k, sy + 16f * k)
+                lineTo(sx + 16f * k, sy + 32f * k)
+            }
+            drawPath(stripePath, c(0x3aa0ff).copy(alpha = 0.85f), style = Stroke(width = 3.5f * k, cap = StrokeCap.Round))
+        }
+    }
+
+    Eyebrow("Enceladus · moon of Saturn", accent, 200f, e1)
+    Head(headline("Ice geysers in\n", "deep space", "."), 84f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Erupting through cracks in its ice shell, geysers feed ", "Saturn's outer ring", " from a hidden ocean."))
+}
+
+// ───────────────────── The Great Red Spot ─────────────────────
+
+@Composable
+fun BoxScope.SpRedSpot(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xe65a38)
+    val cx = 540f; val cy = 1000f
+    val appear = reveal(t, 0.5f, dur = 1.2f).opacity
+
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+
+        // Jupiter's cloud bands across the background
+        val bandColors = listOf(c(0xe8d2b0), c(0x9e6d4c), c(0xf0e2cc), c(0xba5a36), c(0xd6bd98), c(0x8a5238))
+        for (b in 0 until 6) {
+            val by = ctr.y - 320f * k + b * 110f * k
+            drawRect(
+                brush = Brush.verticalGradient(listOf(bandColors[b], bandColors[(b + 1) % 6])),
+                topLeft = Offset(0f, by), size = Size(size.width, 110f * k),
+            )
+        }
+
+        // Great Red Spot storm oval
+        val sw = 220f * k; val sh = 130f * k
+        rotate(-6f, pivot = ctr) {
+            // Outer wind envelope
+            drawOval(
+                brush = Brush.radialGradient(0f to c(0xff5230), 0.65f to c(0xc23b1e), 1f to c(0x731a0a), center = ctr, radius = sw * 1.2f),
+                topLeft = Offset(ctr.x - sw, ctr.y - sh), size = Size(sw * 2f, sh * 2f),
+            )
+
+            // Swirling counter-rotating spiral wind rings
+            rotate(-t * 22f, pivot = ctr) {
+                for (r in 1..3) {
+                    val rw = sw * (0.3f + r * 0.22f); val rh = sh * (0.3f + r * 0.22f)
+                    drawOval(
+                        color = c(0xffcb9e).copy(alpha = 0.5f),
+                        topLeft = Offset(ctr.x - rw, ctr.y - rh), size = Size(rw * 2f, rh * 2f),
+                        style = Stroke(width = 6f * k, pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f * k, 15f * k))),
+                    )
+                }
+            }
+
+            // High-altitude eye of the storm
+            drawOval(
+                color = c(0xfff0e0),
+                topLeft = Offset(ctr.x - sw * 0.25f, ctr.y - sh * 0.25f), size = Size(sw * 0.5f, sh * 0.5f),
+            )
+        }
+    }
+
+    Eyebrow("The Great Red Spot · Jupiter", accent, 200f, e1)
+    Head(headline("A storm older\nthan ", "memory", "."), 80f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("Raging for over 350 years, this anticyclonic storm is ", "wider than planet Earth", "."))
+}
+
+// ───────────────────── Betelgeuse ─────────────────────
+
+@Composable
+fun BoxScope.SpBetelgeuse(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xff6040)
+    val cx = 540f; val cy = 1020f; val r = 240f
+    val pulse = 1f + 0.04f * sin(t * 3f)
+    val appear = reveal(t, 0.5f, dur = 1.2f).opacity
+
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+        val rk = r * k * pulse
+
+        // Expanding outer dust/gas ejected shell
+        drawCircle(
+            brush = Brush.radialGradient(0f to c(0xff4a18).copy(alpha = 0.4f), 1f to Color.Transparent, center = ctr, radius = rk * 1.8f),
+            radius = rk * 1.8f, center = ctr,
+        )
+
+        // Betelgeuse — boiling red supergiant surface
+        drawCircle(
+            brush = Brush.radialGradient(
+                0f to c(0xffffff), 0.35f to c(0xffab38), 0.7f to c(0xeb3d14), 1f to c(0x731002),
+                center = Offset(ctr.x - rk * 0.2f, ctr.y - rk * 0.2f), radius = rk * 1.2f,
+            ),
+            radius = rk, center = ctr,
+        )
+
+        // Swirling surface convection cells
+        for (i in 0 until 6) {
+            val ang = i * 60f * (SP_TAU / 360f) + t * 0.2f
+            val cellCenter = Offset(ctr.x + cos(ang) * rk * 0.55f, ctr.y + sin(ang) * rk * 0.55f)
+            drawCircle(
+                brush = Brush.radialGradient(0f to c(0xfff48a).copy(alpha = 0.6f), 1f to Color.Transparent, center = cellCenter, radius = rk * 0.35f),
+                radius = rk * 0.35f, center = cellCenter,
+            )
+        }
+
+        // Swallowed planetary orbits overlaid (Mars orbit comparison)
+        val orbitR = rk * 0.82f
+        drawCircle(c(0xffffff).copy(alpha = 0.45f), radius = orbitR, center = ctr, style = Stroke(width = 2f * k, pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f * k, 10f * k))))
+    }
+
+    CenterLabel(cx, cy + 280f, reveal(t, 2.2f).opacity) {
+        Text("ORBIT OF MARS (SWALLOWED)", style = spLabel(15f, accent))
+    }
+
+    Eyebrow("Betelgeuse · Orion", accent, 200f, e1)
+    Head(headline("A giant on the\nbrink of ", "destruction", "."), 80f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("So immense it would swallow Mars, this dying supergiant will soon ", "detonate as a supernova", "."))
+}
+
+// ───────────────────── Fast Radio Bursts ─────────────────────
+
+@Composable
+fun BoxScope.SpFrb(t: Float, duration: Float) = SceneFade(t, duration) {
+    val e1 = reveal(t, 0.3f); val e2 = reveal(t, 0.8f)
+    val accent = c(0xc480ff)
+    val cx = 540f; val cy = 980f
+    val appear = reveal(t, 0.5f, dur = 1.2f).opacity
+
+    Canvas(Modifier.fillMaxSize().alpha(appear)) {
+        val k = size.width / 1080f
+        val ctr = Offset(cx * k, cy * k)
+
+        // Expanding radio burst shockwaves
+        for (w in 0 until 4) {
+            val waveR = ((t * 220f + w * 120f) % 480f) * k
+            val waveAlpha = (1f - waveR / (480f * k)).coerceIn(0f, 1f)
+            drawCircle(
+                color = c(0xd699ff).copy(alpha = waveAlpha * 0.7f),
+                radius = waveR, center = ctr, style = Stroke(width = 4f * k),
+            )
+        }
+
+        // High-energy directed radio beam
+        rotate(35f + sin(t * 0.5f) * 8f, pivot = ctr) {
+            val beamPath = Path().apply {
+                moveTo(ctr.x - 12f * k, ctr.y)
+                lineTo(ctr.x + 12f * k, ctr.y)
+                lineTo(ctr.x + 220f * k, ctr.y - 500f * k)
+                lineTo(ctr.x - 220f * k, ctr.y - 500f * k)
+                close()
+            }
+            drawPath(
+                beamPath,
+                brush = Brush.linearGradient(
+                    listOf(c(0xffffff), c(0xc480ff).copy(alpha = 0.5f), Color.Transparent),
+                    start = ctr, end = Offset(ctr.x, ctr.y - 500f * k),
+                ),
+            )
+        }
+
+        // Magnetar core — ultra-dense compact engine
+        drawCircle(
+            brush = Brush.radialGradient(0f to c(0xffffff), 0.4f to c(0xebafff), 1f to Color.Transparent, center = ctr, radius = 90f * k),
+            radius = 90f * k, center = ctr,
+        )
+        drawCircle(c(0xffffff), radius = 22f * k, center = ctr)
+    }
+
+    Eyebrow("Fast Radio Bursts · deep space", accent, 200f, e1)
+    Head(headline("Millisecond blasts\nof pure ", "energy", "."), 80f, 246f, e2)
+    BottomLine(1648f, reveal(t, 5.5f), body("In one millisecond, an FRB discharges as much energy as ", "our Sun generates in three days", "."))
+}
