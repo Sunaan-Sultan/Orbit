@@ -167,6 +167,15 @@ private fun DrawScope.drawIcon(name: String, color: Color, filled: Boolean, sw: 
                 moveTo(13.7f, 10.5f); lineTo(13.4f, 16.8f)
             }
         }
+        "external" -> {
+            strokePath(color, sw) {
+                moveTo(14f, 4f); lineTo(20f, 4f); lineTo(20f, 10f)
+                moveTo(20f, 4f); lineTo(11f, 13f)
+            }
+            strokePath(color, sw) {
+                moveTo(18f, 14.5f); lineTo(18f, 19f); lineTo(5f, 19f); lineTo(5f, 6f); lineTo(9.5f, 6f)
+            }
+        }
         "spotlight" -> {
             // Four-point sparkle: a large star with a small companion.
             val big = Path().apply {

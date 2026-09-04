@@ -2,7 +2,7 @@
 
 Release notes for **Orbit** (`com.orbit.starsystems`).
 
-Current version in source: **2.6** (versionCode 26) — see `app/build.gradle.kts`.
+Current version in source: **2.7** (versionCode 27) — see `app/build.gradle.kts`.
 
 > **How this file is maintained**
 > - The top section is always the **next** release: work that is merged but not yet live on Google Play.
@@ -13,26 +13,35 @@ Current version in source: **2.6** (versionCode 26) — see `app/build.gradle.kt
 
 ---
 
-## 2.6 — Unreleased
+## 2.7 — Unreleased
+
+**Headline:** Check the source yourself
+
+- **Source links on Solar System facts** — the Learn More sheet now has a **Read the source** button that opens the exact page a fact came from, in a reader inside the app. Tap the corner icon to hand it off to your browser. All 16 Sol facts are linked; the other systems follow.
+- The source credit under each fact now names its real source instead of a fixed "NASA / ESA" label.
+
+### Play Store copy
+
+```
+Don't just take our word for it.
+
+Every Solar System fact now has a Read the source button in Learn More — it opens the exact NASA or Wikipedia page the fact came from, right inside the app.
+
+• All 16 Solar System facts linked to a verified source
+• Read without leaving Orbit, or hand off to your browser
+• Each fact now credits its real source
+
+More systems get source links in the next updates.
+```
+
+---
+
+## 2.6 — Shipped 2026-09-04
 
 **Headline:** One new system
 
 - **Wolf 359** — one of the smallest stars known, and the fifth-closest system to the Sun. Twelve facts across four chapters, each with its own animated scene: its hiding place in Leo, a Sun/Jupiter size comparison, its blackbody spectrum against the Sun's, a magnitude ladder, its lifespan on a log timeline, its flares, Max Wolf's photographic plates, the two candidate planets, the week-wide habitable zone, our own Sun seen from its sky, the Star Trek battle, and the distance ladder.
 - Wolf 359 removed from the locked **More systems** list now that it is explorable.
-
-### Play Store copy
-
-```
-Wolf 359 has joined the library — one of the smallest stars we know of, and one of the closest.
-
-Twelve new facts, each with its own animation:
-• Why a neighbour eight light-years away is still invisible without a telescope
-• A habitable zone only days wide
-• The two planets that may not be there at all
-• Our own Sun, seen from its sky
-```
-
----
 
 ## 2.5 — Shipped 2026-09-03
 

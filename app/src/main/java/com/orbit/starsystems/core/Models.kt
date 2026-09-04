@@ -51,6 +51,11 @@ data class StarSystem(
     val color: List<Color>,
 )
 
+data class FactSource(
+    val name: String,
+    val url: String,
+)
+
 /** A single celestial fact: its scene, copy, detail-sheet stats, and owning system. */
 data class Fact(
     val id: String,
@@ -65,6 +70,7 @@ data class Fact(
     val stats: List<Pair<String, String>>,
     val sys: String,
     val musicResId: Int? = null,
+    val source: FactSource? = null,
 )
 
 /** Header copy for a featured/explorable system. */

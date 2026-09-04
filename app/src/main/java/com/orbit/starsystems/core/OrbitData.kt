@@ -58,10 +58,10 @@ object OrbitData {
                 val id = o.getString("id")
                 meta[id] = o.getJSONObject("meta").toSysMeta()
                 cards += o.getJSONObject("featured").toFeatured(id)
-                facts[id] = parseArray(read(o.getString("factsFile"))) { it.toFact(id) }
+                facts[id] = parseFacts(read(o.getString("factsFile")), id)
             }
             // Spotlight is loaded as its own system but kept out of the explorable lists.
-            facts[SPOTLIGHT] = parseArray(read("facts/spotlight.json")) { it.toFact(SPOTLIGHT) }
+            facts[SPOTLIGHT] = parseFacts(read("facts/spotlight.json"), SPOTLIGHT)
 
             sysMeta = meta
             featured = cards
@@ -83,6 +83,11 @@ object OrbitData {
 
     private inline fun <T> parseArray(arr: JSONArray, map: (JSONObject) -> T): List<T> =
         (0 until arr.length()).map { map(arr.getJSONObject(it)) }
+
+    private fun parseFacts(json: String, sys: String): List<Fact> {
+        val arr = JSONArray(json)
+        return (0 until arr.length()).map { arr.getJSONObject(it).toFact(sys, it + 1) }
+    }
 
     /** A 6-hex string is opaque RGB; an 8-hex string is taken as full ARGB (used for glows). */
     private fun color(s: String): Color {
@@ -135,7 +140,7 @@ object OrbitData {
         color = colorList("colors"),
     )
 
-    private fun JSONObject.toFact(sys: String): Fact {
+    private fun JSONObject.toFact(sys: String, num: Int): Fact {
         val stats = getJSONArray("stats")
         return Fact(
             id = getString("id"),
@@ -153,6 +158,7 @@ object OrbitData {
             },
             sys = sys,
             musicResId = optString("music").takeIf { it.isNotEmpty() }?.let { MUSIC[it] },
+            source = SourceManager.sourceFor(sys, num),
         )
     }
 

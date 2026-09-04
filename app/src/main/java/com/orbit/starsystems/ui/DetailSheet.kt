@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.orbit.starsystems.core.ALL_FACTS
 import com.orbit.starsystems.core.Fact
+import com.orbit.starsystems.core.SourceManager
 
 @Composable
 fun DetailSheet(
@@ -47,6 +49,7 @@ fun DetailSheet(
     onJump: (String) -> Unit,
     isSaved: Boolean,
     onToggleSave: () -> Unit,
+    onOpenSource: (String) -> Unit,
 ) {
     // Related facts: prefer same system + category, then same system, then anything.
     val related = remember(fact.id) {
@@ -87,7 +90,8 @@ fun DetailSheet(
                 ) { Ico("close", size = 18.dp, color = Color.White, sw = 2f) }
             }
             Column(
-                Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 22.dp, end = 22.dp, top = 14.dp, bottom = 24.dp),
+                Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding()
+                    .padding(start = 22.dp, end = 22.dp, top = 14.dp, bottom = 24.dp),
             ) {
                 Text(fact.cat.uppercase(), style = ts(12f, FontWeight.SemiBold, fact.accent, 0.12f))
                 Text(fact.title, style = ts(34f, FontWeight.Bold, Color.White, -0.02f, lineHeight = 36f), modifier = Modifier.padding(top = 6.dp))
@@ -116,7 +120,28 @@ fun DetailSheet(
                 ) {
                     Text(if (isSaved) "Saved ✓" else "Save fact", style = ts(15f, FontWeight.SemiBold, if (isSaved) Color.Black else Color.White))
                 }
-                Text("Source · NASA / ESA", style = ts(12f, color = Color(0xFF5A5A5A)), modifier = Modifier.padding(top = 16.dp))
+                fact.source?.let { src ->
+                    Spacer(Modifier.height(10.dp))
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(1.dp, fact.accent.copy(alpha = 0.45f), RoundedCornerShape(12.dp))
+                            .clickable { onOpenSource(src.url) }
+                            .padding(vertical = 13.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text("Read the source", style = ts(15f, FontWeight.SemiBold, fact.accent))
+                        Spacer(Modifier.width(8.dp))
+                        Ico("external", size = 15.dp, color = fact.accent, sw = 2f)
+                    }
+                }
+                Text(
+                    "Source · ${fact.source?.name ?: SourceManager.FALLBACK_NAME}",
+                    style = ts(12f, color = Color(0xFF5A5A5A)),
+                    modifier = Modifier.padding(top = 16.dp),
+                )
                 Text("KEEP EXPLORING", style = ts(13f, FontWeight.SemiBold, Dim, 0.08f), modifier = Modifier.padding(top = 26.dp, bottom = 12.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     related.forEach { r ->

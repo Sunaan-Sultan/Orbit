@@ -49,6 +49,7 @@ import com.orbit.starsystems.ui.FactScreen
 import com.orbit.starsystems.ui.OrbitFont
 import com.orbit.starsystems.ui.ProfileScreen
 import com.orbit.starsystems.ui.SavedScreen
+import com.orbit.starsystems.ui.SourceWebScreen
 import com.orbit.starsystems.ui.SpotlightScreen
 import com.orbit.starsystems.ui.SystemExplore
 import com.orbit.starsystems.ui.SystemsList
@@ -63,6 +64,7 @@ fun OrbitApp() {
     var paused by remember { mutableStateOf(false) }
     var saved by remember { mutableStateOf(OrbitPrefs.saved) }
     var sheet by remember { mutableStateOf(false) }
+    var sourceUrl by remember { mutableStateOf<String?>(null) }
     var toast by remember { mutableStateOf<String?>(null) }
     var viewed by remember { mutableStateOf(OrbitPrefs.viewed) }
     var barVisible by remember { mutableStateOf(true) }
@@ -131,12 +133,13 @@ fun OrbitApp() {
     }
 
     fun openFact(id: String) {
-        withAd { factId = id; paused = false; sheet = false; viewed = viewed + id }
+        withAd { factId = id; paused = false; sheet = false; sourceUrl = null; viewed = viewed + id }
     }
 
     // Leave the fact player, surfacing an interstitial at the shared cap.
     fun exitPlayer() {
         sheet = false
+        sourceUrl = null
         withAd { factId = null }
     }
 
@@ -244,7 +247,12 @@ fun OrbitApp() {
             onJump = { sheet = false; openFact(it) },
             isSaved = saved.contains(curFact.id),
             onToggleSave = { toggleSave(curFact.id) },
+            onOpenSource = { sourceUrl = it },
         )
+
+        sourceUrl?.let { url ->
+            SourceWebScreen(url = url, accent = curFact.accent, onClose = { sourceUrl = null })
+        }
 
         toast?.let { msg ->
             Box(

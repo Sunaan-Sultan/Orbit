@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.UpdateAvailability
@@ -145,6 +146,19 @@ object AppActions {
                 Log.w(TAG, "Update check failed: ${e.message}")
                 onResult("Couldn't reach the Play Store")
             }
+    }
+
+    fun openExternal(context: Context, url: String) {
+        val uri = url.toUri()
+        val tab = CustomTabsIntent.Builder()
+            .setShowTitle(true)
+            .build()
+            .intent
+            .setData(uri)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (start(context, tab)) return
+        val view = Intent(Intent.ACTION_VIEW, uri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (!start(context, view)) toast(context, "No browser available to open this page.")
     }
 
     private fun copyToClipboard(context: Context, text: String) {

@@ -44,9 +44,13 @@ import com.orbit.starsystems.core.factsForSys
  * are looked up in the catalog, so the cards stay in step with the content in assets/.
  */
 private object Release {
-    const val HEADLINE = "One new system"
-    val NEW_SYSTEMS = listOf("wolf")
-    val ALSO = emptyList<String>()
+    const val HEADLINE = "Check the source yourself"
+    val NEW_SYSTEMS = emptyList<String>()
+    val ALSO = listOf(
+        "Solar System facts now have a Read the source button in Learn More — it opens the exact page the fact came from, inside the app.",
+        "Tap the corner icon to hand the page off to your browser.",
+        "Each fact now credits its real source instead of a fixed label.",
+    )
 }
 
 /**
@@ -100,17 +104,23 @@ fun WhatsNewSheet(open: Boolean, onClose: () -> Unit, onOpenSystem: (String) -> 
                     modifier = Modifier.padding(top = 6.dp),
                 )
                 Text(
-                    "Freshly charted and ready to explore.",
+                    if (Release.NEW_SYSTEMS.isEmpty()) {
+                        "Here's what changed in this update."
+                    } else {
+                        "Freshly charted and ready to explore."
+                    },
                     style = ts(15f, FontWeight.Light, Color(0xFFCFCFCF), lineHeight = 24f),
                     modifier = Modifier.padding(top = 10.dp),
                 )
-                Spacer(Modifier.height(20.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Release.NEW_SYSTEMS.forEach { id -> NewSystemCard(id, onOpen = { onOpenSystem(id) }) }
+                if (Release.NEW_SYSTEMS.isNotEmpty()) {
+                    Spacer(Modifier.height(20.dp))
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Release.NEW_SYSTEMS.forEach { id -> NewSystemCard(id, onOpen = { onOpenSystem(id) }) }
+                    }
                 }
                 if (Release.ALSO.isNotEmpty()) {
                     Text(
-                        "ALSO IN THIS UPDATE",
+                        if (Release.NEW_SYSTEMS.isEmpty()) "IN THIS UPDATE" else "ALSO IN THIS UPDATE",
                         style = ts(12f, FontWeight.SemiBold, Dim, 0.12f),
                         modifier = Modifier.padding(top = 26.dp, bottom = 10.dp),
                     )

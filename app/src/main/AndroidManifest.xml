@@ -5,6 +5,13 @@
     <!-- Required by Google Mobile Ads SDK to read the advertising ID; without it
          Play zeroes out the ad ID, breaking ad targeting/analytics. -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <queries>
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
+    </queries>
 
     <application
         android:allowBackup="true"
