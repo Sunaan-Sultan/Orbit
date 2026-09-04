@@ -59,20 +59,20 @@ fun FactScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(fact.id, isActive, lifecycleOwner) {
-        if (!isActive) return@DisposableEffect onDispose {}
-        val resId = fact.musicResId
-        if (resId == null) return@DisposableEffect onDispose {}
 
-        val mp = MediaPlayer.create(context, resId).apply {
-            isLooping = true
-            start()
-        }
+    val mp = remember(fact.id, isActive) {
+        if (!isActive) return@remember null
+        val resId = fact.musicResId ?: return@remember null
+        MediaPlayer.create(context, resId).apply { isLooping = true }
+    }
+
+    DisposableEffect(mp, lifecycleOwner) {
+        if (mp == null) return@DisposableEffect onDispose {}
 
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_PAUSE -> mp.pause()
-                Lifecycle.Event.ON_RESUME -> mp.start()
+                Lifecycle.Event.ON_RESUME -> if (!paused) mp.start()
                 else -> {}
             }
         }
@@ -83,6 +83,10 @@ fun FactScreen(
             mp.stop()
             mp.release()
         }
+    }
+
+    LaunchedEffect(mp, paused) {
+        if (paused) mp?.pause() else mp?.start()
     }
 
     // Looping clock (0 → dur) driving the top progress bar; restarts per fact, only ticks while active.

@@ -93,7 +93,7 @@ private const val STEP_DUR = 4.4f          // seconds spent gliding between two 
 private const val END_HOLD = 2.2f          // pause on the final object before looping
 
 @Composable
-fun ComparisonScreen() {
+fun ComparisonScreen(externalPaused: Boolean = false) {
     val n = COMP_OBJECTS.size
     val activity = LocalContext.current as? android.app.Activity
 
@@ -103,14 +103,14 @@ fun ComparisonScreen() {
     var pos by remember { mutableFloatStateOf(0f) }
     var paused by remember { mutableStateOf(false) }
     var endHold by remember { mutableFloatStateOf(0f) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(externalPaused) {
         var last = withFrameNanos { it }
         while (true) {
             val now = withFrameNanos { it }
             val dt = (now - last) / 1_000_000_000f
             last = now
             clock += dt
-            if (!paused) {
+            if (!paused && !externalPaused) {
                 if (pos >= n - 1f) {
                     // hold on the final object, then — the fly-through is complete —
                     // offer an interstitial (shared frequency cap, so not every loop)
@@ -144,7 +144,7 @@ fun ComparisonScreen() {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_PAUSE -> music?.takeIf { it.isPlaying }?.pause()
-                Lifecycle.Event.ON_RESUME -> if (!paused) music?.start()
+                Lifecycle.Event.ON_RESUME -> if (!paused && !externalPaused) music?.start()
                 else -> {}
             }
         }
@@ -156,8 +156,8 @@ fun ComparisonScreen() {
         }
     }
     // mirror the tap-to-pause state onto the music
-    LaunchedEffect(paused) {
-        if (paused) music?.takeIf { it.isPlaying }?.pause() else music?.start()
+    LaunchedEffect(paused, externalPaused) {
+        if (paused || externalPaused) music?.takeIf { it.isPlaying }?.pause() else music?.start()
     }
 
     // gentle fade at the loop seam only while auto-playing; held steady when paused

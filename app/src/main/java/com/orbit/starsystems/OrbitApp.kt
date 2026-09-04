@@ -148,8 +148,9 @@ fun SpaceFactsApp() {
     }
 
     // Unwind the in-app navigation stack on system back before letting the OS exit.
-    BackHandler(enabled = sheet || factId != null || openSys != null || tab != "systems") {
+    BackHandler(enabled = sourceUrl != null || sheet || factId != null || openSys != null || tab != "systems") {
         when {
+            sourceUrl != null -> sourceUrl = null
             sheet -> sheet = false
             factId != null -> exitPlayer()
             openSys != null -> openSys = null
@@ -194,7 +195,7 @@ fun SpaceFactsApp() {
                 val f = pagerFacts[page]
                 FactScreen(
                     fact = f,
-                    paused = paused,
+                    paused = paused || sheet || sourceUrl != null || whatsNew,
                     isActive = factId == f.id,
                     onTogglePause = { paused = !paused },
                     onBack = { exitPlayer() },
@@ -219,7 +220,7 @@ fun SpaceFactsApp() {
                         }
                     }
                     "spotlight" -> SpotlightScreen(onOpen = { openFact(it) })
-                    "compare" -> ComparisonScreen()
+                    "compare" -> ComparisonScreen(externalPaused = whatsNew || sourceUrl != null)
                     "saved" -> SavedScreen(saved = saved, onOpen = { openFact(it) })
                     "you" -> ProfileScreen(
                         savedCount = saved.size,
