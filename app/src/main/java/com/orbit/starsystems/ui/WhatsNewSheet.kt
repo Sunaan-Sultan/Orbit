@@ -47,7 +47,7 @@ private object Release {
     const val HEADLINE = "Check the source yourself"
     val NEW_SYSTEMS = emptyList<String>()
     val ALSO = listOf(
-        "Solar System facts now have a Read the source button in Learn More — it opens the exact page the fact came from, inside the app.",
+        "Every fact in Orbit now has a Read the source button in Learn More — it opens the exact page the fact came from, inside the app.",
         "Tap the corner icon to hand the page off to your browser.",
         "Each fact now credits its real source instead of a fixed label.",
     )
