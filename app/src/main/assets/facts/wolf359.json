@@ -1,0 +1,194 @@
+[
+  {
+    "id": "wf_intro",
+    "cat": "The Star",
+    "accent": "e0503c",
+    "scene": "WF_INTRO",
+    "hero": 4.6,
+    "title": "The Faintest Star Next Door",
+    "sub": "Fifth-closest system to the Sun",
+    "blurb": "Just under eight light-years away, inside the hindquarters of Leo, burns one of the smallest stars we know of. Only Alpha Centauri, Barnard's Star and two dim brown-dwarf systems lie closer — and yet nothing was ever recorded at this spot until 1918.",
+    "stats": [
+      ["Distance", "7.86 light-years"],
+      ["Type", "Red dwarf (M6V)"],
+      ["Constellation", "Leo"]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "wf_tiny",
+    "cat": "The Star",
+    "accent": "ff8a4a",
+    "scene": "WF_TINY",
+    "hero": 4.4,
+    "title": "Barely a Star at All",
+    "sub": "Nine per cent of a Sun",
+    "blurb": "Wolf 359 packs about 9% of the Sun's mass into 16% of its width — roughly ninety Jupiters squeezed into a ball only about half again as wide as Jupiter itself. A little less mass than this and hydrogen would never have caught fire at all.",
+    "stats": [
+      ["Mass", "0.09 × Sun"],
+      ["Radius", "≈ 0.16 × Sun"],
+      ["Width", "≈ 1.5 × Jupiter"]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "wf_ember",
+    "cat": "The Star",
+    "accent": "ff6a3c",
+    "scene": "WF_EMBER",
+    "hero": 5.0,
+    "title": "A 2,800-Degree Ember",
+    "sub": "Most of its light is invisible",
+    "blurb": "Its surface sits near 2,800 K — cool enough to glow deep red and pour nearly all of its energy out as infrared heat rather than light. Counted in visible light alone it manages about a hundred-thousandth of the Sun; counting the heat as well, still only about a thousandth.",
+    "stats": [
+      ["Surface", "≈ 2,800 K"],
+      ["Visible light", "≈ 1/100,000 of the Sun"],
+      ["Total output", "≈ 1/1,000 of the Sun"]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "wf_invisible",
+    "cat": "The Star",
+    "accent": "9aa8ff",
+    "scene": "WF_INVISIBLE",
+    "hero": 4.8,
+    "title": "You Will Need a Telescope",
+    "sub": "Magnitude 13.5, from eight light-years",
+    "blurb": "At magnitude 13.5 Wolf 359 is some six hundred times too faint for the unaided eye, and well past what binoculars can reach. You want something around 20 cm of aperture before one of the Sun's nearest neighbours shows itself at all.",
+    "stats": [
+      ["Brightness", "Magnitude 13.5"],
+      ["Naked-eye limit", "Magnitude 6.5"],
+      ["Needs", "≈ 20 cm telescope"]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "wf_young",
+    "cat": "The Star",
+    "accent": "7fd0e8",
+    "scene": "WF_YOUNG",
+    "hero": 5.2,
+    "title": "Young, and Nearly Immortal",
+    "sub": "Barely started, with trillions to go",
+    "blurb": "Everything about it — its spin, its temper, its chemistry — says Wolf 359 is young, likely under a billion years old. But a dwarf this small sips its fuel so slowly that it should still be burning trillions of years from now, long after the Sun has gone out.",
+    "stats": [
+      ["Age", "Under 1 billion years"],
+      ["The Sun", "4.6 billion years"],
+      ["Lifespan", "Trillions of years"]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "wf_flare",
+    "cat": "The Star",
+    "accent": "ffd15a",
+    "scene": "WF_FLARE",
+    "hero": 3.4,
+    "title": "CN Leonis Erupts",
+    "sub": "One of the busiest flare stars we know",
+    "blurb": "Under its variable-star name, CN Leonis, Wolf 359 is among the most restless flare stars in the sky. Magnetic outbursts brighten it sharply within minutes and wash X-rays and ultraviolet over everything nearby, then fade just as fast — several times in a single day.",
+    "stats": [
+      ["Variable name", "CN Leonis"],
+      ["Flare rise", "Minutes"],
+      ["Emission", "Optical · UV · X-ray"]
+    ],
+    "music": "music6"
+  },
+  {
+    "id": "wf_maybe",
+    "cat": "The Planets",
+    "accent": "8fe0b4",
+    "scene": "WF_MAYBE",
+    "hero": 4.4,
+    "title": "Two Worlds, Maybe",
+    "sub": "Candidates, not confirmations",
+    "blurb": "A long watch of the star's spectrum turned up two possible planets in 2019: a warm one circling every 2.7 days, and a cold one taking about 2.7 years. Both are still only candidates — a star that flares this often can fake the very wobble that gives a planet away.",
+    "stats": [
+      ["Candidates", "Two, b and c"],
+      ["Inner period", "≈ 2.7 days"],
+      ["Outer period", "≈ 2.7 years"]
+    ],
+    "music": "music7"
+  },
+  {
+    "id": "wf_hugging",
+    "cat": "The Planets",
+    "accent": "6fd8a0",
+    "scene": "WF_HUGGING",
+    "hero": 4.9,
+    "title": "A Habitable Zone Days Wide",
+    "sub": "Warmth only a whisker from the star",
+    "blurb": "A star this faint keeps its temperate band absurdly close in — around 0.03 AU, a twelfth of Mercury's orbit. A world sitting there would round its sun in about a week, hold one face towards it forever, and take every flare full in the chest.",
+    "stats": [
+      ["Habitable zone", "≈ 0.02 – 0.04 AU"],
+      ["A year there", "≈ 1 week"],
+      ["Mercury, for scale", "0.39 AU"]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "wf_wolf",
+    "cat": "Our Neighbour",
+    "accent": "c8b48a",
+    "scene": "WF_WOLF",
+    "hero": 5.6,
+    "title": "Number 359",
+    "sub": "Max Wolf, 1918",
+    "blurb": "Max Wolf found it by laying photographic plates of the same patch of Leo side by side, years apart, hunting for the one speck of light that had shifted. It was the 359th entry in his catalogue of fast-moving stars, and the number never left it.",
+    "stats": [
+      ["Found", "1918 · Max Wolf"],
+      ["Method", "Photographic plates"],
+      ["Proper motion", "4.7 arcsec per year"]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "wf_oursun",
+    "cat": "Our Neighbour",
+    "accent": "ffd267",
+    "scene": "WF_OURSUN",
+    "hero": 5.0,
+    "title": "Our Sun, Seen From There",
+    "sub": "A modest star in Aquarius",
+    "blurb": "Stand on a world at Wolf 359 and the Sun is simply another star — magnitude 1.8, sitting in the patch of sky we call Aquarius, about as bright as Dubhe in the Plough. Notable on a clear night, and giving away nothing at all about who lives there.",
+    "stats": [
+      ["The Sun's brightness", "Magnitude 1.8"],
+      ["Where", "Constellation Aquarius"],
+      ["About as bright as", "Dubhe"]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "wf_distance",
+    "cat": "Our Neighbour",
+    "accent": "9cc4ec",
+    "scene": "WF_DISTANCE",
+    "hero": 4.4,
+    "title": "7.86 Light-Years",
+    "sub": "Fifth-closest system to the Sun",
+    "blurb": "Light setting out from Wolf 359 today arrives here just under eight years from now, having crossed some 74 trillion kilometres. Only Alpha Centauri, Barnard's Star and the brown dwarfs Luhman 16 and WISE 0855 sit between us and it.",
+    "stats": [
+      ["Distance", "7.86 light-years"],
+      ["In kilometres", "≈ 74 trillion"],
+      ["Rank", "5th-closest system"]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "wf_borg",
+    "cat": "In Our Stories",
+    "accent": "a8c4e8",
+    "scene": "WF_BORG",
+    "hero": 3.4,
+    "title": "The Battle That Never Was",
+    "sub": "Why the name sounds familiar",
+    "blurb": "Most people who know the name know it from television: a 1990 episode of Star Trek staged a catastrophic fleet battle here, losing thirty-nine ships, and chose this star precisely because it is real, close and utterly obscure. The star itself carried on regardless.",
+    "stats": [
+      ["From", "Star Trek: TNG, 1990"],
+      ["Fleet lost", "39 ships, in fiction"],
+      ["In reality", "One very small star"]
+    ],
+    "music": "music5"
+  }
+]

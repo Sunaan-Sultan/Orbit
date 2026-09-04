@@ -179,19 +179,29 @@
         "title": "Barnard's Star",
         "tagline": "The fastest star in our sky"
       }
+    },
+    {
+      "id": "wolf",
+      "factsFile": "facts/wolf359.json",
+      "meta": {
+        "label": "Wolf 359",
+        "eyebrow": "Faintest neighbour",
+        "eyebrowColor": "e0503c",
+        "title": "Wolf 359",
+        "blurb": "A red dwarf in the tail of Leo, 7.86 light-years away — one of the smallest stars known, too faint for the eye, and restless enough to flare several times a day."
+      },
+      "featured": {
+        "scene": "WF_TINY",
+        "dur": 9.4,
+        "hero": 4.4,
+        "pill": "Faintest neighbour",
+        "pillColor": "e0503c",
+        "title": "Wolf 359",
+        "tagline": "One of the smallest stars known"
+      }
     }
   ],
   "locked": [
-    {
-      "name": "Wolf 359",
-      "dist": "7.9 light-years",
-      "desc": "A dim red dwarf, one of the closest stars",
-      "colors": [
-        "ffd0b4",
-        "e07a52",
-        "8f3a26"
-      ]
-    },
     {
       "name": "Ross 128",
       "dist": "11 light-years",

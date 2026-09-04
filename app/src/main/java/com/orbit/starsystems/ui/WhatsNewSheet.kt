@@ -44,12 +44,9 @@ import com.orbit.starsystems.core.factsForSys
  * are looked up in the catalog, so the cards stay in step with the content in assets/.
  */
 private object Release {
-    const val HEADLINE = "Two new systems"
-    val NEW_SYSTEMS = listOf("55c", "bar")
-    val ALSO = listOf(
-        "A settings page on the You tab — reviews, support and app info",
-        "Your streak, saved facts and progress now survive between launches",
-    )
+    const val HEADLINE = "One new system"
+    val NEW_SYSTEMS = listOf("wolf")
+    val ALSO = emptyList<String>()
 }
 
 /**
