@@ -37,9 +37,6 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.orbit.starsystems.R
 import com.orbit.starsystems.core.CompKind
 import com.orbit.starsystems.core.OrbitData
@@ -102,13 +99,14 @@ fun ComparisonScreen(externalPaused: Boolean = false) {
     var paused by remember { mutableStateOf(false) }
     var endHold by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(externalPaused) {
+        if (externalPaused) return@LaunchedEffect
         var last = withFrameNanos { it }
         while (true) {
             val now = withFrameNanos { it }
-            val dt = (now - last) / 1_000_000_000f
+            val dt = ((now - last) / 1_000_000_000f).coerceIn(0f, MAX_FRAME_STEP)
             last = now
             clock += dt
-            if (!paused && !externalPaused) {
+            if (!paused) {
                 if (pos >= n - 1f) {
                     // hold on the final object, then fade-loop back to the start
                     endHold += dt
@@ -126,27 +124,24 @@ fun ComparisonScreen(externalPaused: Boolean = false) {
     // looping ambient music while this page is on screen; pauses with the app and with
     // the tap-to-pause state, and is released when the page leaves
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val appResumed by rememberAppResumed()
     val music = remember { MediaPlayer.create(context, R.raw.music1)?.apply { isLooping = true } }
-    DisposableEffect(lifecycleOwner) {
-        music?.start()
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_PAUSE -> music?.takeIf { it.isPlaying }?.pause()
-                Lifecycle.Event.ON_RESUME -> if (!paused && !externalPaused) music?.start()
-                else -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
+    DisposableEffect(music) {
         onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-            music?.stop()
-            music?.release()
+            music?.let {
+                if (it.isPlaying) it.stop()
+                it.release()
+            }
         }
     }
     // mirror the tap-to-pause state onto the music
-    LaunchedEffect(paused, externalPaused) {
-        if (paused || externalPaused) music?.takeIf { it.isPlaying }?.pause() else music?.start()
+    LaunchedEffect(music, paused, externalPaused, appResumed) {
+        val player = music ?: return@LaunchedEffect
+        if (paused || externalPaused || !appResumed) {
+            if (player.isPlaying) player.pause()
+        } else if (!player.isPlaying) {
+            player.start()
+        }
     }
 
     // gentle fade at the loop seam only while auto-playing; held steady when paused

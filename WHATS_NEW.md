@@ -22,6 +22,8 @@ Current version in source: **2.9** (versionCode 29) — see `app/build.gradle.kt
 - **No ad on the Compare fly-through.** The full-screen ad that appeared when the comparison animation finished a loop is gone — it interrupted without you having tapped anything.
 - **Ads while scrolling facts are rarer**, every two minutes instead of every one.
 - **Remove ads permanently** — a one-time purchase in the You tab turns off every ad in the app, banner and full-screen alike. Includes a **Restore purchase** button for a new device or reinstall.
+- **Fixed: “Keep exploring” links now actually open.** Tapping a related fact at the bottom of the Learn more sheet did nothing — the sheet closed but the fact behind it stayed put and went silent. It now jumps to the fact you picked.
+- **Fixed: facts no longer skip ahead behind a full-screen ad.** The scene animation, its progress bar and the music kept running underneath an ad, so a fact came back mid-way through — or on a completely different beat — once the ad closed. Everything now freezes the moment an ad appears and picks up exactly where it left off. The same applies to the Compare fly-through and to the music on any screen.
 
 ### Play Store copy
 

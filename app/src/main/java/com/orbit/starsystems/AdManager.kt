@@ -1,6 +1,9 @@
 package com.orbit.starsystems
 
 import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -14,7 +17,7 @@ object AdManager {
     // Shared frequency cap so every trigger point competes for the same slot and
     // ads never stack. Tune these knobs to trade revenue vs. user experience.
     private const val ACTIONS_PER_AD = 4         // show on every Nth eligible action
-    private const val MIN_INTERVAL_MS = 120_000L // ...but never more often than this
+    private const val MIN_INTERVAL_MS = 100_000L // ...but never more often than this
     private const val LAUNCH_GRACE_MS = 90_000L  // ...and never this soon after a launch
 
     private var actionsSinceAd = 0
@@ -39,11 +42,15 @@ object AdManager {
 
     val adsEnabled: Boolean get() = !BillingManager.isAdFree
 
+    var isAdShowing by mutableStateOf(false)
+        private set
+
     /** Restarts the launch grace period. Called once from MainActivity.onCreate. */
     fun startSession() {
         sessionStartedAt = System.currentTimeMillis()
         actionsSinceAd = 0
         lastShownAt = 0L
+        isAdShowing = false
     }
 
     fun loadInterstitial(context: Context) {
@@ -126,23 +133,27 @@ object AdManager {
     }
 
     fun showInterstitial(context: android.app.Activity, onAdDismissed: () -> Unit) {
-        if (interstitialAd != null) {
-            interstitialAd?.fullScreenContentCallback = object : com.google.android.gms.ads.FullScreenContentCallback() {
-                override fun onAdDismissedFullScreenContent() {
-                    interstitialAd = null
-                    loadInterstitial(context)
-                    onAdDismissed()
-                }
-
-                override fun onAdFailedToShowFullScreenContent(error: com.google.android.gms.ads.AdError) {
-                    interstitialAd = null
-                    onAdDismissed()
-                }
-            }
-            interstitialAd?.show(context)
-        } else {
+        val ad = interstitialAd
+        if (ad == null) {
             onAdDismissed()
+            return
         }
+        isAdShowing = true
+        ad.fullScreenContentCallback = object : com.google.android.gms.ads.FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                isAdShowing = false
+                interstitialAd = null
+                loadInterstitial(context)
+                onAdDismissed()
+            }
+
+            override fun onAdFailedToShowFullScreenContent(error: com.google.android.gms.ads.AdError) {
+                isAdShowing = false
+                interstitialAd = null
+                onAdDismissed()
+            }
+        }
+        ad.show(context)
     }
 
     /** Drops any cached ad the moment the user buys the entitlement. */

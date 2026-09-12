@@ -4,6 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -22,6 +28,22 @@ import com.orbit.starsystems.AdManager
 @Composable
 fun BannerAd(applyNavInset: Boolean, modifier: Modifier = Modifier) {
     val widthDp = LocalConfiguration.current.screenWidthDp
+    val appResumed by rememberAppResumed()
+    val adShowing = AdManager.isAdShowing
+    var adView by remember { mutableStateOf<AdView?>(null) }
+
+    LaunchedEffect(adView, appResumed, adShowing) {
+        val view = adView ?: return@LaunchedEffect
+        if (appResumed && !adShowing) view.resume() else view.pause()
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            adView?.destroy()
+            adView = null
+        }
+    }
+
     AndroidView(
         modifier = modifier
             .fillMaxWidth()
@@ -32,6 +54,7 @@ fun BannerAd(applyNavInset: Boolean, modifier: Modifier = Modifier) {
                 setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(ctx, widthDp))
                 adUnitId = AdManager.bannerId
                 loadAd(AdRequest.Builder().build())
+                adView = this
             }
         },
     )

@@ -36,9 +36,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.orbit.starsystems.core.Fact
 
 /**
@@ -58,7 +55,7 @@ fun FactScreen(
     onToggleSave: () -> Unit,
 ) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val appResumed by rememberAppResumed()
 
     val mp = remember(fact.id, isActive) {
         if (!isActive) return@remember null
@@ -66,27 +63,22 @@ fun FactScreen(
         MediaPlayer.create(context, resId).apply { isLooping = true }
     }
 
-    DisposableEffect(mp, lifecycleOwner) {
-        if (mp == null) return@DisposableEffect onDispose {}
-
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_PAUSE -> mp.pause()
-                Lifecycle.Event.ON_RESUME -> if (!paused) mp.start()
-                else -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
+    DisposableEffect(mp) {
         onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-            mp.stop()
-            mp.release()
+            mp?.let {
+                if (it.isPlaying) it.stop()
+                it.release()
+            }
         }
     }
 
-    LaunchedEffect(mp, paused) {
-        if (paused) mp?.pause() else mp?.start()
+    LaunchedEffect(mp, paused, appResumed) {
+        val player = mp ?: return@LaunchedEffect
+        if (paused || !appResumed) {
+            if (player.isPlaying) player.pause()
+        } else if (!player.isPlaying) {
+            player.start()
+        }
     }
 
     // Looping clock (0 → dur) driving the top progress bar; restarts per fact, only ticks while active.
@@ -96,7 +88,8 @@ fun FactScreen(
         var last = withFrameNanos { it }
         while (true) {
             val now = withFrameNanos { it }
-            clock = (clock + (now - last) / 1_000_000_000f).let { if (it >= fact.dur) it % fact.dur else it }
+            val dt = ((now - last) / 1_000_000_000f).coerceIn(0f, MAX_FRAME_STEP)
+            clock = (clock + dt).let { if (it >= fact.dur) it % fact.dur else it }
             last = now
         }
     }

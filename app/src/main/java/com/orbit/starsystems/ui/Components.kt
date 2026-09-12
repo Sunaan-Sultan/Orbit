@@ -20,9 +20,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
@@ -36,9 +39,34 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.orbit.starsystems.core.Fact
 import com.orbit.starsystems.core.SceneId
 import com.orbit.starsystems.scenes.RenderScene
+
+internal const val MAX_FRAME_STEP = 0.05f
+
+@Composable
+internal fun rememberAppResumed(): State<Boolean> {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val resumed = remember(lifecycleOwner) {
+        mutableStateOf(lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED))
+    }
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> resumed.value = true
+                Lifecycle.Event.ON_PAUSE -> resumed.value = false
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+    return resumed
+}
 
 /**
  * Plays a single scene on its own looping clock. When [active] flips on it restarts
@@ -62,7 +90,7 @@ fun MiniStage(
         var last = withFrameNanos { it }
         while (true) {
             val now = withFrameNanos { it }
-            val dt = (now - last) / 1_000_000_000f
+            val dt = ((now - last) / 1_000_000_000f).coerceIn(0f, MAX_FRAME_STEP)
             last = now
             time = (time + dt).let { if (it >= dur) it % dur else it }
         }

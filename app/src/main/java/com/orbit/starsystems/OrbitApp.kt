@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -90,6 +91,7 @@ fun SpaceFactsApp() {
 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val adShowing = AdManager.isAdShowing
 
     // Show the release notes once, on the first launch after an update. consumeWhatsNew
     // records the version as it answers, so re-running this (e.g. after a rotation)
@@ -171,7 +173,12 @@ fun SpaceFactsApp() {
             val initialPage = remember(pagerFacts) {
                 pagerFacts.indexOfFirst { it.id == factId }.coerceAtLeast(0)
             }
-            val pagerState = rememberPagerState(initialPage = initialPage) { pagerFacts.size }
+            val pagerState = key(pagerSys) { rememberPagerState(initialPage = initialPage) { pagerFacts.size } }
+
+            LaunchedEffect(factId, pagerFacts) {
+                val target = pagerFacts.indexOfFirst { it.id == factId }
+                if (target >= 0 && target != pagerState.currentPage) pagerState.scrollToPage(target)
+            }
 
             LaunchedEffect(pagerState) {
                 snapshotFlow { pagerState.currentPage }.collect { page ->
@@ -194,7 +201,7 @@ fun SpaceFactsApp() {
                 val f = pagerFacts[page]
                 FactScreen(
                     fact = f,
-                    paused = paused || sheet || sourceUrl != null || whatsNew,
+                    paused = paused || sheet || sourceUrl != null || whatsNew || adShowing,
                     isActive = factId == f.id,
                     onTogglePause = { paused = !paused },
                     onBack = { exitPlayer() },
@@ -219,7 +226,7 @@ fun SpaceFactsApp() {
                         }
                     }
                     "spotlight" -> SpotlightScreen(onOpen = { openFact(it) })
-                    "compare" -> ComparisonScreen(externalPaused = whatsNew || sourceUrl != null)
+                    "compare" -> ComparisonScreen(externalPaused = whatsNew || sourceUrl != null || adShowing)
                     "saved" -> SavedScreen(saved = saved, onOpen = { openFact(it) })
                     "you" -> ProfileScreen(
                         savedCount = saved.size,
