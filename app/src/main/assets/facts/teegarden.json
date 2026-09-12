@@ -1,0 +1,252 @@
+[
+  {
+    "id": "tg_intro",
+    "cat": "The Star",
+    "accent": "e8705a",
+    "scene": "TG_INTRO",
+    "hero": 5.4,
+    "title": "The Star We Almost Missed",
+    "sub": "One of our closest neighbours, found in 2003",
+    "blurb": "Twelve and a half light-years away, in the horns of Aries, sits one of the nearest stars to the Sun. It is so faint that generations of sky surveys passed straight over it, and it carried no name at all until 2003 — long after almost every other star in our neighbourhood had been catalogued.",
+    "stats": [
+      [
+        "Distance",
+        "12.5 light-years"
+      ],
+      [
+        "Type",
+        "Red dwarf (M7V)"
+      ],
+      [
+        "Constellation",
+        "Aries"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "tg_hidden",
+    "cat": "The Star",
+    "accent": "ffb27a",
+    "scene": "TG_HIDDEN",
+    "hero": 6.0,
+    "title": "Found in Old Data",
+    "sub": "Nobody looked — someone looked again",
+    "blurb": "It was not discovered by pointing a telescope at it. A team led by Bonnard Teegarden trawled back through archived images taken to track near-Earth asteroids, hunting for anything that shifted between frames. One faint dot moved far too fast to be distant. It had been sitting in that data for years.",
+    "stats": [
+      [
+        "Found",
+        "2003"
+      ],
+      [
+        "Method",
+        "Archived survey images"
+      ],
+      [
+        "Brightness",
+        "Magnitude 15.1"
+      ]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "tg_tiny",
+    "cat": "The Star",
+    "accent": "ff9a6a",
+    "scene": "TG_TINY",
+    "hero": 4.4,
+    "title": "Barely Wider Than Jupiter",
+    "sub": "A hundred Jupiters in one Jupiter's skin",
+    "blurb": "Teegarden's Star holds roughly nine per cent of the Sun's mass inside about eleven per cent of its width — around a hundred Jupiters crushed into a ball only a few per cent wider than Jupiter itself. A little less mass and its core would never have grown hot enough to fuse hydrogen at all.",
+    "stats": [
+      [
+        "Mass",
+        "0.09 × Sun"
+      ],
+      [
+        "Radius",
+        "≈ 0.11 × Sun"
+      ],
+      [
+        "Width",
+        "≈ 1.07 × Jupiter"
+      ]
+    ],
+    "music": "music3"
+  },
+  {
+    "id": "tg_ember",
+    "cat": "The Star",
+    "accent": "ff8a52",
+    "scene": "TG_EMBER",
+    "hero": 5.0,
+    "title": "A Thousand Times Fainter",
+    "sub": "An ember, not a furnace",
+    "blurb": "Its surface sits near 2,900 K — cool enough that the light it does give off is mostly infrared, invisible to us. In visible light it shines with under a thousandth of the Sun's output. That is why a star this close stayed hidden for so long: proximity counts for nothing when there is almost nothing to see.",
+    "stats": [
+      [
+        "Surface",
+        "≈ 2,900 K"
+      ],
+      [
+        "Luminosity",
+        "≈ 0.0007 × Sun"
+      ],
+      [
+        "Naked eye",
+        "Thousands of times too faint"
+      ]
+    ],
+    "music": "music4"
+  },
+  {
+    "id": "tg_ancient",
+    "cat": "The Star",
+    "accent": "c9a86a",
+    "scene": "TG_ANCIENT",
+    "hero": 5.4,
+    "title": "Older Than the Sun",
+    "sub": "Alight for about eight billion years",
+    "blurb": "Estimates put Teegarden's Star at roughly eight billion years old — already ancient when the Sun and Earth formed. And it has barely begun: a red dwarf this small burns its fuel so slowly that it will still be shining long after every star you can see tonight has died.",
+    "stats": [
+      [
+        "Age",
+        "≈ 8 billion years"
+      ],
+      [
+        "The Sun",
+        "4.6 billion years"
+      ],
+      [
+        "Lifespan",
+        "Trillions of years"
+      ]
+    ],
+    "music": "music5"
+  },
+  {
+    "id": "tg_worlds",
+    "cat": "The Planets",
+    "accent": "8fd6a8",
+    "scene": "TG_WORLDS",
+    "hero": 5.2,
+    "title": "Three Small Worlds",
+    "sub": "Not a gas giant among them",
+    "blurb": "Two planets were announced in 2019 and a third followed in 2024. Every one of them weighs about as much as Earth or a little less — an unusually tidy system of small rocky worlds, with nothing resembling Jupiter or Neptune found anywhere in it.",
+    "stats": [
+      [
+        "Known planets",
+        "3"
+      ],
+      [
+        "Heaviest",
+        "≈ 1.05 × Earth"
+      ],
+      [
+        "Lightest",
+        "≈ 0.82 × Earth"
+      ]
+    ],
+    "music": "music6"
+  },
+  {
+    "id": "tg_earthlike",
+    "cat": "The Planets",
+    "accent": "7fd6a0",
+    "scene": "TG_EARTHLIKE",
+    "hero": 5.6,
+    "title": "The Closest Match to Home",
+    "sub": "Teegarden b scores 0.95",
+    "blurb": "Astronomers rank worlds against Earth on a scale from 0 to 1 called the Earth Similarity Index, weighing size, density and temperature. Teegarden b came in at 0.95 — the highest any known planet has scored. It is a measure of resemblance, not of life, but nothing else has come closer.",
+    "stats": [
+      [
+        "Minimum mass",
+        "≈ 1.05 × Earth"
+      ],
+      [
+        "Earth Similarity",
+        "0.95"
+      ],
+      [
+        "Announced",
+        "2019"
+      ]
+    ],
+    "music": "music7"
+  },
+  {
+    "id": "tg_year",
+    "cat": "The Planets",
+    "accent": "ffc24a",
+    "scene": "TG_YEAR",
+    "hero": 4.8,
+    "title": "A Year in Under Five Days",
+    "sub": "The whole system fits inside Mercury's orbit",
+    "blurb": "The innermost world laps its star every 4.9 days; the outermost takes 26. Even the widest of the three orbits sits at under a tenth of the Earth–Sun distance — the entire system would disappear inside Mercury's orbit with room to spare. Around a star this cool, that is simply where the warmth is.",
+    "stats": [
+      [
+        "Teegarden b",
+        "4.9-day year"
+      ],
+      [
+        "Teegarden d",
+        "26-day year"
+      ],
+      [
+        "Widest orbit",
+        "≈ 0.09 AU"
+      ]
+    ],
+    "music": "music1"
+  },
+  {
+    "id": "tg_seen",
+    "cat": "Our Neighbour",
+    "accent": "9cc4ec",
+    "scene": "TG_SEEN",
+    "hero": 5.6,
+    "title": "They Could See Us",
+    "sub": "From there, Earth crosses the Sun",
+    "blurb": "Almost every planet we know was found by watching a star dim as a world passed in front of it — a trick that only works from the right angle. Teegarden's Star happens to lie in that narrow band for us. An observer there, watching our Sun, would see Earth cross its face and could find us exactly as we found them.",
+    "stats": [
+      [
+        "Our Sun from there",
+        "Magnitude 2.7"
+      ],
+      [
+        "Earth's transit dip",
+        "≈ 0.008%"
+      ],
+      [
+        "Position",
+        "Inside the Earth transit zone"
+      ]
+    ],
+    "music": "music2"
+  },
+  {
+    "id": "tg_distance",
+    "cat": "Our Neighbour",
+    "accent": "cfe0ff",
+    "scene": "TG_DISTANCE",
+    "hero": 5.4,
+    "title": "Twelve and a Half Light-Years",
+    "sub": "Close enough to be a neighbour",
+    "blurb": "At 12.5 light-years, Teegarden's Star is among the couple of dozen nearest systems to the Sun. Light leaving it now reaches us in the middle of the next decade — near enough that the next generation of telescopes may be able to sniff the air of its worlds directly.",
+    "stats": [
+      [
+        "Distance",
+        "12.5 light-years"
+      ],
+      [
+        "In parsecs",
+        "3.83 pc"
+      ],
+      [
+        "Rank",
+        "Around 24th nearest"
+      ]
+    ],
+    "music": "music3"
+  }
+]

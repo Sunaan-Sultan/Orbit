@@ -15,8 +15,10 @@ Current version in source: **2.9** (versionCode 29) — see `app/build.gradle.kt
 
 ## 2.9 — Unreleased
 
-**Headline:** Fewer ads, or none at all
+**Headline:** A new neighbour, and five new wonders
 
+- **A new system: Teegarden's Star.** Ten facts on the red dwarf 12.5 light-years away that nobody catalogued until 2003 — a star barely wider than Jupiter, around eight billion years old, with three small worlds packed inside Mercury's orbit. One of them, Teegarden b, is the closest match to Earth yet measured. And because the system sits in just the right patch of sky, anyone there watching our Sun would see Earth cross its face — they could find us the way we found them.
+- **Five new Spotlight facts** — Titan's methane rain, the Oort Cloud at the true edge of the Solar System, the gravitational waves from two colliding black holes, the interstellar visitor ʻOumuamua, and the oldest light in the universe.
 - **Ads are far less frequent.** The minimum gap between full-screen ads went from 40 seconds to 2 minutes, they now need four actions instead of two, and there are no ads at all in the first 90 seconds of a session.
 - **No more ad when you close a fact.** Opening and closing a fact used to be able to trigger two ads; now only opening one can.
 - **No ad on the Compare fly-through.** The full-screen ad that appeared when the comparison animation finished a loop is gone — it interrupted without you having tapped anything.
@@ -28,11 +30,13 @@ Current version in source: **2.9** (versionCode 29) — see `app/build.gradle.kt
 ### Play Store copy
 
 ```
-Fewer interruptions.
+A new neighbour, and five new wonders.
 
-Full-screen ads now appear at most once every two minutes instead of every forty seconds, and never in your first minute and a half. The ad when you closed a fact is gone, and so is the one that interrupted the Compare fly-through.
+Teegarden's Star joins the library: a red dwarf 12.5 light-years away, missed by every sky survey until 2003, with three small worlds — one of them the closest match to Earth yet measured.
 
-Prefer none at all? Remove ads is a one-time purchase in the You tab — it turns off every ad in the app, forever.
+Plus five new Spotlight facts: Titan, the Oort Cloud, gravitational waves, ʻOumuamua and the oldest light there is.
+
+Fewer interruptions, too — full-screen ads are far rarer, and Remove ads turns them off for good.
 ```
 
 ---

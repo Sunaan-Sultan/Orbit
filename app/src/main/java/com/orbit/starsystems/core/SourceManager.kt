@@ -109,6 +109,17 @@ object SourceManager {
         "wolf.11" to "https://en.wikipedia.org/wiki/List_of_nearest_stars",
         "wolf.12" to "https://en.wikipedia.org/wiki/The_Best_of_Both_Worlds_(Star_Trek:_The_Next_Generation)",
 
+        "teeg.1" to "https://en.wikipedia.org/wiki/Teegarden%27s_Star",
+        "teeg.2" to "https://en.wikipedia.org/wiki/Teegarden%27s_Star",
+        "teeg.3" to "https://en.wikipedia.org/wiki/Teegarden%27s_Star",
+        "teeg.4" to "https://en.wikipedia.org/wiki/Teegarden%27s_Star",
+        "teeg.5" to "https://en.wikipedia.org/wiki/Teegarden%27s_Star",
+        "teeg.6" to "https://en.wikipedia.org/wiki/Teegarden%27s_Star",
+        "teeg.7" to "https://en.wikipedia.org/wiki/Teegarden%27s_Star_b",
+        "teeg.8" to "https://en.wikipedia.org/wiki/Teegarden%27s_Star_b",
+        "teeg.9" to "https://en.wikipedia.org/wiki/Teegarden%27s_Star",
+        "teeg.10" to "https://en.wikipedia.org/wiki/List_of_nearest_stars",
+
         "spot.1" to "https://science.nasa.gov/mission/voyager/voyager-1/",
         "spot.2" to "https://en.wikipedia.org/wiki/Sun",
         "spot.3" to "https://www.nasa.gov/international-space-station/space-station-facts-and-figures/",
@@ -133,6 +144,11 @@ object SourceManager {
         "spot.22" to "https://science.nasa.gov/jupiter/facts/",
         "spot.23" to "https://en.wikipedia.org/wiki/Betelgeuse",
         "spot.24" to "https://en.wikipedia.org/wiki/Fast_radio_burst",
+        "spot.25" to "https://science.nasa.gov/saturn/moons/titan/",
+        "spot.26" to "https://science.nasa.gov/solar-system/oort-cloud/facts/",
+        "spot.27" to "https://en.wikipedia.org/wiki/GW150914",
+        "spot.28" to "https://en.wikipedia.org/wiki/%CA%BBOumuamua",
+        "spot.29" to "https://en.wikipedia.org/wiki/Cosmic_microwave_background",
     )
 
     private val PUBLISHERS: Map<String, String> = mapOf(

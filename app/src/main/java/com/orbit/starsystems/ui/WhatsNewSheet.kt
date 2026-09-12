@@ -44,12 +44,12 @@ import com.orbit.starsystems.core.factsForSys
  * are looked up in the catalog, so the cards stay in step with the content in assets/.
  */
 private object Release {
-    const val HEADLINE = "Check the source yourself"
-    val NEW_SYSTEMS = emptyList<String>()
+    const val HEADLINE = "A new neighbour, and five new wonders"
+    val NEW_SYSTEMS = listOf("teeg")
     val ALSO = listOf(
-        "Every fact in Space Facts now has a Read the source button in Learn More — it opens the exact page the fact came from, inside the app.",
-        "Tap the corner icon to hand the page off to your browser.",
-        "Each fact now credits its real source instead of a fixed label.",
+        "Five new Spotlight facts: Titan, the Oort Cloud, gravitational waves, ʻOumuamua and the oldest light in the universe.",
+        "Fewer interruptions — full-screen ads are far rarer, and Remove ads in the You tab turns them off for good.",
+        "Facts no longer skip ahead behind an ad: the animation and music now pause and pick up exactly where they left off.",
     )
 }
 

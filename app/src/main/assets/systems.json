@@ -199,6 +199,26 @@
         "title": "Wolf 359",
         "tagline": "One of the smallest stars known"
       }
+    },
+    {
+      "id": "teeg",
+      "factsFile": "facts/teegarden.json",
+      "meta": {
+        "label": "Teegarden's Star",
+        "eyebrow": "The hidden neighbour",
+        "eyebrowColor": "e8705a",
+        "title": "Teegarden's Star",
+        "blurb": "A red dwarf 12.5 light-years away that went uncatalogued until 2003 — now known to hold three small worlds, one of them the closest match to Earth yet measured."
+      },
+      "featured": {
+        "scene": "TG_EARTHLIKE",
+        "dur": 9.4,
+        "hero": 5.6,
+        "pill": "The hidden neighbour",
+        "pillColor": "e8705a",
+        "title": "Teegarden's Star",
+        "tagline": "The closest match to Earth"
+      }
     }
   ],
   "locked": [
@@ -220,16 +240,6 @@
         "fff0cc",
         "ffcf73",
         "b5853a"
-      ]
-    },
-    {
-      "name": "Teegarden's Star",
-      "dist": "12.5 light-years",
-      "desc": "An ancient dwarf with two Earth-mass planets",
-      "colors": [
-        "ffc9a0",
-        "d8643c",
-        "7a2c1c"
       ]
     },
     {
