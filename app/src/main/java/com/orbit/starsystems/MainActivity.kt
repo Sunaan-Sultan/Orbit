@@ -19,6 +19,7 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
+import com.orbit.starsystems.billing.BillingManager
 import com.orbit.starsystems.core.OrbitData
 import com.orbit.starsystems.core.OrbitPrefs
 import com.orbit.starsystems.ui.UpdateCheckSplash
@@ -80,8 +81,12 @@ class MainActivity : ComponentActivity() {
         OrbitPrefs.init(this)
         // Count this launch towards the daily streak before the UI reads it.
         OrbitPrefs.recordOpen()
-        MobileAds.initialize(this) {}
-        AdManager.loadInterstitial(this)
+        BillingManager.init(this)
+        AdManager.startSession()
+        if (AdManager.adsEnabled) {
+            MobileAds.initialize(this) {}
+            AdManager.loadInterstitial(this)
+        }
 
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkForImmediateUpdate()
@@ -105,6 +110,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Catches a purchase, refund or restore that happened outside the app.
+        BillingManager.refreshPurchases()
         if (!::appUpdateManager.isInitialized) return
         // If an immediate update was already running (e.g. the app was killed mid-update),
         // Play reports it as in progress — resume the flow so the user can't slip past it.

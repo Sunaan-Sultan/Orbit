@@ -5,19 +5,25 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.orbit.starsystems.billing.BillingManager
 
 object AdManager {
     private var interstitialAd: InterstitialAd? = null
+    private var loadInFlight = false
 
     // Shared frequency cap so every trigger point competes for the same slot and
-    // ads never stack. Tune these two knobs to trade revenue vs. user experience.
-    private const val ACTIONS_PER_AD = 2       // show on every Nth eligible action
-    private const val MIN_INTERVAL_MS = 40_000L // ...but never more often than this
+    // ads never stack. Tune these knobs to trade revenue vs. user experience.
+    private const val ACTIONS_PER_AD = 4         // show on every Nth eligible action
+    private const val MIN_INTERVAL_MS = 120_000L // ...but never more often than this
+    private const val LAUNCH_GRACE_MS = 90_000L  // ...and never this soon after a launch
+
     private var actionsSinceAd = 0
     private var lastShownAt = 0L
+    private var sessionStartedAt = System.currentTimeMillis()
 
-    // Toggle this for production
-    private const val USE_TEST_ADS = false
+    // Debug builds must never touch the live unit: a developer clicking real ads is
+    // what gets an AdMob account suspended.
+    private val useTestAds: Boolean get() = BuildConfig.DEBUG
 
     private const val REAL_INTERSTITIAL_ID = "ca-app-pub-9720007236604856/3193381376"
     private const val TEST_INTERSTITIAL_ID = "ca-app-pub-3940256099942544/1033173712"
@@ -26,12 +32,23 @@ object AdManager {
     private const val TEST_BANNER_ID = "ca-app-pub-3940256099942544/6300978111"
 
     private val interstitialId: String
-        get() = if (USE_TEST_ADS) TEST_INTERSTITIAL_ID else REAL_INTERSTITIAL_ID
+        get() = if (useTestAds) TEST_INTERSTITIAL_ID else REAL_INTERSTITIAL_ID
 
     val bannerId: String
-        get() = if (USE_TEST_ADS) TEST_BANNER_ID else REAL_BANNER_ID
+        get() = if (useTestAds) TEST_BANNER_ID else REAL_BANNER_ID
+
+    val adsEnabled: Boolean get() = !BillingManager.isAdFree
+
+    /** Restarts the launch grace period. Called once from MainActivity.onCreate. */
+    fun startSession() {
+        sessionStartedAt = System.currentTimeMillis()
+        actionsSinceAd = 0
+        lastShownAt = 0L
+    }
 
     fun loadInterstitial(context: Context) {
+        if (!adsEnabled || loadInFlight || interstitialAd != null) return
+        loadInFlight = true
         val adRequest = AdRequest.Builder().build()
         InterstitialAd.load(
             context,
@@ -39,10 +56,12 @@ object AdManager {
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
+                    loadInFlight = false
                     interstitialAd = ad
                 }
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
+                    loadInFlight = false
                     interstitialAd = null
                 }
             }
@@ -62,32 +81,48 @@ object AdManager {
         onProceed: () -> Unit,
     ) {
         val now = System.currentTimeMillis()
-        if (interstitialAd != null && now - lastShownAt >= minIntervalMs) {
-            actionsSinceAd = 0
-            lastShownAt = now
+        if (interstitialAd != null && quotaAllows(now, minIntervalMs)) {
+            record(now)
             showInterstitial(activity, onProceed)
         } else {
+            loadInterstitial(activity)
             onProceed()
         }
     }
 
     /**
      * Entry point for all in-app triggers. Applies the shared frequency cap and
-     * shows an interstitial only when both the action count and time interval
-     * allow it. Always invokes [onProceed] so navigation is never blocked.
+     * shows an interstitial only when the action count, time interval and launch
+     * grace period all allow it. Always invokes [onProceed] so navigation is never
+     * blocked.
+     *
+     * Actions taken while no ad is loaded are not counted: otherwise a fill outage
+     * banks up credits and the first ad to load fires immediately.
      */
     fun maybeShowInterstitial(activity: android.app.Activity, onProceed: () -> Unit) {
+        if (interstitialAd == null) {
+            loadInterstitial(activity)
+            onProceed()
+            return
+        }
         actionsSinceAd += 1
         val now = System.currentTimeMillis()
-        val enoughActions = actionsSinceAd >= ACTIONS_PER_AD
-        val enoughTime = now - lastShownAt >= MIN_INTERVAL_MS
-        if (interstitialAd != null && enoughActions && enoughTime) {
-            actionsSinceAd = 0
-            lastShownAt = now
+        if (actionsSinceAd >= ACTIONS_PER_AD && quotaAllows(now, MIN_INTERVAL_MS)) {
+            record(now)
             showInterstitial(activity, onProceed)
         } else {
             onProceed()
         }
+    }
+
+    private fun quotaAllows(now: Long, minIntervalMs: Long): Boolean =
+        adsEnabled &&
+            now - sessionStartedAt >= LAUNCH_GRACE_MS &&
+            now - lastShownAt >= minIntervalMs
+
+    private fun record(now: Long) {
+        actionsSinceAd = 0
+        lastShownAt = now
     }
 
     fun showInterstitial(context: android.app.Activity, onAdDismissed: () -> Unit) {
@@ -108,5 +143,11 @@ object AdManager {
         } else {
             onAdDismissed()
         }
+    }
+
+    /** Drops any cached ad the moment the user buys the entitlement. */
+    fun discard() {
+        interstitialAd = null
+        loadInFlight = false
     }
 }

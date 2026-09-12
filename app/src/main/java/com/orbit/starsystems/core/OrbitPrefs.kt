@@ -21,6 +21,7 @@ object OrbitPrefs {
     private const val KEY_LAST_OPEN = "last_open_day"
     private const val KEY_FIRST_OPEN = "first_open_day"
     private const val KEY_LAST_VERSION = "last_seen_version"
+    private const val KEY_AD_FREE = "ad_free"
 
     private const val MILLIS_PER_DAY = 86_400_000L
 
@@ -55,6 +56,15 @@ object OrbitPrefs {
     var viewed: Set<String>
         get() = prefs?.getStringSet(KEY_VIEWED, null)?.toSet() ?: emptySet()
         set(value) { prefs?.edit()?.putStringSet(KEY_VIEWED, value.toSet())?.apply() }
+
+    /**
+     * Cached copy of the Play "remove ads" entitlement, so the ad code can answer
+     * synchronously on a cold start. Play owns the real answer and overwrites this on
+     * every successful ownership query.
+     */
+    var adFree: Boolean
+        get() = prefs?.getBoolean(KEY_AD_FREE, false) ?: false
+        set(value) { prefs?.edit()?.putBoolean(KEY_AD_FREE, value)?.apply() }
 
     /** Consecutive days the app has been opened, today included. */
     val streak: Int get() = prefs?.getInt(KEY_STREAK, 1)?.coerceAtLeast(1) ?: 1

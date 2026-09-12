@@ -136,11 +136,10 @@ fun SpaceFactsApp() {
         withAd { factId = id; paused = false; sheet = false; sourceUrl = null; viewed = viewed + id }
     }
 
-    // Leave the fact player, surfacing an interstitial at the shared cap.
     fun exitPlayer() {
         sheet = false
         sourceUrl = null
-        withAd { factId = null }
+        factId = null
     }
 
     LaunchedEffect(toast) {
@@ -181,8 +180,8 @@ fun SpaceFactsApp() {
                         factId = newFact.id
                         viewed = viewed + newFact.id
                         // Scrolling facts: surface an ad on the first swipe once
-                        // 60s have elapsed since the last one (time-based, not per-swipe).
-                        activity?.let { AdManager.maybeShowInterstitialAfter(it, 60_000L) {} }
+                        // 120s have elapsed since the last one (time-based, not per-swipe).
+                        activity?.let { AdManager.maybeShowInterstitialAfter(it, 120_000L) {} }
                     }
                 }
             }
@@ -274,7 +273,7 @@ fun SpaceFactsApp() {
             androidx.compose.foundation.layout.Column(Modifier.align(Alignment.BottomCenter)) {
                 // Banner only on the Compare tab. Take the nav-bar inset ourselves
                 // when the app bar is hidden (scrolled away).
-                if (tab == "compare") BannerAd(applyNavInset = !barVisible)
+                if (tab == "compare" && AdManager.adsEnabled) BannerAd(applyNavInset = !barVisible)
                 AnimatedVisibility(
                     visible = barVisible,
                     enter = slideInVertically { it },

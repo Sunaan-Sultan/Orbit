@@ -36,7 +36,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.orbit.starsystems.AdManager
 import com.orbit.starsystems.AppActions
+import com.orbit.starsystems.billing.BillingManager
 import com.orbit.starsystems.core.FEATURED_SYSTEMS
 import com.orbit.starsystems.core.OrbitPrefs
 
@@ -49,6 +51,9 @@ fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
     // Result of the last manual update check, shown under the row instead of as a toast.
     var updateStatus by remember { mutableStateOf<String?>(null) }
     var checkingUpdate by remember { mutableStateOf(false) }
+    // Result of the last purchase or restore attempt, shown under the row it came from.
+    var purchaseStatus by remember { mutableStateOf<String?>(null) }
+    var billingBusy by remember { mutableStateOf(false) }
     // Both come from disk and only change between launches, so a plain read is enough.
     val streak = OrbitPrefs.streak
     val daysExploring = OrbitPrefs.daysSinceFirstOpen
@@ -103,6 +108,74 @@ fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
                     if (streak == 1) "Come back tomorrow to start a run." else "Come back tomorrow to keep it going.",
                     style = ts(13.5f, color = Color(0xFFC9A98A)),
                     modifier = Modifier.padding(top = 1.dp),
+                )
+            }
+        }
+
+        SectionLabel("ADS")
+        SettingsCard {
+            if (BillingManager.isAdFree) {
+                SettingsRow(
+                    icon = "bolt",
+                    iconTint = Color(0xFF9CC4EC),
+                    title = "Ad-free unlocked",
+                    subtitle = "Thanks for supporting Orbit.",
+                    showChevron = false,
+                )
+            } else {
+                SettingsRow(
+                    icon = "bolt",
+                    iconTint = Color(0xFF9CC4EC),
+                    title = "Remove ads",
+                    subtitle = when {
+                        billingBusy -> "Opening Google Play…"
+                        purchaseStatus != null -> purchaseStatus!!
+                        // Play's own localised price, never a hardcoded one — it differs
+                        // by country, tax and currency.
+                        BillingManager.price != null -> "One-time purchase · ${BillingManager.price}"
+                        else -> "One-time purchase, yours forever"
+                    },
+                    subtitleTint = if (purchaseStatus != null && !billingBusy) Color(0xFF9CC4EC) else Dim,
+                    enabled = !billingBusy,
+                    onClick = {
+                        val activity = context as? android.app.Activity ?: return@SettingsRow
+                        billingBusy = true
+                        purchaseStatus = null
+                        BillingManager.launchPurchase(activity) { outcome ->
+                            billingBusy = false
+                            purchaseStatus = when (outcome) {
+                                BillingManager.Outcome.PURCHASED -> {
+                                    AdManager.discard()
+                                    "Ads removed — thank you!"
+                                }
+                                BillingManager.Outcome.CANCELLED -> null
+                                BillingManager.Outcome.UNAVAILABLE ->
+                                    "Google Play isn't available right now."
+                                BillingManager.Outcome.ERROR ->
+                                    "Purchase didn't go through. Please try again."
+                            }
+                        }
+                    },
+                )
+                RowDivider()
+                SettingsRow(
+                    icon = "refresh",
+                    title = "Restore purchase",
+                    subtitle = "Already bought it? Bring it back here",
+                    enabled = !billingBusy,
+                    onClick = {
+                        billingBusy = true
+                        purchaseStatus = null
+                        BillingManager.refreshPurchases { owned ->
+                            billingBusy = false
+                            purchaseStatus = if (owned) {
+                                AdManager.discard()
+                                "Purchase restored — ads are off."
+                            } else {
+                                "No previous purchase found on this account."
+                            }
+                        }
+                    },
                 )
             }
         }

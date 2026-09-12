@@ -12,6 +12,7 @@ composeBom = "2026.02.01"
 playServicesAds = "25.4.0"
 appUpdate = "2.1.0"
 browser = "1.8.0"
+billing = "8.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,6 +34,7 @@ androidx-browser = { group = "androidx.browser", name = "browser", version.ref =
 play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 play-app-update = { group = "com.google.android.play", name = "app-update", version.ref = "appUpdate" }
 play-app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "appUpdate" }
+billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

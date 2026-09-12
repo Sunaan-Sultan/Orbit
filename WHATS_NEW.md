@@ -2,7 +2,7 @@
 
 Release notes for **Space Facts** (`com.orbit.starsystems`).
 
-Current version in source: **2.7** (versionCode 27) — see `app/build.gradle.kts`.
+Current version in source: **2.9** (versionCode 29) — see `app/build.gradle.kts`.
 
 > **How this file is maintained**
 > - The top section is always the **next** release: work that is merged but not yet live on Google Play.
@@ -10,6 +10,28 @@ Current version in source: **2.7** (versionCode 27) — see `app/build.gradle.kt
 > - New work after that goes into the new `Unreleased` section as it lands.
 > - The **Play Store copy** block below is the ready-to-paste text for the Play Console "What's new" field (500 character limit).
 > - In-app release notes live in `app/src/main/java/com/orbit/starsystems/ui/WhatsNewSheet.kt` (the `Release` object). Keep the pending section here and that object in step.
+
+---
+
+## 2.9 — Unreleased
+
+**Headline:** Fewer ads, or none at all
+
+- **Ads are far less frequent.** The minimum gap between full-screen ads went from 40 seconds to 2 minutes, they now need four actions instead of two, and there are no ads at all in the first 90 seconds of a session.
+- **No more ad when you close a fact.** Opening and closing a fact used to be able to trigger two ads; now only opening one can.
+- **No ad on the Compare fly-through.** The full-screen ad that appeared when the comparison animation finished a loop is gone — it interrupted without you having tapped anything.
+- **Ads while scrolling facts are rarer**, every two minutes instead of every one.
+- **Remove ads permanently** — a one-time purchase in the You tab turns off every ad in the app, banner and full-screen alike. Includes a **Restore purchase** button for a new device or reinstall.
+
+### Play Store copy
+
+```
+Fewer interruptions.
+
+Full-screen ads now appear at most once every two minutes instead of every forty seconds, and never in your first minute and a half. The ad when you closed a fact is gone, and so is the one that interrupted the Compare fly-through.
+
+Prefer none at all? Remove ads is a one-time purchase in the You tab — it turns off every ad in the app, forever.
+```
 
 ---
 

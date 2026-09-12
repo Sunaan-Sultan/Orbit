@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.orbit.starsystems.AdManager
 import com.orbit.starsystems.R
 import com.orbit.starsystems.core.CompKind
 import com.orbit.starsystems.core.OrbitData
@@ -95,7 +94,6 @@ private const val END_HOLD = 2.2f          // pause on the final object before l
 @Composable
 fun ComparisonScreen(externalPaused: Boolean = false) {
     val n = COMP_OBJECTS.size
-    val activity = LocalContext.current as? android.app.Activity
 
     // clock advances always (ambient twinkle + black-hole shimmer); pos is the
     // navigation position in step-space [0, n-1] and only auto-advances while playing
@@ -112,19 +110,10 @@ fun ComparisonScreen(externalPaused: Boolean = false) {
             clock += dt
             if (!paused && !externalPaused) {
                 if (pos >= n - 1f) {
-                    // hold on the final object, then — the fly-through is complete —
-                    // offer an interstitial (shared frequency cap, so not every loop)
-                    // and fade-loop back to the start once it's dismissed.
+                    // hold on the final object, then fade-loop back to the start
                     endHold += dt
                     if (endHold >= END_HOLD) {
-                        if (activity != null) {
-                            paused = true // freeze on the final object behind the ad
-                            AdManager.maybeShowInterstitial(activity) {
-                                pos = 0f; endHold = 0f; paused = false
-                            }
-                        } else {
-                            pos = 0f; endHold = 0f
-                        }
+                        pos = 0f; endHold = 0f
                     }
                 } else {
                     pos = (pos + dt / STEP_DUR).coerceAtMost(n - 1f)
