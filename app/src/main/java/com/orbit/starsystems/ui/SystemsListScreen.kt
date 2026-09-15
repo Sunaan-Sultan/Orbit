@@ -32,6 +32,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.orbit.starsystems.core.DailyFact
+import com.orbit.starsystems.core.OrbitPrefs
+import com.orbit.starsystems.core.Quiz
 import com.orbit.starsystems.core.FEATURED_SYSTEMS
 import com.orbit.starsystems.core.Fact
 import com.orbit.starsystems.core.FeaturedSystem
@@ -45,6 +47,7 @@ fun SystemsList(
     onOpenSystem: (String) -> Unit,
     onOpenFact: (String) -> Unit,
     onOpenSearch: () -> Unit,
+    onOpenQuiz: () -> Unit,
 ) {
     // Recomputed per composition rather than remembered: the pick rolls over at local
     // midnight, and a session can outlive that.
@@ -83,6 +86,8 @@ fun SystemsList(
         }
 
         today?.let { TodayCard(fact = it, onClick = { onOpenFact(it.id) }) }
+
+        QuizCard(onClick = onOpenQuiz)
 
         FEATURED_SYSTEMS.forEach { sys ->
             val inSys = factsForSys(sys.sysId)
@@ -129,6 +134,46 @@ fun SystemsList(
             style = ts(12.5f, color = Color(0xFF5A5A5A), lineHeight = 19f),
             modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp, vertical = 22.dp),
         )
+    }
+}
+
+/**
+ * The way into the quiz. A row rather than another big card: it sits between the daily fact and
+ * the system library without competing with either for the eye.
+ */
+@Composable
+private fun QuizCard(onClick: () -> Unit) {
+    val best = OrbitPrefs.quizBest
+    val played = OrbitPrefs.quizRounds
+    Row(
+        Modifier
+            .padding(start = 22.dp, end = 22.dp, top = 14.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp))
+            .background(Brush.linearGradient(listOf(Color(0xFFFFC24D).copy(alpha = 0.16f), Color(0xFFFF9E34).copy(alpha = 0.05f))))
+            .border(1.dp, Color(0xFFFFC24D).copy(alpha = 0.28f), RoundedCornerShape(18.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 18.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Ico("spotlight", size = 26.dp, color = Color(0xFFFFC24D), filled = true)
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            Text("Cosmic Quiz", style = ts(18f, FontWeight.Bold, Color.White))
+            Text(
+                if (played == 0) {
+                    "Ten questions from the facts you've been reading"
+                } else {
+                    "Best so far · $best out of ${Quiz.ROUND_SIZE}"
+                },
+                style = ts(13f, color = Color(0xFFC9A98A)),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(top = 2.dp),
+            )
+        }
+        Spacer(Modifier.width(10.dp))
+        Ico("chevR", size = 18.dp, color = Color(0xFFFFC24D))
     }
 }
 

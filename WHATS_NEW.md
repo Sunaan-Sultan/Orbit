@@ -23,10 +23,11 @@ Current version in source: **3.2** (versionCode 32) — see `app/build.gradle.kt
 
 ## 3.2 — Unreleased
 
-**Headline:** A fact a day, and a way to find any of them
+**Headline:** A fact a day, a quiz, and a way to find any of them
 
 - **Fact of the day.** One of the 131 facts now leads the Systems tab, chosen fresh each morning and the same for the whole day. It walks the catalog as a shuffled cycle, so nothing repeats until everything else has had its turn.
 - **A daily reminder.** Switch it on in the You tab and pick a time — morning, midday, evening or night — and the day's fact arrives as a notification. Tapping it opens that fact directly. Off by default; the permission is only ever asked for on the tap that turns it on.
+- **Cosmic Quiz.** Ten multiple-choice questions a round, built from the facts already in the app — a measurement to name, a description to match to its fact, a fact to place in its system. Wrong answers show the right one straight away, and the round ends with every fact you missed, ready to open and read again. Your best score is kept on the You tab.
 - **Search.** The library outgrew browsing. Search any fact by name, by what it is, by its category or system, or by a number buried in its blurb or stats — "diamond", "habitable", "1918".
 - **Your progress now shows.** Facts you have seen are ticked in every list, each system card carries a progress bar and tells you how many of its facts you have explored, and each category shows how far through it you are.
 - **Share a fact as a picture.** The Learn more sheet has a share button that renders the fact's own scene as an image card and hands it to the share sheet — with a link that opens straight back to that fact.
@@ -40,6 +41,7 @@ A fact a day — and a way to find any of them.
 
 One of Space Facts' 131 facts now leads the app each morning, and a daily reminder can bring it to you at a time you choose.
 
+• Cosmic Quiz — ten questions a round, drawn from the facts
 • Search every fact by name, subject or number
 • See your progress — ticked facts, and how far through each system you are
 • Share any fact as a picture of its own scene

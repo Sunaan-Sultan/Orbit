@@ -49,6 +49,7 @@ import com.orbit.starsystems.billing.BillingManager
 import com.orbit.starsystems.core.Analytics
 import com.orbit.starsystems.core.FEATURED_SYSTEMS
 import com.orbit.starsystems.core.OrbitPrefs
+import com.orbit.starsystems.core.Quiz
 import com.orbit.starsystems.notify.DailyReminder
 
 private val Danger = Color(0xFFE0654A)
@@ -144,6 +145,10 @@ fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
             ProfileStat(viewed.toString(), "Facts seen")
             ProfileStat(FEATURED_SYSTEMS.size.toString(), "Systems")
             ProfileStat(savedCount.toString(), "Saved")
+            // Only once there is a score to show — an empty column reads as a missing feature.
+            if (OrbitPrefs.quizRounds > 0) {
+                ProfileStat("${OrbitPrefs.quizBest}/${Quiz.ROUND_SIZE}", "Quiz best")
+            }
         }
         Row(
             Modifier

@@ -38,12 +38,18 @@ object OrbitData {
     /** Idempotent — safe to call from every Activity.onCreate. */
     fun init(context: Context) {
         if (loaded) return
+        val assets = context.applicationContext.assets
+        load { path -> assets.open(path).bufferedReader().use { it.readText() } }
+    }
+
+    /**
+     * The catalog load, with reading left to the caller so a JVM test can hand it the files
+     * from `src/main/assets` directly instead of needing a Context and an emulator.
+     */
+    internal fun load(read: (String) -> String) {
+        if (loaded) return
         synchronized(this) {
             if (loaded) return
-            val assets = context.applicationContext.assets
-
-            fun read(path: String) = assets.open(path).bufferedReader().use { it.readText() }
-
             planets = parseArray(read("planets.json")) { it.toPlanet() }
             compObjects = parseArray(read("comparison.json")) { it.toCompObj() }
 

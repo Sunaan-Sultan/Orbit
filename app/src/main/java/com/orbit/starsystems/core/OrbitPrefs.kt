@@ -24,6 +24,8 @@ object OrbitPrefs {
     private const val KEY_AD_FREE = "ad_free"
     private const val KEY_NOTIFY_ENABLED = "notify_enabled"
     private const val KEY_NOTIFY_HOUR = "notify_hour"
+    private const val KEY_QUIZ_BEST = "quiz_best"
+    private const val KEY_QUIZ_ROUNDS = "quiz_rounds"
 
     private const val MILLIS_PER_DAY = 86_400_000L
 
@@ -80,6 +82,24 @@ object OrbitPrefs {
     var notifyHour: Int
         get() = prefs?.getInt(KEY_NOTIFY_HOUR, DEFAULT_NOTIFY_HOUR) ?: DEFAULT_NOTIFY_HOUR
         set(value) { prefs?.edit()?.putInt(KEY_NOTIFY_HOUR, value.coerceIn(0, 23))?.apply() }
+
+    /** Best score from a single quiz round, out of [com.orbit.starsystems.core.Quiz.ROUND_SIZE]. */
+    val quizBest: Int get() = prefs?.getInt(KEY_QUIZ_BEST, 0) ?: 0
+
+    /** How many rounds have been finished. */
+    val quizRounds: Int get() = prefs?.getInt(KEY_QUIZ_ROUNDS, 0) ?: 0
+
+    /** Records a finished round and reports whether it beat the previous best. */
+    fun recordQuizRound(score: Int): Boolean {
+        val p = prefs ?: return false
+        val best = p.getInt(KEY_QUIZ_BEST, 0)
+        val improved = score > best
+        p.edit()
+            .putInt(KEY_QUIZ_ROUNDS, p.getInt(KEY_QUIZ_ROUNDS, 0) + 1)
+            .apply { if (improved) putInt(KEY_QUIZ_BEST, score) }
+            .apply()
+        return improved
+    }
 
     /** Days since the epoch in the device's own time zone. Drives the streak and the daily pick. */
     val dayIndex: Long get() = today()

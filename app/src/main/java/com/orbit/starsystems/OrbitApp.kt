@@ -50,6 +50,7 @@ import com.orbit.starsystems.ui.DetailSheet
 import com.orbit.starsystems.ui.FactScreen
 import com.orbit.starsystems.ui.OrbitFont
 import com.orbit.starsystems.ui.ProfileScreen
+import com.orbit.starsystems.ui.QuizScreen
 import com.orbit.starsystems.ui.SavedScreen
 import com.orbit.starsystems.ui.SearchScreen
 import com.orbit.starsystems.ui.ShareCardCapture
@@ -77,6 +78,7 @@ fun SpaceFactsApp(
     var barVisible by remember { mutableStateOf(true) }
     var whatsNew by remember { mutableStateOf(false) }
     var searching by remember { mutableStateOf(false) }
+    var quizOpen by remember { mutableStateOf(false) }
     // Non-null only while a share card is being drawn and captured.
     var sharing by remember { mutableStateOf<String?>(null) }
 
@@ -191,12 +193,13 @@ fun SpaceFactsApp(
     }
 
     // Unwind the in-app navigation stack on system back before letting the OS exit.
-    BackHandler(enabled = sourceUrl != null || sheet || factId != null || searching || openSys != null || tab != "systems") {
+    BackHandler(enabled = sourceUrl != null || sheet || factId != null || searching || quizOpen || openSys != null || tab != "systems") {
         when {
             sourceUrl != null -> sourceUrl = null
             sheet -> sheet = false
             factId != null -> exitPlayer()
             searching -> searching = false
+            quizOpen -> quizOpen = false
             openSys != null -> openSys = null
             tab != "systems" -> tab = "systems"
         }
@@ -270,6 +273,7 @@ fun SpaceFactsApp(
                                 onOpenSystem = { sys -> Analytics.systemOpen(sys); withAd { openSys = sys } },
                                 onOpenFact = { openFact(it, Analytics.Source.TODAY) },
                                 onOpenSearch = { searching = true },
+                                onOpenQuiz = { quizOpen = true },
                             )
                         }
                     }
@@ -283,6 +287,15 @@ fun SpaceFactsApp(
                     )
                 }
             }
+        }
+
+        if (quizOpen && factId == null) {
+            QuizScreen(
+                // Leaves the quiz rather than stacking on top of it: the round is finished by
+                // the time these are reachable.
+                onOpenFact = { quizOpen = false; openFact(it, Analytics.Source.QUIZ) },
+                onClose = { quizOpen = false },
+            )
         }
 
         if (searching && factId == null) {
@@ -339,7 +352,7 @@ fun SpaceFactsApp(
 
         // The what's-new sheet is modal: without this the bar draws over it and stays
         // tappable behind the scrim.
-        if (factId == null && !whatsNew && !searching) {
+        if (factId == null && !whatsNew && !searching && !quizOpen) {
             androidx.compose.foundation.layout.Column(Modifier.align(Alignment.BottomCenter)) {
                 // Banner only on the Compare tab. Take the nav-bar inset ourselves
                 // when the app bar is hidden (scrolled away).

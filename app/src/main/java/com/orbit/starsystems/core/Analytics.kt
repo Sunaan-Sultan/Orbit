@@ -40,6 +40,7 @@ object Analytics {
         const val SPOTLIGHT = "spotlight"
         const val SAVED = "saved"
         const val SEARCH = "search"
+        const val QUIZ = "quiz"
         const val DEEP_LINK = "deep_link"
     }
 
@@ -58,6 +59,11 @@ object Analytics {
 
     fun reminderToggled(enabled: Boolean, hour: Int) =
         log("reminder_toggled", "enabled" to enabled.toString(), "hour" to hour.toString())
+
+    fun quizStarted() = log("quiz_started")
+
+    fun quizFinished(score: Int, total: Int) =
+        log("quiz_finished", "score" to score.toString(), "total" to total.toString())
 
     fun purchase(outcome: String) = log("purchase", "outcome" to outcome)
 
