@@ -186,7 +186,34 @@ private fun DrawScope.drawIcon(name: String, color: Color, filled: Boolean, sw: 
             else drawPath(big, color, style = Stroke(width = sw, join = StrokeJoin.Round))
             drawCircle(color, radius = 1.3f, center = Offset(19.5f, 5.5f))
         }
+        "bell" -> {
+            val body = Path().apply {
+                moveTo(5.5f, 17f)
+                cubicTo(7f, 15.6f, 6.6f, 14.4f, 6.6f, 11f)
+                cubicTo(6.6f, 7.4f, 8.9f, 5.2f, 12f, 5.2f)
+                cubicTo(15.1f, 5.2f, 17.4f, 7.4f, 17.4f, 11f)
+                cubicTo(17.4f, 14.4f, 17f, 15.6f, 18.5f, 17f)
+                close()
+            }
+            if (filled) drawPath(body, color)
+            else drawPath(body, color, style = Stroke(width = sw, join = StrokeJoin.Round))
+            strokePath(color, sw) {
+                moveTo(10f, 19.4f)
+                cubicTo(10.5f, 20.4f, 13.5f, 20.4f, 14f, 19.4f)
+            }
+        }
+        "check" -> strokePath(color, sw) {
+            moveTo(5f, 12.5f); lineTo(10f, 17.5f); lineTo(19f, 7f)
+        }
+        "search" -> strokePath(color, sw) {
+            addOvalCompat(4f, 4f, 12f, 12f)
+            moveTo(18.5f, 18.5f); lineTo(14.6f, 14.6f)
+        }
     }
+}
+
+private fun Path.addOvalCompat(x: Float, y: Float, w: Float, h: Float) {
+    addOval(androidx.compose.ui.geometry.Rect(x, y, x + w, y + h))
 }
 
 private fun Path.addRoundRectCompat(x: Float, y: Float, w: Float, h: Float, r: Float) {

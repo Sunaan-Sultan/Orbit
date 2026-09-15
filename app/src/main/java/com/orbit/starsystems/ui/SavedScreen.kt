@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.orbit.starsystems.core.ALL_FACTS
 
 @Composable
-fun SavedScreen(saved: Set<String>, onOpen: (String) -> Unit) {
+fun SavedScreen(saved: Set<String>, viewed: Set<String>, onOpen: (String) -> Unit) {
     val items = ALL_FACTS.filter { saved.contains(it.id) }
     Column(Modifier.fillMaxSize().background(Color.Black)) {
         Column(
@@ -52,7 +52,7 @@ fun SavedScreen(saved: Set<String>, onOpen: (String) -> Unit) {
             ) {
                 items(items.size) { i ->
                     val item = items[i]
-                    FactListCard(fact = item, onClick = { onOpen(item.id) })
+                    FactListCard(fact = item, onClick = { onOpen(item.id) }, isSeen = item.id in viewed)
                 }
             }
         }

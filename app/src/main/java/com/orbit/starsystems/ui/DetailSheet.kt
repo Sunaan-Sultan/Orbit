@@ -50,6 +50,7 @@ fun DetailSheet(
     isSaved: Boolean,
     onToggleSave: () -> Unit,
     onOpenSource: (String) -> Unit,
+    onShare: () -> Unit,
 ) {
     // Related facts: prefer same system + category, then same system, then anything.
     val related = remember(fact.id) {
@@ -109,16 +110,28 @@ fun DetailSheet(
                     Box(Modifier.fillMaxWidth().height(1.dp).background(Color.White.copy(alpha = 0.08f)))
                 }
                 Spacer(Modifier.height(22.dp))
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(if (isSaved) fact.accent else Color.White.copy(alpha = 0.10f))
-                        .clickable(onClick = onToggleSave)
-                        .padding(vertical = 13.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(if (isSaved) "Saved ✓" else "Save fact", style = ts(15f, FontWeight.SemiBold, if (isSaved) Color.Black else Color.White))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(if (isSaved) fact.accent else Color.White.copy(alpha = 0.10f))
+                            .clickable(onClick = onToggleSave)
+                            .padding(vertical = 13.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(if (isSaved) "Saved ✓" else "Save fact", style = ts(15f, FontWeight.SemiBold, if (isSaved) Color.Black else Color.White))
+                    }
+                    Box(
+                        Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.White.copy(alpha = 0.10f))
+                            .clickable(onClick = onShare),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Ico("share", size = 19.dp, color = Color.White, sw = 1.9f)
+                    }
                 }
                 fact.source?.let { src ->
                     Spacer(Modifier.height(10.dp))

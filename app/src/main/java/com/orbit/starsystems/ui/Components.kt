@@ -167,6 +167,7 @@ fun FactListCard(
     fact: Fact,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isSeen: Boolean = false,
 ) {
     Row(
         modifier = modifier
@@ -184,6 +185,19 @@ fun FactListCard(
                 .clip(RoundedCornerShape(12.dp)),
         ) {
             MiniStage(fact.scene, fact.dur, fact.hero, active = false, paused = true, modifier = Modifier.fillMaxSize())
+            if (isSeen) {
+                Box(
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(5.dp)
+                        .size(18.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.55f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Ico("check", size = 11.dp, color = fact.accent, sw = 2.6f)
+                }
+            }
         }
         Spacer(Modifier.width(14.dp))
         Column(

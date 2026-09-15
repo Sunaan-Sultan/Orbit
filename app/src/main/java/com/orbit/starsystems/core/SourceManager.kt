@@ -176,6 +176,9 @@ object SourceManager {
         "science.org" to "Science",
     )
 
+    /** Every key in the link map, for the content-validation test in `ContentTest`. */
+    internal val keys: Set<String> get() = LINKS.keys
+
     fun keyFor(sys: String, num: Int): String = "$sys.$num"
 
     fun urlFor(sys: String, num: Int): String? =

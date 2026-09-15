@@ -18,7 +18,7 @@ import com.orbit.starsystems.core.SPOTLIGHT_FACTS
 
 /** A standalone tab of singular facts — spacecraft, our Sun, and landmarks — outside any one system. */
 @Composable
-fun SpotlightScreen(onOpen: (String) -> Unit) {
+fun SpotlightScreen(viewed: Set<String>, onOpen: (String) -> Unit) {
     Column(Modifier.fillMaxSize().background(Color.Black)) {
         Column(
             Modifier.statusBarsPadding().padding(start = 22.dp, end = 22.dp, top = 26.dp, bottom = 8.dp),
@@ -37,7 +37,7 @@ fun SpotlightScreen(onOpen: (String) -> Unit) {
         ) {
             items(SPOTLIGHT_FACTS.size) { i ->
                 val fact = SPOTLIGHT_FACTS[i]
-                FactListCard(fact = fact, onClick = { onOpen(fact.id) })
+                FactListCard(fact = fact, onClick = { onOpen(fact.id) }, isSeen = fact.id in viewed)
             }
         }
     }

@@ -1,0 +1,23 @@
+<!--
+  Status-bar icons are masked to a single colour, so this is a flat silhouette: a filled
+  planet with a bite taken out for the ring, plus two stars. Anything with gradients or
+  more than one tone (the launcher icon, for example) renders as a white blob here.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M13,4.5c-4.14,0 -7.5,3.36 -7.5,7.5s3.36,7.5 7.5,7.5s7.5,-3.36 7.5,-7.5S17.14,4.5 13,4.5zM13,6.5c3.04,0 5.5,2.46 5.5,5.5s-2.46,5.5 -5.5,5.5s-5.5,-2.46 -5.5,-5.5S9.96,6.5 13,6.5z" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M13,7.5c2.49,0 4.5,2.01 4.5,4.5s-2.01,4.5 -4.5,4.5s-4.5,-2.01 -4.5,-4.5S10.51,7.5 13,7.5z" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M4.2,2.2l0.62,1.38l1.38,0.62l-1.38,0.62l-0.62,1.38l-0.62,-1.38l-1.38,-0.62l1.38,-0.62z" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M4.6,16.6l0.45,1l1,0.45l-1,0.45l-0.45,1l-0.45,-1l-1,-0.45l1,-0.45z" />
+</vector>

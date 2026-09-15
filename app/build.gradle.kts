@@ -11,8 +11,8 @@ android {
         applicationId = "com.orbit.starsystems"
         minSdk = 24
         targetSdk = 36
-        versionCode = 31
-        versionName = "3.1"
+        versionCode = 32
+        versionName = "3.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -48,11 +48,14 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.browser)
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.play.services.ads)
+    implementation(libs.user.messaging.platform)
     implementation(libs.play.app.update)
     implementation(libs.play.app.update.ktx)
     implementation(libs.billing.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.org.json)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)

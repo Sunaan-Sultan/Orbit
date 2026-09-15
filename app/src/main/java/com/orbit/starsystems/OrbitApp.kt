@@ -39,6 +39,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.orbit.starsystems.core.ALL_FACTS
+import com.orbit.starsystems.core.Analytics
 import com.orbit.starsystems.core.OrbitPrefs
 import com.orbit.starsystems.core.factById
 import com.orbit.starsystems.core.factsForSys
@@ -50,6 +51,8 @@ import com.orbit.starsystems.ui.FactScreen
 import com.orbit.starsystems.ui.OrbitFont
 import com.orbit.starsystems.ui.ProfileScreen
 import com.orbit.starsystems.ui.SavedScreen
+import com.orbit.starsystems.ui.SearchScreen
+import com.orbit.starsystems.ui.ShareCardCapture
 import com.orbit.starsystems.ui.SourceWebScreen
 import com.orbit.starsystems.ui.SpotlightScreen
 import com.orbit.starsystems.ui.SystemExplore
@@ -58,7 +61,10 @@ import com.orbit.starsystems.ui.WhatsNewSheet
 import kotlinx.coroutines.delay
 
 @Composable
-fun SpaceFactsApp() {
+fun SpaceFactsApp(
+    pendingFactId: String? = null,
+    onPendingFactConsumed: () -> Unit = {},
+) {
     var tab by remember { mutableStateOf("systems") }
     var openSys by remember { mutableStateOf<String?>(null) }
     var factId by remember { mutableStateOf<String?>(null) }
@@ -70,6 +76,9 @@ fun SpaceFactsApp() {
     var viewed by remember { mutableStateOf(OrbitPrefs.viewed) }
     var barVisible by remember { mutableStateOf(true) }
     var whatsNew by remember { mutableStateOf(false) }
+    var searching by remember { mutableStateOf(false) }
+    // Non-null only while a share card is being drawn and captured.
+    var sharing by remember { mutableStateOf<String?>(null) }
 
     // Mirror the collection and seen-list back to disk whenever they change, so both
     // survive the process. The first run of each is a no-op write of what was just read.
@@ -122,7 +131,9 @@ fun SpaceFactsApp() {
     // }
 
     fun toggleSave(id: String) {
-        saved = if (saved.contains(id)) saved - id else saved + id
+        val nowSaved = !saved.contains(id)
+        saved = if (nowSaved) saved + id else saved - id
+        factById(id)?.let { Analytics.factSave(it, nowSaved) }
     }
 
     val activity = context as? android.app.Activity
@@ -134,8 +145,39 @@ fun SpaceFactsApp() {
         if (activity != null) AdManager.maybeShowInterstitial(activity, action) else action()
     }
 
-    fun openFact(id: String) {
+    fun openFact(id: String, source: String) {
+        // The streak counts days a fact was actually watched, not bare launches, so it is
+        // recorded here rather than in MainActivity. Idempotent within a day.
+        OrbitPrefs.recordFactSeen()
+        factById(id)?.let { Analytics.factView(it, source) }
         withAd { factId = id; paused = false; sheet = false; sourceUrl = null; viewed = viewed + id }
+    }
+
+    /**
+     * Opens a fact without consulting the ad cap. Used for deep links, where the user tapped
+     * a notification or a shared link rather than navigating inside the app — an interstitial
+     * on arrival would be an ad they never asked for.
+     */
+    fun jumpToFact(id: String) {
+        OrbitPrefs.recordFactSeen()
+        factById(id)?.let { Analytics.factView(it, Analytics.Source.DEEP_LINK) }
+        factId = id
+        paused = false
+        sheet = false
+        sourceUrl = null
+        viewed = viewed + id
+    }
+
+    // A deep link can arrive before this composes (cold start behind the update gate) or
+    // long after it (singleTop onNewIntent), so it is consumed here rather than passed in once.
+    LaunchedEffect(pendingFactId) {
+        val target = pendingFactId ?: return@LaunchedEffect
+        if (factById(target) != null) {
+            tab = "systems"
+            openSys = null
+            jumpToFact(target)
+        }
+        onPendingFactConsumed()
     }
 
     fun exitPlayer() {
@@ -149,11 +191,12 @@ fun SpaceFactsApp() {
     }
 
     // Unwind the in-app navigation stack on system back before letting the OS exit.
-    BackHandler(enabled = sourceUrl != null || sheet || factId != null || openSys != null || tab != "systems") {
+    BackHandler(enabled = sourceUrl != null || sheet || factId != null || searching || openSys != null || tab != "systems") {
         when {
             sourceUrl != null -> sourceUrl = null
             sheet -> sheet = false
             factId != null -> exitPlayer()
+            searching -> searching = false
             openSys != null -> openSys = null
             tab != "systems" -> tab = "systems"
         }
@@ -220,14 +263,19 @@ fun SpaceFactsApp() {
                     "systems" -> {
                         val sys = openSys
                         if (sys != null) {
-                            SystemExplore(sys = sys, onOpenFact = { openFact(it) }, onBack = { openSys = null })
+                            SystemExplore(sys = sys, viewed = viewed, onOpenFact = { openFact(it, Analytics.Source.SYSTEM) }, onBack = { openSys = null })
                         } else {
-                            SystemsList(onOpenSystem = { sys -> withAd { openSys = sys } })
+                            SystemsList(
+                                viewed = viewed,
+                                onOpenSystem = { sys -> Analytics.systemOpen(sys); withAd { openSys = sys } },
+                                onOpenFact = { openFact(it, Analytics.Source.TODAY) },
+                                onOpenSearch = { searching = true },
+                            )
                         }
                     }
-                    "spotlight" -> SpotlightScreen(onOpen = { openFact(it) })
+                    "spotlight" -> SpotlightScreen(viewed = viewed, onOpen = { openFact(it, Analytics.Source.SPOTLIGHT) })
                     "compare" -> ComparisonScreen(externalPaused = whatsNew || sourceUrl != null || adShowing)
-                    "saved" -> SavedScreen(saved = saved, onOpen = { openFact(it) })
+                    "saved" -> SavedScreen(saved = saved, viewed = viewed, onOpen = { openFact(it, Analytics.Source.SAVED) })
                     "you" -> ProfileScreen(
                         savedCount = saved.size,
                         viewed = viewed.size,
@@ -235,6 +283,14 @@ fun SpaceFactsApp() {
                     )
                 }
             }
+        }
+
+        if (searching && factId == null) {
+            SearchScreen(
+                viewed = viewed,
+                onOpen = { searching = false; openFact(it, Analytics.Source.SEARCH) },
+                onClose = { searching = false },
+            )
         }
 
         WhatsNewSheet(
@@ -251,11 +307,18 @@ fun SpaceFactsApp() {
             fact = curFact,
             open = sheet,
             onClose = { sheet = false },
-            onJump = { sheet = false; openFact(it) },
+            onJump = { sheet = false; openFact(it, Analytics.Source.SYSTEM) },
             isSaved = saved.contains(curFact.id),
             onToggleSave = { toggleSave(curFact.id) },
             onOpenSource = { sourceUrl = it },
+            onShare = { Analytics.factShare(curFact); sharing = curFact.id },
         )
+
+        sharing?.let { id ->
+            factById(id)?.let { f ->
+                ShareCardCapture(fact = f, onDone = { sharing = null })
+            }
+        }
 
         sourceUrl?.let { url ->
             SourceWebScreen(url = url, accent = curFact.accent, onClose = { sourceUrl = null })
@@ -276,7 +339,7 @@ fun SpaceFactsApp() {
 
         // The what's-new sheet is modal: without this the bar draws over it and stays
         // tappable behind the scrim.
-        if (factId == null && !whatsNew) {
+        if (factId == null && !whatsNew && !searching) {
             androidx.compose.foundation.layout.Column(Modifier.align(Alignment.BottomCenter)) {
                 // Banner only on the Compare tab. Take the nav-bar inset ourselves
                 // when the app bar is hidden (scrolled away).

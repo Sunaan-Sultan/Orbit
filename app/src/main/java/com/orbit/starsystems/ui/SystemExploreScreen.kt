@@ -30,7 +30,7 @@ import com.orbit.starsystems.core.categoriesForSys
 import com.orbit.starsystems.core.factsForSys
 
 @Composable
-fun SystemExplore(sys: String, onOpenFact: (String) -> Unit, onBack: () -> Unit) {
+fun SystemExplore(sys: String, viewed: Set<String>, onOpenFact: (String) -> Unit, onBack: () -> Unit) {
     val facts = factsForSys(sys)
     val meta = SYS_META[sys] ?: return
     Column(
@@ -73,11 +73,19 @@ fun SystemExplore(sys: String, onOpenFact: (String) -> Unit, onBack: () -> Unit)
                     Spacer(Modifier.width(12.dp))
                     Text(cat, style = ts(26f, FontWeight.Bold, Color.White, -0.01f))
                 }
-                Text("${inCat.size} ${if (inCat.size == 1) "fact" else "facts"}".uppercase(), style = ts(11f, FontWeight.SemiBold, Color(0xFF6A6A6A), 0.14f))
+                val seenInCat = inCat.count { it.id in viewed }
+                Text(
+                    if (seenInCat == 0) {
+                        "${inCat.size} ${if (inCat.size == 1) "fact" else "facts"}".uppercase()
+                    } else {
+                        "$seenInCat of ${inCat.size} seen".uppercase()
+                    },
+                    style = ts(11f, FontWeight.SemiBold, if (seenInCat == inCat.size) accent.copy(alpha = 0.85f) else Color(0xFF6A6A6A), 0.14f),
+                )
             }
             Column(Modifier.padding(horizontal = 22.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 inCat.forEach { f ->
-                    FactListCard(fact = f, onClick = { onOpenFact(f.id) })
+                    FactListCard(fact = f, onClick = { onOpenFact(f.id) }, isSeen = f.id in viewed)
                 }
             }
         }

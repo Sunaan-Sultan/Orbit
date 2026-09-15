@@ -2,7 +2,7 @@
 
 Release notes for **Space Facts** (`com.orbit.starsystems`).
 
-Current version in source: **2.9** (versionCode 29) — see `app/build.gradle.kts`.
+Current version in source: **3.2** (versionCode 32) — see `app/build.gradle.kts`.
 
 > **How this file is maintained**
 > - The top section is always the **next** release: work that is merged but not yet live on Google Play.
@@ -13,7 +13,41 @@ Current version in source: **2.9** (versionCode 29) — see `app/build.gradle.kt
 
 ---
 
-## 2.9 — Unreleased
+> **Note:** 3.0 and 3.1 were cut (2026-09-12) without sections here, and the 2.9 and 2.7
+> sections below were left marked `Unreleased` after their work had already gone out. They
+> are marked "merged" rather than "shipped" because the repo records when each version was
+> cut, not when it reached the Play Store — set those dates when you confirm them in the
+> Play Console.
+
+---
+
+## 3.2 — Unreleased
+
+**Headline:** A fact a day, and a way to find any of them
+
+- **Fact of the day.** One of the 131 facts now leads the Systems tab, chosen fresh each morning and the same for the whole day. It walks the catalog as a shuffled cycle, so nothing repeats until everything else has had its turn.
+- **A daily reminder.** Switch it on in the You tab and pick a time — morning, midday, evening or night — and the day's fact arrives as a notification. Tapping it opens that fact directly. Off by default; the permission is only ever asked for on the tap that turns it on.
+- **Search.** The library outgrew browsing. Search any fact by name, by what it is, by its category or system, or by a number buried in its blurb or stats — "diamond", "habitable", "1918".
+- **Your progress now shows.** Facts you have seen are ticked in every list, each system card carries a progress bar and tells you how many of its facts you have explored, and each category shows how far through it you are.
+- **Share a fact as a picture.** The Learn more sheet has a share button that renders the fact's own scene as an image card and hands it to the share sheet — with a link that opens straight back to that fact.
+- **A privacy choice for ads.** Where the law gives you one, ads now ask before they personalise, and the choice can be changed at any time from the You tab.
+- The daily streak now counts days you actually watched a fact, rather than days you merely opened the app.
+
+### Play Store copy
+
+```
+A fact a day — and a way to find any of them.
+
+One of Space Facts' 131 facts now leads the app each morning, and a daily reminder can bring it to you at a time you choose.
+
+• Search every fact by name, subject or number
+• See your progress — ticked facts, and how far through each system you are
+• Share any fact as a picture of its own scene
+```
+
+---
+
+## 2.9 — Merged, superseded by 3.1
 
 **Headline:** A new neighbour, and five new wonders
 
@@ -41,7 +75,7 @@ Fewer interruptions, too — full-screen ads are far rarer, and Remove ads turns
 
 ---
 
-## 2.7 — Unreleased
+## 2.7 — Merged, superseded by 3.1
 
 **Headline:** Check the source yourself
 

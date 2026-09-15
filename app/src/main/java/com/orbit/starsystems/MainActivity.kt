@@ -1,5 +1,6 @@
 package com.orbit.starsystems
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -22,6 +23,8 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.orbit.starsystems.billing.BillingManager
 import com.orbit.starsystems.core.OrbitData
 import com.orbit.starsystems.core.OrbitPrefs
+import com.orbit.starsystems.core.DeepLink
+import com.orbit.starsystems.notify.DailyReminder
 import com.orbit.starsystems.ui.UpdateCheckSplash
 import com.orbit.starsystems.ui.UpdateRequiredScreen
 
@@ -48,6 +51,14 @@ class MainActivity : ComponentActivity() {
 
     /** True while Play's UI is up, so the two callers below can't launch it twice. */
     private var updateFlowLaunched = false
+
+    /**
+     * A fact id from a `spacefacts://fact/<id>` intent, waiting to be opened. Held as state
+     * rather than acted on directly so it survives the update gate: a deep link that arrives
+     * while Play is still being queried is honoured once the gate opens, instead of being
+     * dropped along with the splash.
+     */
+    private var pendingFactId by mutableStateOf<String?>(null)
 
     private val mainHandler = Handler(Looper.getMainLooper())
 
@@ -79,13 +90,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         OrbitData.init(this)
         OrbitPrefs.init(this)
-        // Count this launch towards the daily streak before the UI reads it.
-        OrbitPrefs.recordOpen()
+        pendingFactId = DeepLink.factIdFrom(intent)
+        // Re-arm the reminder: work does not survive an app update or a "force stop".
+        DailyReminder.sync(this)
         BillingManager.init(this)
         AdManager.startSession()
+        // The Mobile Ads SDK must not start before consent is settled, or the first requests
+        // go out with no legal basis. AdConsent always calls back, so ads are never stranded.
         if (AdManager.adsEnabled) {
-            MobileAds.initialize(this) {}
-            AdManager.loadInterstitial(this)
+            AdConsent.gather(this) {
+                MobileAds.initialize(this) {}
+                AdManager.loadInterstitial(this)
+            }
         }
 
         appUpdateManager = AppUpdateManagerFactory.create(this)
@@ -103,9 +119,20 @@ class MainActivity : ComponentActivity() {
                             ?: AppActions.openPlayListing(this)
                     },
                 )
-                Gate.ALLOWED -> SpaceFactsApp()
+                Gate.ALLOWED -> SpaceFactsApp(
+                    pendingFactId = pendingFactId,
+                    onPendingFactConsumed = { pendingFactId = null },
+                )
             }
         }
+    }
+
+    // launchMode is singleTop, so a deep link tapped while the app is already running
+    // arrives here rather than through a fresh onCreate.
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        DeepLink.factIdFrom(intent)?.let { pendingFactId = it }
     }
 
     override fun onResume() {

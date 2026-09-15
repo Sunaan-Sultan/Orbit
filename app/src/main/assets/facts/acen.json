@@ -22,9 +22,7 @@
         "≈ 13,000 AU"
       ]
     ],
-    "music": "music1",
-    "sourceName": "Wikipedia",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Alpha_Centauri"
+    "music": "music1"
   },
   {
     "id": "ac_waltz",
@@ -49,9 +47,7 @@
         "36 AU"
       ]
     ],
-    "music": "music2",
-    "sourceName": "Wikipedia",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Alpha_Centauri"
+    "music": "music2"
   },
   {
     "id": "ac_twin",
@@ -76,9 +72,7 @@
         "K1 · orange"
       ]
     ],
-    "music": "music3",
-    "sourceName": "Wikipedia",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Alpha_Centauri"
+    "music": "music3"
   },
   {
     "id": "ac_proxima",
@@ -103,9 +97,7 @@
         "≈ 3,000°C"
       ]
     ],
-    "music": "music4",
-    "sourceName": "Wikipedia",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Proxima_Centauri"
+    "music": "music4"
   },
   {
     "id": "ac_proximab",
@@ -130,9 +122,7 @@
         "Habitable"
       ]
     ],
-    "music": "music7",
-    "sourceName": "Wikipedia",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Proxima_Centauri_b"
+    "music": "music7"
   },
   {
     "id": "ac_travel",
@@ -157,8 +147,6 @@
         "≈ 20 yrs"
       ]
     ],
-    "music": "music6",
-    "sourceName": "Wikipedia",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Alpha_Centauri"
+    "music": "music6"
   }
 ]

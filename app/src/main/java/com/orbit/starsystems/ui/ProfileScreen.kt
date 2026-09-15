@@ -1,5 +1,9 @@
 package com.orbit.starsystems.ui
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,6 +24,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,13 +42,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.orbit.starsystems.AdConsent
 import com.orbit.starsystems.AdManager
 import com.orbit.starsystems.AppActions
 import com.orbit.starsystems.billing.BillingManager
+import com.orbit.starsystems.core.Analytics
 import com.orbit.starsystems.core.FEATURED_SYSTEMS
 import com.orbit.starsystems.core.OrbitPrefs
+import com.orbit.starsystems.notify.DailyReminder
 
 private val Danger = Color(0xFFE0654A)
+private val Accent = Color(0xFF9CC4EC)
+
+/** The reminder times offered, as hour-of-day to label. */
+private val NOTIFY_TIMES = listOf(8 to "Morning · 8:00", 13 to "Midday · 1:00 PM", 19 to "Evening · 7:00 PM", 21 to "Night · 9:00 PM")
+
+private fun timeLabel(hour: Int): String =
+    NOTIFY_TIMES.firstOrNull { it.first == hour }?.second ?: "$hour:00"
 
 @Composable
 fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
@@ -54,6 +70,45 @@ fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
     // Result of the last purchase or restore attempt, shown under the row it came from.
     var purchaseStatus by remember { mutableStateOf<String?>(null) }
     var billingBusy by remember { mutableStateOf(false) }
+    var privacyStatus by remember { mutableStateOf<String?>(null) }
+    var notifyOn by remember { mutableStateOf(OrbitPrefs.notifyEnabled) }
+    var notifyHour by remember { mutableStateOf(OrbitPrefs.notifyHour) }
+    var pickTime by remember { mutableStateOf(false) }
+    // Set when the OS prompt is declined, so the row explains itself instead of silently
+    // snapping back off.
+    var notifyDenied by remember { mutableStateOf(false) }
+
+    fun enableReminder() {
+        notifyDenied = false
+        notifyOn = true
+        OrbitPrefs.notifyEnabled = true
+        DailyReminder.schedule(context)
+        Analytics.reminderToggled(enabled = true, hour = OrbitPrefs.notifyHour)
+    }
+
+    // Android 13+ gates notifications behind a runtime permission. Asked here, on the tap
+    // that turns the reminder on, rather than at launch.
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) enableReminder() else notifyDenied = true
+    }
+
+    fun toggleReminder(on: Boolean) {
+        if (!on) {
+            notifyDenied = false
+            notifyOn = false
+            OrbitPrefs.notifyEnabled = false
+            DailyReminder.cancel(context)
+            Analytics.reminderToggled(enabled = false, hour = OrbitPrefs.notifyHour)
+            return
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            enableReminder()
+        }
+    }
     // Both come from disk and only change between launches, so a plain read is enough.
     val streak = OrbitPrefs.streak
     val daysExploring = OrbitPrefs.daysSinceFirstOpen
@@ -112,6 +167,45 @@ fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
             }
         }
 
+        SectionLabel("DAILY FACT")
+        SettingsCard {
+            SettingsRow(
+                icon = "bell",
+                iconTint = if (notifyOn) Accent else Color(0xFFCFCFCF),
+                title = "Daily reminder",
+                subtitle = when {
+                    notifyDenied -> "Notifications are off for Space Facts — turn them on in Settings"
+                    notifyOn -> "One fact from the cosmos, every day"
+                    else -> "One fact from the cosmos, once a day"
+                },
+                subtitleTint = if (notifyDenied) Danger else Dim,
+                showChevron = false,
+                onClick = { toggleReminder(!notifyOn) },
+                trailingSlot = {
+                    Switch(
+                        checked = notifyOn,
+                        onCheckedChange = { toggleReminder(it) },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.Black,
+                            checkedTrackColor = Accent,
+                            uncheckedThumbColor = Color(0xFF8A8A8A),
+                            uncheckedTrackColor = Color.White.copy(alpha = 0.10f),
+                            uncheckedBorderColor = Color.White.copy(alpha = 0.18f),
+                        ),
+                    )
+                },
+            )
+            if (notifyOn) {
+                RowDivider()
+                SettingsRow(
+                    icon = "refresh",
+                    title = "Time",
+                    subtitle = timeLabel(notifyHour),
+                    onClick = { pickTime = true },
+                )
+            }
+        }
+
         SectionLabel("ADS")
         SettingsCard {
             if (BillingManager.isAdFree) {
@@ -143,6 +237,7 @@ fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
                         purchaseStatus = null
                         BillingManager.launchPurchase(activity) { outcome ->
                             billingBusy = false
+                            Analytics.purchase(outcome.name)
                             purchaseStatus = when (outcome) {
                                 BillingManager.Outcome.PURCHASED -> {
                                     AdManager.discard()
@@ -177,6 +272,23 @@ fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
                         }
                     },
                 )
+                // Only shown where a privacy choice actually applies (the EEA and the UK);
+                // AdConsent reports that from the UMP SDK rather than guessing from locale.
+                if (AdConsent.isPrivacyOptionsRequired) {
+                    RowDivider()
+                    SettingsRow(
+                        icon = "info",
+                        title = "Privacy options",
+                        subtitle = privacyStatus ?: "Change your ad personalisation choice",
+                        subtitleTint = if (privacyStatus != null) Accent else Dim,
+                        onClick = {
+                            val activity = context as? android.app.Activity ?: return@SettingsRow
+                            AdConsent.showPrivacyOptions(activity) { error ->
+                                privacyStatus = error?.let { "Couldn't open the form. Please try again." }
+                            }
+                        },
+                    )
+                }
             }
         }
 
@@ -264,6 +376,44 @@ fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
         )
     }
 
+    if (pickTime) {
+        AlertDialog(
+            onDismissRequest = { pickTime = false },
+            containerColor = Color(0xFF141418),
+            titleContentColor = Color.White,
+            shape = RoundedCornerShape(20.dp),
+            title = { Text("When should we remind you?", style = ts(19f, FontWeight.Bold, Color.White)) },
+            text = {
+                Column {
+                    NOTIFY_TIMES.forEach { (hour, label) ->
+                        val on = hour == notifyHour
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable {
+                                    notifyHour = hour
+                                    OrbitPrefs.notifyHour = hour
+                                    DailyReminder.schedule(context)
+                                    pickTime = false
+                                }
+                                .padding(horizontal = 12.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(label, style = ts(15.5f, if (on) FontWeight.SemiBold else FontWeight.Normal, if (on) Accent else Color.White), modifier = Modifier.weight(1f))
+                            if (on) Text("✓", style = ts(16f, FontWeight.Bold, Accent))
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { pickTime = false }) {
+                    Text("Cancel", style = ts(15f, FontWeight.SemiBold, Mute))
+                }
+            },
+        )
+    }
+
     if (confirmClear) {
         AlertDialog(
             onDismissRequest = { confirmClear = false },
@@ -328,6 +478,7 @@ private fun SettingsRow(
     showChevron: Boolean = true,
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
+    trailingSlot: (@Composable () -> Unit)? = null,
 ) {
     Row(
         Modifier
@@ -351,6 +502,10 @@ private fun SettingsRow(
         }
         trailing?.let {
             Text(it, style = ts(14f, FontWeight.Medium, Mute), modifier = Modifier.padding(start = 8.dp))
+        }
+        trailingSlot?.let {
+            Spacer(Modifier.width(8.dp))
+            it()
         }
         if (showChevron) {
             Spacer(Modifier.width(6.dp))

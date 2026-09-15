@@ -22,8 +22,13 @@ object OrbitPrefs {
     private const val KEY_FIRST_OPEN = "first_open_day"
     private const val KEY_LAST_VERSION = "last_seen_version"
     private const val KEY_AD_FREE = "ad_free"
+    private const val KEY_NOTIFY_ENABLED = "notify_enabled"
+    private const val KEY_NOTIFY_HOUR = "notify_hour"
 
     private const val MILLIS_PER_DAY = 86_400_000L
+
+    /** Early evening — dark enough to feel like stargazing, early enough not to be a nuisance. */
+    const val DEFAULT_NOTIFY_HOUR = 19
 
     /** The one fact a brand-new install starts with, seeded only on a true first run. */
     private val FIRST_RUN_SAVED = setOf("moon")
@@ -66,6 +71,19 @@ object OrbitPrefs {
         get() = prefs?.getBoolean(KEY_AD_FREE, false) ?: false
         set(value) { prefs?.edit()?.putBoolean(KEY_AD_FREE, value)?.apply() }
 
+    /** Whether the daily fact reminder is scheduled. Off until the user asks for it. */
+    var notifyEnabled: Boolean
+        get() = prefs?.getBoolean(KEY_NOTIFY_ENABLED, false) ?: false
+        set(value) { prefs?.edit()?.putBoolean(KEY_NOTIFY_ENABLED, value)?.apply() }
+
+    /** Local hour of day the reminder fires, 0-23. */
+    var notifyHour: Int
+        get() = prefs?.getInt(KEY_NOTIFY_HOUR, DEFAULT_NOTIFY_HOUR) ?: DEFAULT_NOTIFY_HOUR
+        set(value) { prefs?.edit()?.putInt(KEY_NOTIFY_HOUR, value.coerceIn(0, 23))?.apply() }
+
+    /** Days since the epoch in the device's own time zone. Drives the streak and the daily pick. */
+    val dayIndex: Long get() = today()
+
     /** Consecutive days the app has been opened, today included. */
     val streak: Int get() = prefs?.getInt(KEY_STREAK, 1)?.coerceAtLeast(1) ?: 1
 
@@ -78,11 +96,14 @@ object OrbitPrefs {
         }
 
     /**
-     * Advances the streak for today's launch: the same day changes nothing, yesterday
-     * extends the run, and any longer gap (or a first launch) starts a new one at 1.
-     * Idempotent within a day, so calling it on every launch is safe.
+     * Advances the streak for today: the same day changes nothing, yesterday extends the
+     * run, and any longer gap (or a first launch) starts a new one at 1. Idempotent within
+     * a day, so calling it on every fact opened is safe.
+     *
+     * Called when a fact is actually watched rather than on launch, so the streak measures
+     * the habit the app is trying to build instead of counting bare launches.
      */
-    fun recordOpen() {
+    fun recordFactSeen() {
         val p = prefs ?: return
         val today = today()
         val last = p.getLong(KEY_LAST_OPEN, Long.MIN_VALUE)

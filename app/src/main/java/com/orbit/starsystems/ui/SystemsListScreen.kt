@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.verticalScroll
@@ -28,14 +31,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.orbit.starsystems.core.DailyFact
 import com.orbit.starsystems.core.FEATURED_SYSTEMS
+import com.orbit.starsystems.core.Fact
 import com.orbit.starsystems.core.FeaturedSystem
 import com.orbit.starsystems.core.SYSTEMS
 import com.orbit.starsystems.core.SceneId
 import com.orbit.starsystems.core.factsForSys
 
 @Composable
-fun SystemsList(onOpenSystem: (String) -> Unit) {
+fun SystemsList(
+    viewed: Set<String>,
+    onOpenSystem: (String) -> Unit,
+    onOpenFact: (String) -> Unit,
+    onOpenSearch: () -> Unit,
+) {
+    // Recomputed per composition rather than remembered: the pick rolls over at local
+    // midnight, and a session can outlive that.
+    val today = DailyFact.factForToday()
     Column(
         Modifier
             .fillMaxSize()
@@ -48,8 +61,20 @@ fun SystemsList(onOpenSystem: (String) -> Unit) {
                 .statusBarsPadding()
                 .padding(start = 22.dp, end = 22.dp, top = 28.dp, bottom = 8.dp),
         ) {
-            Text("SPACE FACTS", style = ts(12f, FontWeight.Bold, Mute, 0.34f))
-            Text("Star systems", style = ts(34f, FontWeight.Bold, Color.White, -0.02f), modifier = Modifier.padding(top = 6.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text("SPACE FACTS", style = ts(12f, FontWeight.Bold, Mute, 0.34f))
+                    Text("Star systems", style = ts(34f, FontWeight.Bold, Color.White, -0.02f), modifier = Modifier.padding(top = 6.dp))
+                }
+                Box(
+                    Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.08f))
+                        .clickable(onClick = onOpenSearch),
+                    contentAlignment = Alignment.Center,
+                ) { Ico("search", size = 20.dp, color = Color.White, sw = 2f) }
+            }
             Text(
                 "Worlds beyond worlds — explored one system at a time.",
                 style = ts(15f, FontWeight.Light, Mute, lineHeight = 22f),
@@ -57,10 +82,14 @@ fun SystemsList(onOpenSystem: (String) -> Unit) {
             )
         }
 
+        today?.let { TodayCard(fact = it, onClick = { onOpenFact(it.id) }) }
+
         FEATURED_SYSTEMS.forEach { sys ->
+            val inSys = factsForSys(sys.sysId)
             FeaturedCard(
                 sys = sys,
-                factCount = factsForSys(sys.sysId).size,
+                factCount = inSys.size,
+                seenCount = inSys.count { it.id in viewed },
                 onClick = { onOpenSystem(sys.sysId) },
             )
         }
@@ -103,10 +132,45 @@ fun SystemsList(onOpenSystem: (String) -> Unit) {
     }
 }
 
+/**
+ * The one fact the app leads with today, above the system library. Deliberately shorter
+ * than a [FeaturedCard] so it reads as a daily pick rather than a twelfth system.
+ */
+@Composable
+private fun TodayCard(fact: Fact, onClick: () -> Unit) {
+    Box(Modifier.padding(start = 22.dp, end = 22.dp, top = 16.dp)) {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(178.dp)
+                .clip(RoundedCornerShape(22.dp))
+                .border(1.dp, fact.accent.copy(alpha = 0.32f), RoundedCornerShape(22.dp))
+                .clickable(onClick = onClick),
+        ) {
+            MiniStage(fact.scene, fact.dur, fact.hero, active = false, paused = true, modifier = Modifier.fillMaxSize())
+            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.3f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.88f))))
+            Box(Modifier.align(Alignment.TopStart).padding(14.dp)) {
+                CategoryPill("Today", fact.accent, filledBg = fact.accent.copy(alpha = 0.16f))
+            }
+            Column(Modifier.align(Alignment.BottomStart).padding(start = 16.dp, end = 16.dp, bottom = 15.dp)) {
+                Text(fact.title, style = ts(26f, FontWeight.Bold, Color.White, -0.02f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    fact.sub,
+                    style = ts(13.5f, FontWeight.Medium, Color(0xFFD4D4D4)),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun FeaturedCard(
     sys: FeaturedSystem,
     factCount: Int,
+    seenCount: Int,
     onClick: () -> Unit,
 ) {
     val scene: SceneId = sys.scene
@@ -115,7 +179,12 @@ private fun FeaturedCard(
     val pill = sys.pill
     val pillColor = sys.pillColor
     val title = sys.title
-    val subtitle = "${sys.tagline} · $factCount facts"
+    val subtitle = when {
+        seenCount == 0 -> "${sys.tagline} · $factCount facts"
+        seenCount >= factCount -> "${sys.tagline} · all $factCount explored"
+        else -> "${sys.tagline} · $seenCount of $factCount explored"
+    }
+    val progress = if (factCount == 0) 0f else seenCount.toFloat() / factCount
     Box(Modifier.padding(start = 22.dp, end = 22.dp, top = 16.dp, bottom = 2.dp)) {
         Box(
             Modifier
@@ -129,6 +198,17 @@ private fun FeaturedCard(
             Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.38f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.86f))))
             Box(Modifier.align(Alignment.TopStart).padding(14.dp)) {
                 CategoryPill(pill, pillColor, filledBg = pillColor.copy(alpha = 0.16f))
+            }
+            if (seenCount > 0) {
+                Box(
+                    Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .height(3.dp)
+                        .background(Color.White.copy(alpha = 0.14f)),
+                ) {
+                    Box(Modifier.fillMaxHeight().fillMaxWidth(progress).background(sys.pillColor))
+                }
             }
             Row(
                 Modifier.align(Alignment.BottomStart).fillMaxWidth().padding(16.dp),

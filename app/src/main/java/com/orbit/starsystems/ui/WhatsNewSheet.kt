@@ -44,12 +44,15 @@ import com.orbit.starsystems.core.factsForSys
  * are looked up in the catalog, so the cards stay in step with the content in assets/.
  */
 private object Release {
-    const val HEADLINE = "A new neighbour, and five new wonders"
-    val NEW_SYSTEMS = listOf("teeg")
+    const val HEADLINE = "A fact a day, and a way to find any of them"
+    val NEW_SYSTEMS = emptyList<String>()
     val ALSO = listOf(
-        "Five new Spotlight facts: Titan, the Oort Cloud, gravitational waves, ʻOumuamua and the oldest light in the universe.",
-        "Fewer interruptions — full-screen ads are far rarer, and Remove ads in the You tab turns them off for good.",
-        "Facts no longer skip ahead behind an ad: the animation and music now pause and pick up exactly where they left off.",
+        "A fact of the day, waiting at the top of the Systems tab — one of the 131, chosen fresh each morning.",
+        "A daily reminder you can switch on in the You tab, at a time that suits you.",
+        "Search, at last: find any fact by its name, by what it is, or by a number buried in it.",
+        "Your progress now shows: seen facts are ticked, and every system tells you how far through it you are.",
+        "Share a fact as a picture — the real scene, ready to send.",
+        "A privacy choice for ads, where the law gives you one.",
     )
 }
 
