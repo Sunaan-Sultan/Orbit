@@ -3,7 +3,6 @@ package com.orbit.starsystems
 import com.orbit.starsystems.core.ALL_FACTS
 import com.orbit.starsystems.core.OrbitData
 import com.orbit.starsystems.core.Quiz
-import com.orbit.starsystems.core.QuizKind
 import com.orbit.starsystems.core.QuizQuestion
 import com.orbit.starsystems.core.factById
 import org.junit.Assert.assertEquals
@@ -14,11 +13,14 @@ import java.io.File
 import kotlin.random.Random
 
 /**
- * The quiz invents its wrong answers, so the things that make a question bad are properties of
- * generated text rather than of any one fact: an option that repeats, an answer that is also a
- * distractor, a number that is given away by the title it sits under. None of that is visible
- * by reading the generator — it only shows up across the whole catalog, which is what this
- * checks, over many seeds.
+ * The quiz is authored now rather than generated, so these checks fall into two halves: the bank
+ * itself has to be sound (every question answerable, every option distinct, every fact covered),
+ * and rounds built from it have to stay varied and non-repeating.
+ *
+ * Several of these guard against the specific ways the old generator produced nonsense — an
+ * answer repeated as its own distractor, an option that is a bare column heading, a question
+ * asked about a yardstick rather than its subject — so that hand-written additions cannot
+ * quietly reintroduce them.
  */
 class QuizTest {
 
@@ -35,6 +37,73 @@ class QuizTest {
         assertEquals(131, ALL_FACTS.size)
     }
 
+    // ───────────────────────── the bank ─────────────────────────
+
+    @Test
+    fun `every question points at a fact that ships`() {
+        assertTrue("bank is empty", Quiz.bank.isNotEmpty())
+        Quiz.bank.forEach { entry ->
+            assertTrue("unknown fact id ${entry.factId}", factById(entry.factId) != null)
+        }
+    }
+
+    /** A fact with no question can never be revisited from a missed answer. */
+    @Test
+    fun `every fact has at least one question`() {
+        val covered = Quiz.bank.mapTo(HashSet()) { it.factId }
+        val missing = ALL_FACTS.filter { it.id !in covered }.map { it.id }
+        assertTrue("facts with no question: $missing", missing.isEmpty())
+    }
+
+    /** A round needs one question per fact, so the bank must hold at least a round's worth. */
+    @Test
+    fun `the bank is comfortably larger than a round`() {
+        assertTrue("bank too small: ${Quiz.bank.size}", Quiz.bank.size >= Quiz.ROUND_SIZE * 4)
+    }
+
+    @Test
+    fun `every entry offers four distinct options`() {
+        Quiz.bank.forEach { entry ->
+            val options = listOf(entry.answer) + entry.wrong
+            assertEquals("${entry.prompt}: not three distractors — ${entry.wrong}", 3, entry.wrong.size)
+            assertEquals("${entry.prompt}: duplicate options — $options", 4, options.distinct().size)
+            options.forEach { assertTrue("${entry.prompt}: blank option", it.isNotBlank()) }
+        }
+    }
+
+    /** A prompt has to read as a question on its own, not as a column heading like "Undone?". */
+    @Test
+    fun `every prompt is a written-out question`() {
+        Quiz.bank.forEach { entry ->
+            assertTrue("not a question: ${entry.prompt}", entry.prompt.trim().endsWith("?"))
+            assertTrue(
+                "prompt too short to stand alone: ${entry.prompt}",
+                entry.prompt.trim().split(" ").size >= 4,
+            )
+        }
+    }
+
+    /** Two identical prompts are one question asked twice, whatever facts they hang off. */
+    @Test
+    fun `no prompt appears twice`() {
+        val repeated = Quiz.bank.groupBy { it.prompt }.filterValues { it.size > 1 }.keys
+        assertTrue("repeated prompts: $repeated", repeated.isEmpty())
+    }
+
+    /** The question must not contain its own answer. */
+    @Test
+    fun `no question gives its answer away in the prompt`() {
+        Quiz.bank.forEach { entry ->
+            val answer = entry.answer.lowercase().trim()
+            assertTrue(
+                "${entry.prompt}: answer visible in prompt",
+                answer.length < 4 || answer !in entry.prompt.lowercase(),
+            )
+        }
+    }
+
+    // ───────────────────────── rounds ─────────────────────────
+
     @Test
     fun `every round is full length and never repeats a fact`() {
         (0..60).forEach { seed ->
@@ -46,108 +115,44 @@ class QuizTest {
     }
 
     @Test
-    fun `every question has four distinct options and a valid answer`() {
+    fun `every question has four options and a valid answer index`() {
         allQuestions().forEach { q ->
             assertEquals("${q.prompt}: not four options — ${q.options}", 4, q.options.size)
-            assertEquals("${q.prompt}: duplicate options — ${q.options}", 4, q.options.distinct().size)
             assertTrue("${q.prompt}: answer index out of range", q.answerIndex in q.options.indices)
-            q.options.forEach { assertTrue("${q.prompt}: blank option", it.isNotBlank()) }
         }
     }
 
-    /** The whole point of a distractor is that it is wrong; an equal value is not. */
+    /** If the answer always landed in the same slot, the quiz could be played without reading. */
     @Test
-    fun `no distractor equals the answer after formatting`() {
-        allQuestions().forEach { q ->
-            val others = q.options.filterIndexed { i, _ -> i != q.answerIndex }
-            assertTrue("${q.prompt}: distractor equals answer — ${q.options}", q.answer !in others)
+    fun `the answer moves around the four slots`() {
+        val slots = allQuestions().groupingBy { it.answerIndex }.eachCount()
+        assertEquals("answer never reaches some slots: $slots", 4, slots.size)
+        val total = allQuestions().size
+        slots.forEach { (slot, count) ->
+            assertTrue("slot $slot is over-used: $slots", count < total / 2)
         }
     }
 
-    /**
-     * A generated number must be written the way the authored one is. If the answer is the only
-     * option with a comma, a degree sign or a decimal point, it can be picked without knowing
-     * anything. Only quantities are comparable this way — the other kinds offer titles, which
-     * differ in shape by nature.
-     */
+    /** Ten questions about one star is a worse round than ten across the catalogue. */
     @Test
-    fun `quantity options share the shape of the answer`() {
-        allQuestions().filter { it.kind == QuizKind.QUANTITY }.forEach { q ->
-            val shapes = q.options.map { option -> option.filter { !it.isDigit() } }
-            assertEquals(
-                "${q.subject} / ${q.prompt}: options differ in format — ${q.options}",
-                1,
-                shapes.distinct().size,
-            )
-        }
-    }
-
-    /** An option that rounds away to zero is a non-answer nobody would pick. */
-    @Test
-    fun `no option is a zero`() {
-        allQuestions().filter { it.kind == QuizKind.QUANTITY }.forEach { q ->
-            q.options.forEach { option ->
-                assertTrue(
-                    "${q.subject} / ${q.prompt}: zero option in ${q.options}",
-                    option.any { it in '1'..'9' },
-                )
-            }
-        }
-    }
-
-    /** Years are positions on a scale, not magnitudes — scaling them produces nonsense. */
-    @Test
-    fun `year options stay in a believable range`() {
-        allQuestions().filter { it.kind == QuizKind.QUANTITY }.forEach { q ->
-            val years = q.options.mapNotNull { Regex("""\b(\d{4})\b""").find(it)?.groupValues?.get(1)?.toInt() }
-            if (years.size == q.options.size && years.any { it in 1500..2100 }) {
-                assertTrue(
-                    "${q.subject} / ${q.prompt}: implausible year in ${q.options}",
-                    years.all { it in 1400..2200 },
-                )
-            }
-        }
-    }
-
-    /** The subject line must not contain the answer. */
-    @Test
-    fun `no question gives its answer away in the prompt`() {
-        allQuestions().forEach { q ->
-            val shown = "${q.subject.orEmpty()} ${q.prompt}".lowercase()
-            val answer = q.answer.lowercase().trim()
-            assertTrue("${q.subject} / ${q.prompt}: answer visible in prompt", answer !in shown)
-        }
-    }
-
-    /** Solar-system facts make system questions that answer themselves. */
-    @Test
-    fun `system questions never ask about our own system`() {
-        allQuestions().filter { it.kind == QuizKind.SYSTEM }.forEach { q ->
-            assertTrue("${q.subject}: Sol asked as a system question", factById(q.factId)?.sys != "sol")
-        }
-    }
-
-    /** Every question has to be traceable back to a real fact, for the end-of-round review. */
-    @Test
-    fun `every question points at a fact that exists`() {
-        allQuestions().forEach { q ->
-            assertTrue("unknown fact id ${q.factId}", factById(q.factId) != null)
+    fun `a round spreads across systems`() {
+        (0..20).forEach { seed ->
+            val systems = Quiz.round(Quiz.ROUND_SIZE, Random(seed))
+                .mapNotNull { factById(it.factId)?.sys }
+                .distinct()
+            assertTrue("seed $seed: only ${systems.size} system(s) — $systems", systems.size >= 5)
         }
     }
 
     @Test
     fun `a seed always produces the same round`() {
-        val a = Quiz.round(Quiz.ROUND_SIZE, Random(99))
-        val b = Quiz.round(Quiz.ROUND_SIZE, Random(99))
-        assertEquals(a, b)
+        assertEquals(Quiz.round(Quiz.ROUND_SIZE, Random(99)), Quiz.round(Quiz.ROUND_SIZE, Random(99)))
     }
 
-    /** Rounds must not all be the same question type, or the mix logic has silently broken. */
     @Test
-    fun `a round mixes question types`() {
-        (0..20).forEach { seed ->
-            val prompts = Quiz.round(Quiz.ROUND_SIZE, Random(seed)).map { it.prompt }
-            assertTrue("seed $seed: only one kind of question", prompts.distinct().size >= 3)
-        }
+    fun `different seeds produce different rounds`() {
+        val a = Quiz.round(Quiz.ROUND_SIZE, Random(1)).map { it.prompt }
+        val b = Quiz.round(Quiz.ROUND_SIZE, Random(2)).map { it.prompt }
+        assertTrue("two seeds gave the same round", a != b)
     }
 }

@@ -1,0 +1,2552 @@
+[
+  {
+    "fact": "sizes",
+    "q": "Which planet is the largest in the Solar System?",
+    "a": "Jupiter",
+    "w": [
+      "Saturn",
+      "Neptune",
+      "Earth"
+    ]
+  },
+  {
+    "fact": "sizes",
+    "q": "Roughly how many Earths would fit inside Jupiter?",
+    "a": "About 1,300",
+    "w": [
+      "About 13",
+      "About 130",
+      "About 13,000"
+    ]
+  },
+  {
+    "fact": "sizes",
+    "q": "Which is the smallest planet in the Solar System?",
+    "a": "Mercury",
+    "w": [
+      "Mars",
+      "Venus",
+      "Pluto"
+    ]
+  },
+  {
+    "fact": "sun",
+    "q": "How much of the Solar System's total mass is held by the Sun?",
+    "a": "About 99.9%",
+    "w": [
+      "About 75%",
+      "About 90%",
+      "About 50%"
+    ]
+  },
+  {
+    "fact": "sun",
+    "q": "Laid side by side, how many Earths would span the Sun's diameter?",
+    "a": "About 109",
+    "w": [
+      "About 11",
+      "About 1,090",
+      "About 3"
+    ]
+  },
+  {
+    "fact": "sun",
+    "q": "Roughly how many Earths would fit inside the Sun?",
+    "a": "About 1.3 million",
+    "w": [
+      "About 1,300",
+      "About 13,000",
+      "About 1.3 billion"
+    ]
+  },
+  {
+    "fact": "distance",
+    "q": "How far from the Sun does Neptune orbit, compared with Earth?",
+    "a": "About 30 times farther",
+    "w": [
+      "About 3 times farther",
+      "About 10 times farther",
+      "About 300 times farther"
+    ]
+  },
+  {
+    "fact": "distance",
+    "q": "How long does sunlight take to reach Neptune?",
+    "a": "About 4 hours",
+    "w": [
+      "About 4 minutes",
+      "About 4 days",
+      "About 40 minutes"
+    ]
+  },
+  {
+    "fact": "moon",
+    "q": "What famously fits, end to end, in the gap between Earth and the Moon?",
+    "a": "All seven other planets",
+    "w": [
+      "The Sun",
+      "Jupiter and Saturn only",
+      "The asteroid belt"
+    ]
+  },
+  {
+    "fact": "moon",
+    "q": "How far away is the Moon?",
+    "a": "About 384,000 km",
+    "w": [
+      "About 38,000 km",
+      "About 3.8 million km",
+      "About 150 million km"
+    ]
+  },
+  {
+    "fact": "light",
+    "q": "How long does sunlight take to reach Earth?",
+    "a": "About 8 minutes 20 seconds",
+    "w": [
+      "Instantly",
+      "About 1.3 seconds",
+      "About 80 minutes"
+    ]
+  },
+  {
+    "fact": "light",
+    "q": "How long does light from the Moon take to reach Earth?",
+    "a": "About 1.3 seconds",
+    "w": [
+      "About 8 minutes",
+      "About 1.3 minutes",
+      "Instantly"
+    ]
+  },
+  {
+    "fact": "light",
+    "q": "What is the speed of light in a vacuum?",
+    "a": "About 300,000 km per second",
+    "w": [
+      "About 300,000 km per hour",
+      "About 30,000 km per second",
+      "About 3 million km per second"
+    ]
+  },
+  {
+    "fact": "star",
+    "q": "Which star is closest to the Sun?",
+    "a": "Proxima Centauri",
+    "w": [
+      "Sirius",
+      "Barnard's Star",
+      "Alpha Centauri A"
+    ]
+  },
+  {
+    "fact": "star",
+    "q": "How long would our fastest probe take to reach the nearest star?",
+    "a": "Tens of thousands of years",
+    "w": [
+      "About 40 years",
+      "About 400 years",
+      "A few million years"
+    ]
+  },
+  {
+    "fact": "rings",
+    "q": "Saturn's rings span about 282,000 km. Roughly how thick are they?",
+    "a": "About ten metres",
+    "w": [
+      "About ten kilometres",
+      "About a thousand kilometres",
+      "About ten thousand kilometres"
+    ]
+  },
+  {
+    "fact": "rings",
+    "q": "What are Saturn's rings made of, almost entirely?",
+    "a": "Ice",
+    "w": [
+      "Iron dust",
+      "Rock",
+      "Frozen methane"
+    ]
+  },
+  {
+    "fact": "olympus",
+    "q": "Where is Olympus Mons, the tallest known volcano in the Solar System?",
+    "a": "Mars",
+    "w": [
+      "Venus",
+      "Io",
+      "The Moon"
+    ]
+  },
+  {
+    "fact": "olympus",
+    "q": "How tall is Olympus Mons compared with Mount Everest?",
+    "a": "About two and a half times",
+    "w": [
+      "About the same",
+      "About ten times",
+      "About twenty times"
+    ]
+  },
+  {
+    "fact": "redspot",
+    "q": "What is Jupiter's Great Red Spot?",
+    "a": "A vast storm",
+    "w": [
+      "A volcano",
+      "An impact crater",
+      "A shadow cast by a moon"
+    ]
+  },
+  {
+    "fact": "redspot",
+    "q": "For roughly how long have astronomers watched the Great Red Spot?",
+    "a": "More than 350 years",
+    "w": [
+      "About 35 years",
+      "About 100 years",
+      "More than 3,000 years"
+    ]
+  },
+  {
+    "fact": "diamondrain",
+    "q": "Inside Neptune and Uranus, immense pressure is thought to turn carbon into what?",
+    "a": "Diamond",
+    "w": [
+      "Graphite",
+      "Coal",
+      "Liquid metal"
+    ]
+  },
+  {
+    "fact": "diamondrain",
+    "q": "Which gas is broken apart to supply the carbon for Neptune's diamond rain?",
+    "a": "Methane",
+    "w": [
+      "Ammonia",
+      "Nitrogen",
+      "Carbon monoxide"
+    ]
+  },
+  {
+    "fact": "venusday",
+    "q": "On which planet does a single day last longer than its entire year?",
+    "a": "Venus",
+    "w": [
+      "Mercury",
+      "Uranus",
+      "Neptune"
+    ]
+  },
+  {
+    "fact": "venusday",
+    "q": "Seen from the surface of Venus, where would the Sun rise?",
+    "a": "In the west",
+    "w": [
+      "In the east",
+      "It never sets",
+      "Straight overhead"
+    ]
+  },
+  {
+    "fact": "uranus",
+    "q": "What is unusual about the way Uranus orbits the Sun?",
+    "a": "It is tipped on its side",
+    "w": [
+      "It orbits backwards",
+      "It orbits in a figure of eight",
+      "It orbits above the other planets"
+    ]
+  },
+  {
+    "fact": "uranus",
+    "q": "How long does each pole of Uranus spend in continuous sunlight?",
+    "a": "About 42 years",
+    "w": [
+      "About 6 months",
+      "About 4 years",
+      "About 400 years"
+    ]
+  },
+  {
+    "fact": "mercurytemp",
+    "q": "Why does Mercury swing between roasting days and freezing nights?",
+    "a": "It has almost no atmosphere to hold heat",
+    "w": [
+      "It orbits in and out of Earth's shadow",
+      "Its surface is half ice",
+      "It spins too quickly to warm up"
+    ]
+  },
+  {
+    "fact": "mercurytemp",
+    "q": "Roughly how large is Mercury's day-to-night temperature swing?",
+    "a": "More than 600°C",
+    "w": [
+      "About 60°C",
+      "About 200°C",
+      "More than 2,000°C"
+    ]
+  },
+  {
+    "fact": "saturnfloat",
+    "q": "Which planet is less dense than water, and would float in a big enough ocean?",
+    "a": "Saturn",
+    "w": [
+      "Jupiter",
+      "Neptune",
+      "Uranus"
+    ]
+  },
+  {
+    "fact": "saturnfloat",
+    "q": "What is Saturn mostly made of?",
+    "a": "Hydrogen and helium",
+    "w": [
+      "Water ice",
+      "Rock and iron",
+      "Methane and ammonia"
+    ]
+  },
+  {
+    "fact": "asteroidbelt",
+    "q": "Why has every spacecraft crossed the asteroid belt without trouble?",
+    "a": "The rocks are spread incredibly thinly",
+    "w": [
+      "They fly above the belt",
+      "The rocks are too small to matter",
+      "Their shields deflect the rocks"
+    ]
+  },
+  {
+    "fact": "asteroidbelt",
+    "q": "Where does the asteroid belt lie?",
+    "a": "Between Mars and Jupiter",
+    "w": [
+      "Between Earth and Mars",
+      "Beyond Neptune",
+      "Between Jupiter and Saturn"
+    ]
+  },
+  {
+    "fact": "plutoyear",
+    "q": "How long does Pluto take to orbit the Sun once?",
+    "a": "About 248 Earth years",
+    "w": [
+      "About 84 Earth years",
+      "About 500 Earth years",
+      "About 1,000 Earth years"
+    ]
+  },
+  {
+    "fact": "plutoyear",
+    "q": "Pluto was discovered in 1930. How many orbits has it completed since?",
+    "a": "Not even one",
+    "w": [
+      "Exactly one",
+      "About three",
+      "About twelve"
+    ]
+  },
+  {
+    "fact": "ac_triple",
+    "q": "How many stars make up the Alpha Centauri system?",
+    "a": "Three",
+    "w": [
+      "One",
+      "Two",
+      "Four"
+    ]
+  },
+  {
+    "fact": "ac_triple",
+    "q": "Which star of the Alpha Centauri system orbits far out from the other two?",
+    "a": "Proxima Centauri",
+    "w": [
+      "Alpha Centauri A",
+      "Alpha Centauri B",
+      "Sirius B"
+    ]
+  },
+  {
+    "fact": "ac_waltz",
+    "q": "How long do Alpha Centauri A and B take to orbit each other?",
+    "a": "About 79 years",
+    "w": [
+      "About 8 years",
+      "About 790 years",
+      "About 8,000 years"
+    ]
+  },
+  {
+    "fact": "ac_waltz",
+    "q": "How far apart do Alpha Centauri A and B swing over one orbit?",
+    "a": "From about 11 AU to 36 AU",
+    "w": [
+      "From about 1 AU to 3 AU",
+      "From about 100 AU to 360 AU",
+      "They stay a fixed distance apart"
+    ]
+  },
+  {
+    "fact": "ac_twin",
+    "q": "Which star is nearly a carbon copy of our own Sun?",
+    "a": "Alpha Centauri A",
+    "w": [
+      "Proxima Centauri",
+      "Sirius B",
+      "Barnard's Star"
+    ]
+  },
+  {
+    "fact": "ac_twin",
+    "q": "What kind of star is Alpha Centauri B?",
+    "a": "A slightly smaller, cooler orange star",
+    "w": [
+      "A white dwarf",
+      "A blue giant",
+      "A red dwarf"
+    ]
+  },
+  {
+    "fact": "ac_proxima",
+    "q": "What kind of star is Proxima Centauri?",
+    "a": "A red dwarf",
+    "w": [
+      "A white dwarf",
+      "A yellow star like the Sun",
+      "A blue supergiant"
+    ]
+  },
+  {
+    "fact": "ac_proxima",
+    "q": "What does Proxima Centauri do that makes it a hazard to nearby planets?",
+    "a": "It unleashes powerful flares",
+    "w": [
+      "It pulses in and out",
+      "It sheds its outer layers",
+      "It swells and shrinks each year"
+    ]
+  },
+  {
+    "fact": "ac_proximab",
+    "q": "How long does Proxima b take to orbit its star?",
+    "a": "About 11 days",
+    "w": [
+      "About 11 hours",
+      "About 11 months",
+      "About 11 years"
+    ]
+  },
+  {
+    "fact": "ac_proximab",
+    "q": "Why does Proxima b sit in the habitable zone despite its very tight orbit?",
+    "a": "Its star is extremely dim",
+    "w": [
+      "It has a thick atmosphere",
+      "It spins very quickly",
+      "It is shielded by a large moon"
+    ]
+  },
+  {
+    "fact": "ac_travel",
+    "q": "Roughly how long would our fastest probes take to reach Alpha Centauri?",
+    "a": "About 73,000 years",
+    "w": [
+      "About 730 years",
+      "About 7,300 years",
+      "About 730,000 years"
+    ]
+  },
+  {
+    "fact": "ac_travel",
+    "q": "A laser-pushed nanocraft might cut the trip to Alpha Centauri down to about how long?",
+    "a": "About 20 years",
+    "w": [
+      "About 2 years",
+      "About 200 years",
+      "About 2,000 years"
+    ]
+  },
+  {
+    "fact": "tp_seven",
+    "q": "How many roughly Earth-sized planets orbit TRAPPIST-1?",
+    "a": "Seven",
+    "w": [
+      "Three",
+      "Five",
+      "Nine"
+    ]
+  },
+  {
+    "fact": "tp_seven",
+    "q": "What kind of star is TRAPPIST-1?",
+    "a": "An ultracool red dwarf",
+    "w": [
+      "A Sun-like yellow star",
+      "A white dwarf",
+      "A blue-white giant"
+    ]
+  },
+  {
+    "fact": "tp_star",
+    "q": "How wide is TRAPPIST-1 compared with the Sun?",
+    "a": "About 12%",
+    "w": [
+      "About 1%",
+      "About 50%",
+      "About 90%"
+    ]
+  },
+  {
+    "fact": "tp_star",
+    "q": "TRAPPIST-1 is so cool that it shines mostly in which kind of light?",
+    "a": "Infrared",
+    "w": [
+      "Ultraviolet",
+      "X-ray",
+      "Blue visible light"
+    ]
+  },
+  {
+    "fact": "tp_compact",
+    "q": "The whole seven-world TRAPPIST-1 system would fit inside which orbit?",
+    "a": "Mercury's",
+    "w": [
+      "Earth's",
+      "Jupiter's",
+      "The Moon's"
+    ]
+  },
+  {
+    "fact": "tp_compact",
+    "q": "How far out does TRAPPIST-1's outermost planet orbit?",
+    "a": "About 0.06 AU",
+    "w": [
+      "About 0.6 AU",
+      "About 1 AU",
+      "About 6 AU"
+    ]
+  },
+  {
+    "fact": "tp_years",
+    "q": "How long is a year on TRAPPIST-1's innermost planet?",
+    "a": "About 1.5 days",
+    "w": [
+      "About 1.5 hours",
+      "About 15 days",
+      "About 1.5 years"
+    ]
+  },
+  {
+    "fact": "tp_years",
+    "q": "How long is a year on TRAPPIST-1's outermost planet?",
+    "a": "About 19 days",
+    "w": [
+      "About 19 hours",
+      "About 190 days",
+      "About 19 years"
+    ]
+  },
+  {
+    "fact": "tp_hz",
+    "q": "How many TRAPPIST-1 planets orbit within the habitable zone?",
+    "a": "Three",
+    "w": [
+      "One",
+      "Five",
+      "All seven"
+    ]
+  },
+  {
+    "fact": "tp_hz",
+    "q": "Which TRAPPIST-1 world is considered the best candidate for liquid water?",
+    "a": "TRAPPIST-1e",
+    "w": [
+      "TRAPPIST-1b",
+      "TRAPPIST-1c",
+      "TRAPPIST-1h"
+    ]
+  },
+  {
+    "fact": "tp_locked",
+    "q": "What does it mean that the TRAPPIST-1 planets are likely tidally locked?",
+    "a": "One face stays in daylight forever",
+    "w": [
+      "They never rotate at all",
+      "They orbit backwards",
+      "They always face each other"
+    ]
+  },
+  {
+    "fact": "tp_locked",
+    "q": "On a tidally locked TRAPPIST-1 world, what lies between the day and night sides?",
+    "a": "A ring of perpetual twilight",
+    "w": [
+      "A wall of storms",
+      "A frozen ocean",
+      "Nothing — the change is instant"
+    ]
+  },
+  {
+    "fact": "tp_sky",
+    "q": "How large can neighbouring planets appear in the sky of a TRAPPIST-1 world?",
+    "a": "Several times the size of our Moon",
+    "w": [
+      "About the size of Venus from Earth",
+      "Like ordinary stars",
+      "Half the sky"
+    ]
+  },
+  {
+    "fact": "tp_distance",
+    "q": "How far away is TRAPPIST-1?",
+    "a": "About 39 light-years",
+    "w": [
+      "About 4 light-years",
+      "About 390 light-years",
+      "About 3,900 light-years"
+    ]
+  },
+  {
+    "fact": "tp_distance",
+    "q": "In which constellation does TRAPPIST-1 lie?",
+    "a": "Aquarius",
+    "w": [
+      "Orion",
+      "Leo",
+      "Cygnus"
+    ]
+  },
+  {
+    "fact": "sir_bright",
+    "q": "Which is the brightest star in Earth's night sky?",
+    "a": "Sirius",
+    "w": [
+      "Canopus",
+      "Polaris",
+      "Betelgeuse"
+    ]
+  },
+  {
+    "fact": "sir_bright",
+    "q": "Which star is the second brightest in the night sky, after Sirius?",
+    "a": "Canopus",
+    "w": [
+      "Vega",
+      "Arcturus",
+      "Rigel"
+    ]
+  },
+  {
+    "fact": "sir_binary",
+    "q": "What is Sirius B?",
+    "a": "A white dwarf",
+    "w": [
+      "A red dwarf",
+      "A brown dwarf",
+      "A large rocky planet"
+    ]
+  },
+  {
+    "fact": "sir_binary",
+    "q": "How long do Sirius A and B take to orbit each other?",
+    "a": "About 50 years",
+    "w": [
+      "About 5 years",
+      "About 500 years",
+      "About 5,000 years"
+    ]
+  },
+  {
+    "fact": "sir_binary",
+    "q": "Sirius B was predicted from a wobble in 1844. When was it first actually seen?",
+    "a": "1862",
+    "w": [
+      "1801",
+      "1915",
+      "1930"
+    ]
+  },
+  {
+    "fact": "sir_hotter",
+    "q": "Roughly how much more light does Sirius A radiate than the Sun?",
+    "a": "About 25 times more",
+    "w": [
+      "About twice as much",
+      "About 250 times more",
+      "About the same"
+    ]
+  },
+  {
+    "fact": "sir_hotter",
+    "q": "What colour is the surface of Sirius A?",
+    "a": "Blue-white",
+    "w": [
+      "Deep red",
+      "Orange",
+      "Yellow, like the Sun"
+    ]
+  },
+  {
+    "fact": "sir_dwarf",
+    "q": "Sirius B packs about a full solar mass into a sphere the size of what?",
+    "a": "Earth",
+    "w": [
+      "The Moon",
+      "Jupiter",
+      "A city"
+    ]
+  },
+  {
+    "fact": "sir_dwarf",
+    "q": "A teaspoon of Sirius B's matter would weigh roughly as much as what?",
+    "a": "A small car",
+    "w": [
+      "A bag of sugar",
+      "A cruise ship",
+      "A mountain"
+    ]
+  },
+  {
+    "fact": "sir_dog",
+    "q": "Sirius is the brightest star of which constellation?",
+    "a": "Canis Major",
+    "w": [
+      "Orion",
+      "Ursa Major",
+      "Taurus"
+    ]
+  },
+  {
+    "fact": "sir_dog",
+    "q": "In ancient Egypt, the dawn rising of Sirius heralded what?",
+    "a": "The flooding of the Nile",
+    "w": [
+      "The winter solstice",
+      "The harvest",
+      "A season of storms"
+    ]
+  },
+  {
+    "fact": "sir_distance",
+    "q": "How far away is Sirius?",
+    "a": "About 8.6 light-years",
+    "w": [
+      "About 0.86 light-years",
+      "About 86 light-years",
+      "About 860 light-years"
+    ]
+  },
+  {
+    "fact": "kep_eight",
+    "q": "How many known planets orbit Kepler-90?",
+    "a": "Eight",
+    "w": [
+      "Four",
+      "Six",
+      "Twelve"
+    ]
+  },
+  {
+    "fact": "kep_eight",
+    "q": "Why was Kepler-90 a landmark discovery?",
+    "a": "It was the first star found to match our Sun's eight planets",
+    "w": [
+      "It was the first star found with any planet",
+      "It was the first system with liquid water",
+      "It was the first system found outside our galaxy"
+    ]
+  },
+  {
+    "fact": "kep_sunlike",
+    "q": "What kind of star is Kepler-90?",
+    "a": "A G-type star, much like the Sun",
+    "w": [
+      "A red dwarf",
+      "A white dwarf",
+      "A blue supergiant"
+    ]
+  },
+  {
+    "fact": "kep_sunlike",
+    "q": "How does Kepler-90 compare with the Sun in size?",
+    "a": "About 20% larger",
+    "w": [
+      "About half the size",
+      "About twice the size",
+      "Almost exactly the same"
+    ]
+  },
+  {
+    "fact": "kep_crowded",
+    "q": "All eight of Kepler-90's planets fit inside which orbit?",
+    "a": "Earth's",
+    "w": [
+      "Mercury's",
+      "Jupiter's",
+      "Neptune's"
+    ]
+  },
+  {
+    "fact": "kep_ai",
+    "q": "How was Kepler-90i, the system's eighth planet, discovered?",
+    "a": "By a neural network trained to spot transits",
+    "w": [
+      "By a single amateur astronomer",
+      "By direct imaging",
+      "By a gravitational-wave detector"
+    ]
+  },
+  {
+    "fact": "kep_ai",
+    "q": "In which year did AI turn up the eighth planet of Kepler-90?",
+    "a": "2017",
+    "w": [
+      "1997",
+      "2007",
+      "2023"
+    ]
+  },
+  {
+    "fact": "kep_distance",
+    "q": "How far away is Kepler-90?",
+    "a": "About 2,840 light-years",
+    "w": [
+      "About 28 light-years",
+      "About 284 light-years",
+      "About 28,400 light-years"
+    ]
+  },
+  {
+    "fact": "kep_distance",
+    "q": "In which constellation does Kepler-90 lie?",
+    "a": "Draco",
+    "w": [
+      "Cygnus",
+      "Cancer",
+      "Aries"
+    ]
+  },
+  {
+    "fact": "kp_dwarf",
+    "q": "What kind of star is Kepler-186?",
+    "a": "A cool red M-dwarf",
+    "w": [
+      "A Sun-like yellow star",
+      "A white dwarf",
+      "An orange giant"
+    ]
+  },
+  {
+    "fact": "kp_dwarf",
+    "q": "How do red dwarfs like Kepler-186 compare with the Sun in lifespan?",
+    "a": "They burn for far longer",
+    "w": [
+      "They burn out far sooner",
+      "They last about the same time",
+      "They never fuse hydrogen at all"
+    ]
+  },
+  {
+    "fact": "kp_transit",
+    "q": "How were Kepler-186's planets found?",
+    "a": "By the tiny repeating dip as each crossed the star",
+    "w": [
+      "By photographing them directly",
+      "By radio signals",
+      "By their gravitational lensing"
+    ]
+  },
+  {
+    "fact": "kp_transit",
+    "q": "How much does a Kepler-186 planet dim its star as it transits?",
+    "a": "Less than 0.1%",
+    "w": [
+      "About 1%",
+      "About 10%",
+      "About half"
+    ]
+  },
+  {
+    "fact": "kp_hz",
+    "q": "What made Kepler-186f a milestone?",
+    "a": "It was the first Earth-size planet found in a habitable zone",
+    "w": [
+      "It was the first planet ever found",
+      "It was the first planet with confirmed water",
+      "It was the first planet with an atmosphere"
+    ]
+  },
+  {
+    "fact": "kp_hz",
+    "q": "How large is Kepler-186f compared with Earth?",
+    "a": "About 10% larger",
+    "w": [
+      "About half the size",
+      "About twice the size",
+      "About ten times larger"
+    ]
+  },
+  {
+    "fact": "kp_sunset",
+    "q": "What would high noon look like on the surface of Kepler-186f?",
+    "a": "Dim and deep red, like dusk on Earth",
+    "w": [
+      "Blinding white",
+      "Blue and hazy",
+      "Completely dark"
+    ]
+  },
+  {
+    "fact": "kp_sunset",
+    "q": "Why might plants on Kepler-186f have evolved darker colours?",
+    "a": "To soak up feeble red light",
+    "w": [
+      "To reflect intense heat",
+      "To hide from predators",
+      "To survive constant storms"
+    ]
+  },
+  {
+    "fact": "kp_cygnus",
+    "q": "How far away is Kepler-186?",
+    "a": "About 580 light-years",
+    "w": [
+      "About 58 light-years",
+      "About 5,800 light-years",
+      "About 5.8 light-years"
+    ]
+  },
+  {
+    "fact": "kp_cygnus",
+    "q": "Kepler-186 lies in Cygnus. What is that constellation better known as?",
+    "a": "The Swan",
+    "w": [
+      "The Crab",
+      "The Great Dog",
+      "The Ram"
+    ]
+  },
+  {
+    "fact": "k2_intro",
+    "q": "What kind of world is K2-18 b?",
+    "a": "A sub-Neptune in the habitable zone",
+    "w": [
+      "A gas giant hugging its star",
+      "A rocky world smaller than Mercury",
+      "A moon of a larger planet"
+    ]
+  },
+  {
+    "fact": "k2_intro",
+    "q": "How far away is the K2-18 system?",
+    "a": "About 124 light-years",
+    "w": [
+      "About 12 light-years",
+      "About 1,240 light-years",
+      "About 4 light-years"
+    ]
+  },
+  {
+    "fact": "k2_dwarf",
+    "q": "How wide is K2-18 compared with the Sun?",
+    "a": "About 40%",
+    "w": [
+      "About 4%",
+      "About 80%",
+      "About twice as wide"
+    ]
+  },
+  {
+    "fact": "k2_dwarf",
+    "q": "Why can small red dwarfs like K2-18 shine for trillions of years?",
+    "a": "They burn their fuel very slowly",
+    "w": [
+      "They pull in fresh fuel from space",
+      "They are far hotter inside",
+      "They fuse helium instead of hydrogen"
+    ]
+  },
+  {
+    "fact": "k2_size",
+    "q": "How wide is K2-18 b compared with Earth?",
+    "a": "About 2.6 times",
+    "w": [
+      "About the same",
+      "About 10 times",
+      "About half"
+    ]
+  },
+  {
+    "fact": "k2_size",
+    "q": "What is odd about sub-Neptunes, the most common class of planet we have found?",
+    "a": "Our own Solar System has none",
+    "w": [
+      "They only orbit dead stars",
+      "They are all tidally locked",
+      "They have no atmospheres"
+    ]
+  },
+  {
+    "fact": "k2_hz",
+    "q": "How long does K2-18 b take to orbit its star?",
+    "a": "About 33 days",
+    "w": [
+      "About 33 hours",
+      "About 330 days",
+      "About 3 years"
+    ]
+  },
+  {
+    "fact": "k2_hz",
+    "q": "How can K2-18 b orbit so close and still be temperate?",
+    "a": "Its star is very dim",
+    "w": [
+      "It has a reflective atmosphere",
+      "It orbits on a steep tilt",
+      "It rotates extremely fast"
+    ]
+  },
+  {
+    "fact": "k2_transit",
+    "q": "Which telescope discovered K2-18 b, in 2015?",
+    "a": "Kepler, on its K2 mission",
+    "w": [
+      "Hubble",
+      "James Webb",
+      "Spitzer"
+    ]
+  },
+  {
+    "fact": "k2_spectrum",
+    "q": "How do astronomers work out which gases float in an exoplanet's atmosphere?",
+    "a": "They split the starlight that filters through it",
+    "w": [
+      "They measure the planet's magnetic field",
+      "They time how fast it orbits",
+      "They photograph its clouds directly"
+    ]
+  },
+  {
+    "fact": "k2_spectrum",
+    "q": "What does each gas leave behind in a spectrum?",
+    "a": "Dark lines at its own set of colours",
+    "w": [
+      "A shift in the planet's orbit",
+      "A flash of radio noise",
+      "A change in the star's colour"
+    ]
+  },
+  {
+    "fact": "k2_water",
+    "q": "What did astronomers detect in K2-18 b's atmosphere in 2019?",
+    "a": "Water vapour",
+    "w": [
+      "Oxygen",
+      "Methane",
+      "Liquid water on the surface"
+    ]
+  },
+  {
+    "fact": "k2_water",
+    "q": "Why was the 2019 detection at K2-18 b a first?",
+    "a": "No habitable-zone planet had shown water before",
+    "w": [
+      "No exoplanet had ever been imaged before",
+      "It was the first planet found by JWST",
+      "It was the first life ever detected"
+    ]
+  },
+  {
+    "fact": "k2_hycean",
+    "q": "What did JWST find in K2-18 b's air in 2023?",
+    "a": "Methane and carbon dioxide, but little ammonia",
+    "w": [
+      "Pure oxygen",
+      "Nothing at all",
+      "Sulphuric acid clouds"
+    ]
+  },
+  {
+    "fact": "k2_hycean",
+    "q": "What is a “Hycean” world?",
+    "a": "An ocean planet under a hydrogen atmosphere",
+    "w": [
+      "A world made entirely of ice",
+      "A planet with no atmosphere",
+      "A gas giant with a rocky core"
+    ]
+  },
+  {
+    "fact": "k2_distance",
+    "q": "In which constellation does K2-18 lie?",
+    "a": "Leo",
+    "w": [
+      "Cancer",
+      "Draco",
+      "Aries"
+    ]
+  },
+  {
+    "fact": "cn_intro",
+    "q": "The star 55 Cancri was formally given which name in 2015?",
+    "a": "Copernicus",
+    "w": [
+      "Galileo",
+      "Kepler",
+      "Brahe"
+    ]
+  },
+  {
+    "fact": "cn_intro",
+    "q": "How many planets circle the brighter star of 55 Cancri?",
+    "a": "Five",
+    "w": [
+      "Two",
+      "Three",
+      "Eight"
+    ]
+  },
+  {
+    "fact": "cn_family",
+    "q": "In which year did 55 Cancri become the first star beyond the Sun known to hold five planets?",
+    "a": "2007",
+    "w": [
+      "1996",
+      "1985",
+      "2015"
+    ]
+  },
+  {
+    "fact": "cn_family",
+    "q": "What kind of planet was the first one found at 55 Cancri, back in 1996?",
+    "a": "A hot Jupiter",
+    "w": [
+      "A rocky super-Earth",
+      "An icy dwarf planet",
+      "A rogue planet"
+    ]
+  },
+  {
+    "fact": "cn_giant",
+    "q": "How long does the gas giant 55 Cancri d take to orbit its star?",
+    "a": "About 14 years",
+    "w": [
+      "About 14 days",
+      "About 14 months",
+      "About 140 years"
+    ]
+  },
+  {
+    "fact": "cn_giant",
+    "q": "Why did 55 Cancri d matter when it was found in 2002?",
+    "a": "It was the first exoplanet on an orbit as wide as Jupiter's",
+    "w": [
+      "It was the first exoplanet ever found",
+      "It was the first planet with rings",
+      "It was the first planet with a moon"
+    ]
+  },
+  {
+    "fact": "cn_binary",
+    "q": "What is the faint companion bound to 55 Cancri A?",
+    "a": "A red dwarf",
+    "w": [
+      "A white dwarf",
+      "A neutron star",
+      "A brown dwarf"
+    ]
+  },
+  {
+    "fact": "cn_binary",
+    "q": "How far apart are the two stars of 55 Cancri?",
+    "a": "About 1,000 AU",
+    "w": [
+      "About 10 AU",
+      "About 100 AU",
+      "About 100,000 AU"
+    ]
+  },
+  {
+    "fact": "cn_naked",
+    "q": "What makes 55 Cancri unusual among planet-hosting stars?",
+    "a": "You can just see it with the naked eye",
+    "w": [
+      "It is the brightest star in the sky",
+      "It is visible only from the southern hemisphere",
+      "It can be seen during the day"
+    ]
+  },
+  {
+    "fact": "cn_naked",
+    "q": "How faint a star can the unaided human eye pick out?",
+    "a": "About magnitude 6.5",
+    "w": [
+      "About magnitude 1",
+      "About magnitude 13",
+      "About magnitude 20"
+    ]
+  },
+  {
+    "fact": "cn_lava",
+    "q": "How hot does the daylit face of 55 Cancri e get?",
+    "a": "About 2,400 °C",
+    "w": [
+      "About 240 °C",
+      "About 600 °C",
+      "About 24,000 °C"
+    ]
+  },
+  {
+    "fact": "cn_lava",
+    "q": "What do astronomers picture covering the surface of 55 Cancri e?",
+    "a": "An ocean of magma",
+    "w": [
+      "A global water ocean",
+      "Thick ice sheets",
+      "Bare, cratered rock"
+    ]
+  },
+  {
+    "fact": "cn_year",
+    "q": "How long is a year on 55 Cancri e?",
+    "a": "About 17.7 hours",
+    "w": [
+      "About 17.7 days",
+      "About 7 days",
+      "About 17.7 years"
+    ]
+  },
+  {
+    "fact": "cn_year",
+    "q": "How close does 55 Cancri e orbit its star, compared with Mercury?",
+    "a": "About one twenty-fifth of Mercury's distance",
+    "w": [
+      "About half Mercury's distance",
+      "About the same",
+      "About twice Mercury's distance"
+    ]
+  },
+  {
+    "fact": "cn_tidal",
+    "q": "What is strange about the night side of 55 Cancri e?",
+    "a": "It stays surprisingly warm",
+    "w": [
+      "It is frozen solid",
+      "It glows brighter than the day side",
+      "It faces a second star"
+    ]
+  },
+  {
+    "fact": "cn_diamond",
+    "q": "What was proposed about 55 Cancri e in 2012?",
+    "a": "That it hid a mantle of diamond",
+    "w": [
+      "That it was made of solid iron",
+      "That it had a breathable atmosphere",
+      "That it had once been a star"
+    ]
+  },
+  {
+    "fact": "cn_diamond",
+    "q": "What became of the diamond-planet idea?",
+    "a": "Better data found far less carbon than assumed",
+    "w": [
+      "It was confirmed by JWST",
+      "The planet turned out not to exist",
+      "It is still the leading theory"
+    ]
+  },
+  {
+    "fact": "cn_atmos",
+    "q": "What did JWST find above the lava world 55 Cancri e in 2024?",
+    "a": "An atmosphere rich in carbon monoxide and dioxide",
+    "w": [
+      "Water clouds",
+      "A breathable oxygen layer",
+      "No atmosphere at all"
+    ]
+  },
+  {
+    "fact": "cn_distance",
+    "q": "In which constellation does 55 Cancri lie?",
+    "a": "Cancer",
+    "w": [
+      "Leo",
+      "Aries",
+      "Ophiuchus"
+    ]
+  },
+  {
+    "fact": "cn_distance",
+    "q": "How far away is 55 Cancri?",
+    "a": "About 41 light-years",
+    "w": [
+      "About 4 light-years",
+      "About 410 light-years",
+      "About 140 light-years"
+    ]
+  },
+  {
+    "fact": "br_intro",
+    "q": "What makes Barnard's Star special among our neighbours?",
+    "a": "It is the closest star that stands on its own",
+    "w": [
+      "It is the closest star of all",
+      "It is the brightest star nearby",
+      "It is the only star with planets nearby"
+    ]
+  },
+  {
+    "fact": "br_intro",
+    "q": "In which constellation is Barnard's Star found?",
+    "a": "Ophiuchus",
+    "w": [
+      "Leo",
+      "Aries",
+      "Cancer"
+    ]
+  },
+  {
+    "fact": "br_intro",
+    "q": "How many worlds are now known around Barnard's Star?",
+    "a": "Four",
+    "w": [
+      "One",
+      "Two",
+      "Seven"
+    ]
+  },
+  {
+    "fact": "br_dwarf",
+    "q": "How much of the Sun's mass does Barnard's Star carry?",
+    "a": "About 16%",
+    "w": [
+      "About 1.6%",
+      "About 50%",
+      "About 90%"
+    ]
+  },
+  {
+    "fact": "br_dwarf",
+    "q": "Roughly how much of the Sun's light does Barnard's Star give off?",
+    "a": "About a three-hundredth",
+    "w": [
+      "About a third",
+      "About a thousandth of a per cent",
+      "About the same"
+    ]
+  },
+  {
+    "fact": "br_dim",
+    "q": "Why can't you see Barnard's Star with the naked eye, despite its closeness?",
+    "a": "At magnitude 9.5 it is far too faint",
+    "w": [
+      "It is hidden behind dust",
+      "It only shines in radio waves",
+      "It is visible only from space"
+    ]
+  },
+  {
+    "fact": "br_dim",
+    "q": "In which year was Barnard's Star finally picked out?",
+    "a": "1916",
+    "w": [
+      "1816",
+      "1863",
+      "1963"
+    ]
+  },
+  {
+    "fact": "br_ancient",
+    "q": "Roughly how old is Barnard's Star?",
+    "a": "About 10 billion years",
+    "w": [
+      "About 1 billion years",
+      "About 4.6 billion years",
+      "About 100 billion years"
+    ]
+  },
+  {
+    "fact": "br_ancient",
+    "q": "What marks Barnard's Star as one of the galaxy's old ones?",
+    "a": "Its metal-poor chemistry and plunging orbit",
+    "w": [
+      "Its enormous size",
+      "Its blue-white colour",
+      "Its lack of any planets"
+    ]
+  },
+  {
+    "fact": "br_flare",
+    "q": "What did astronomers watch Barnard's Star do in 1998?",
+    "a": "Throw out a flare that briefly doubled its brightness",
+    "w": [
+      "Swallow one of its planets",
+      "Dim by half for a month",
+      "Eject a shell of gas"
+    ]
+  },
+  {
+    "fact": "br_flare",
+    "q": "Why is flaring bad news for planets around a red dwarf?",
+    "a": "It strips away their atmospheres",
+    "w": [
+      "It pushes them out of orbit",
+      "It freezes their surfaces",
+      "It slows their rotation"
+    ]
+  },
+  {
+    "fact": "br_runaway",
+    "q": "What record does Barnard's Star hold?",
+    "a": "The largest proper motion of any known star",
+    "w": [
+      "The closest star to the Sun",
+      "The oldest known star",
+      "The faintest star ever seen"
+    ]
+  },
+  {
+    "fact": "br_runaway",
+    "q": "How fast does Barnard's Star shift against the background sky?",
+    "a": "About 10.4 arcseconds a year",
+    "w": [
+      "About 1 arcsecond a year",
+      "About 10.4 degrees a year",
+      "About 104 arcseconds a year"
+    ]
+  },
+  {
+    "fact": "br_moon",
+    "q": "How long does Barnard's Star take to cross a patch of sky the width of the full Moon?",
+    "a": "About 180 years",
+    "w": [
+      "About 18 years",
+      "About 1,800 years",
+      "About 18,000 years"
+    ]
+  },
+  {
+    "fact": "br_moon",
+    "q": "How wide does the full Moon appear in our sky?",
+    "a": "About half a degree",
+    "w": [
+      "About 5 degrees",
+      "About 1 arcsecond",
+      "About 10 degrees"
+    ]
+  },
+  {
+    "fact": "br_approach",
+    "q": "What will Barnard's Star briefly become in about ten thousand years?",
+    "a": "The closest star to the Sun",
+    "w": [
+      "The brightest star in our sky",
+      "A supernova",
+      "A companion to the Sun"
+    ]
+  },
+  {
+    "fact": "br_approach",
+    "q": "How fast is Barnard's Star falling towards us?",
+    "a": "About 110 km per second",
+    "w": [
+      "About 11 km per second",
+      "About 1,100 km per second",
+      "About 110 km per hour"
+    ]
+  },
+  {
+    "fact": "br_phantom",
+    "q": "From 1963, Peter van de Kamp claimed to have found what at Barnard's Star?",
+    "a": "Jupiter-like planets",
+    "w": [
+      "A second star",
+      "A ring of comets",
+      "An artificial signal"
+    ]
+  },
+  {
+    "fact": "br_phantom",
+    "q": "What turned out to be causing van de Kamp's famous wobble?",
+    "a": "Adjustments made to his own telescope",
+    "w": [
+      "A passing comet",
+      "An undiscovered planet after all",
+      "Errors in his assistant's notes"
+    ]
+  },
+  {
+    "fact": "br_found",
+    "q": "In which year was the first genuine planet around Barnard's Star announced?",
+    "a": "2024",
+    "w": [
+      "1963",
+      "2004",
+      "2016"
+    ]
+  },
+  {
+    "fact": "br_found",
+    "q": "How was Barnard b detected?",
+    "a": "By a tug on the star of a few centimetres a second",
+    "w": [
+      "By a transit across the star",
+      "By direct imaging",
+      "By a radio pulse"
+    ]
+  },
+  {
+    "fact": "br_four",
+    "q": "How do the four Barnard's Star planets compare with Earth?",
+    "a": "Each weighs a fifth to a third as much",
+    "w": [
+      "Each is about twice Earth's mass",
+      "They are all gas giants",
+      "They are all larger than Neptune"
+    ]
+  },
+  {
+    "fact": "br_four",
+    "q": "How long do the orbits of Barnard's four worlds take?",
+    "a": "Between two and seven days",
+    "w": [
+      "Between two and seven months",
+      "Between two and seven years",
+      "Between two and seven hours"
+    ]
+  },
+  {
+    "fact": "br_roast",
+    "q": "Where do Barnard's four planets sit relative to the star's habitable zone?",
+    "a": "Well inside it — all too warm for liquid water",
+    "w": [
+      "Right in the middle of it",
+      "Far beyond it, frozen solid",
+      "Two inside, two outside"
+    ]
+  },
+  {
+    "fact": "br_daedalus",
+    "q": "Which star did Project Daedalus pick as the target for its fusion-driven probe?",
+    "a": "Barnard's Star",
+    "w": [
+      "Proxima Centauri",
+      "Sirius",
+      "Wolf 359"
+    ]
+  },
+  {
+    "fact": "br_daedalus",
+    "q": "How fast was Project Daedalus designed to cruise?",
+    "a": "About an eighth of the speed of light",
+    "w": [
+      "About half the speed of light",
+      "About 1% of the speed of light",
+      "Faster than light"
+    ]
+  },
+  {
+    "fact": "br_distance",
+    "q": "How far away is Barnard's Star?",
+    "a": "About 5.96 light-years",
+    "w": [
+      "About 4.24 light-years",
+      "About 8.6 light-years",
+      "About 12.5 light-years"
+    ]
+  },
+  {
+    "fact": "br_distance",
+    "q": "Which system is the only one closer to us than Barnard's Star?",
+    "a": "Alpha Centauri",
+    "w": [
+      "Sirius",
+      "Wolf 359",
+      "Teegarden's Star"
+    ]
+  },
+  {
+    "fact": "wf_intro",
+    "q": "How far away is Wolf 359?",
+    "a": "About 7.86 light-years",
+    "w": [
+      "About 0.86 light-years",
+      "About 12.5 light-years",
+      "About 78 light-years"
+    ]
+  },
+  {
+    "fact": "wf_intro",
+    "q": "In which constellation does Wolf 359 lie?",
+    "a": "Leo",
+    "w": [
+      "Ophiuchus",
+      "Aquarius",
+      "Aries"
+    ]
+  },
+  {
+    "fact": "wf_tiny",
+    "q": "How much of the Sun's mass does Wolf 359 hold?",
+    "a": "About 9%",
+    "w": [
+      "About 0.9%",
+      "About 30%",
+      "About 60%"
+    ]
+  },
+  {
+    "fact": "wf_tiny",
+    "q": "Wolf 359 squeezes roughly ninety Jupiters into a ball how wide?",
+    "a": "About one and a half Jupiters",
+    "w": [
+      "About ninety Jupiters",
+      "About the width of Earth",
+      "About half the Sun"
+    ]
+  },
+  {
+    "fact": "wf_ember",
+    "q": "Wolf 359 pours nearly all of its energy out as what?",
+    "a": "Infrared heat",
+    "w": [
+      "Ultraviolet light",
+      "Radio waves",
+      "Visible red light"
+    ]
+  },
+  {
+    "fact": "wf_ember",
+    "q": "How hot is the surface of Wolf 359?",
+    "a": "About 2,800 K",
+    "w": [
+      "About 280 K",
+      "About 5,800 K",
+      "About 28,000 K"
+    ]
+  },
+  {
+    "fact": "wf_invisible",
+    "q": "What do you need to see Wolf 359 at all?",
+    "a": "A telescope of about 20 cm",
+    "w": [
+      "Nothing — it is naked-eye visible",
+      "A decent pair of binoculars",
+      "A radio dish"
+    ]
+  },
+  {
+    "fact": "wf_invisible",
+    "q": "How faint is Wolf 359?",
+    "a": "Magnitude 13.5",
+    "w": [
+      "Magnitude 1.35",
+      "Magnitude 6.5",
+      "Magnitude 9.5"
+    ]
+  },
+  {
+    "fact": "wf_young",
+    "q": "How old is Wolf 359 thought to be?",
+    "a": "Under a billion years",
+    "w": [
+      "About 4.6 billion years",
+      "About 10 billion years",
+      "About 50 billion years"
+    ]
+  },
+  {
+    "fact": "wf_young",
+    "q": "How long should a dwarf star like Wolf 359 keep burning?",
+    "a": "Trillions of years",
+    "w": [
+      "Millions of years",
+      "About 5 billion more years",
+      "Only a few thousand years"
+    ]
+  },
+  {
+    "fact": "wf_flare",
+    "q": "Under what variable-star name is Wolf 359 catalogued?",
+    "a": "CN Leonis",
+    "w": [
+      "CN Aquarii",
+      "V Leonis",
+      "AD Leonis"
+    ]
+  },
+  {
+    "fact": "wf_flare",
+    "q": "How often can Wolf 359 flare?",
+    "a": "Several times a day",
+    "w": [
+      "Once a decade",
+      "Once a year",
+      "Once every few centuries"
+    ]
+  },
+  {
+    "fact": "wf_maybe",
+    "q": "What is the status of the two planets reported at Wolf 359 in 2019?",
+    "a": "Still only candidates",
+    "w": [
+      "Both confirmed",
+      "Both ruled out",
+      "One confirmed, one ruled out"
+    ]
+  },
+  {
+    "fact": "wf_maybe",
+    "q": "Why are planets hard to confirm around a star like Wolf 359?",
+    "a": "Its frequent flares can fake a planet's wobble",
+    "w": [
+      "It is too far away to measure",
+      "It is hidden behind dust",
+      "It moves too quickly to track"
+    ]
+  },
+  {
+    "fact": "wf_hugging",
+    "q": "How long would a year last for a world in Wolf 359's habitable zone?",
+    "a": "About a week",
+    "w": [
+      "About a month",
+      "About a year",
+      "About a day"
+    ]
+  },
+  {
+    "fact": "wf_hugging",
+    "q": "Where does the habitable zone of Wolf 359 sit?",
+    "a": "Around 0.03 AU — a twelfth of Mercury's orbit",
+    "w": [
+      "Around 1 AU, like Earth's",
+      "Around 0.4 AU, like Mercury's",
+      "Beyond 5 AU"
+    ]
+  },
+  {
+    "fact": "wf_wolf",
+    "q": "How did Max Wolf find Wolf 359 in 1918?",
+    "a": "By comparing photographic plates years apart",
+    "w": [
+      "By measuring its radio emission",
+      "By watching it transit the Sun",
+      "By spotting a flare through an eyepiece"
+    ]
+  },
+  {
+    "fact": "wf_wolf",
+    "q": "Where does the “359” in Wolf 359 come from?",
+    "a": "Its entry number in Max Wolf's catalogue",
+    "w": [
+      "Its distance in light-days",
+      "The year it was catalogued",
+      "Its position in the constellation"
+    ]
+  },
+  {
+    "fact": "wf_oursun",
+    "q": "Seen from Wolf 359, in which constellation would our Sun appear?",
+    "a": "Aquarius",
+    "w": [
+      "Leo",
+      "Orion",
+      "Canis Major"
+    ]
+  },
+  {
+    "fact": "wf_oursun",
+    "q": "How bright would our Sun look from Wolf 359?",
+    "a": "An ordinary star, around magnitude 2",
+    "w": [
+      "The brightest star in their sky",
+      "Far too faint to see",
+      "Bright enough to cast shadows"
+    ]
+  },
+  {
+    "fact": "wf_distance",
+    "q": "Where does Wolf 359 rank among the closest systems to the Sun?",
+    "a": "Fifth",
+    "w": [
+      "First",
+      "Second",
+      "Twentieth"
+    ]
+  },
+  {
+    "fact": "wf_borg",
+    "q": "Why do many people recognise the name Wolf 359?",
+    "a": "A 1990 Star Trek episode staged a battle there",
+    "w": [
+      "A famous comet was found there",
+      "It was the first star with a known planet",
+      "It briefly became visible to the naked eye"
+    ]
+  },
+  {
+    "fact": "tg_intro",
+    "q": "Until which year did Teegarden's Star carry no name at all?",
+    "a": "2003",
+    "w": [
+      "1918",
+      "1963",
+      "2019"
+    ]
+  },
+  {
+    "fact": "tg_intro",
+    "q": "In which constellation does Teegarden's Star lie?",
+    "a": "Aries",
+    "w": [
+      "Leo",
+      "Aquarius",
+      "Ophiuchus"
+    ]
+  },
+  {
+    "fact": "tg_hidden",
+    "q": "How was Teegarden's Star discovered?",
+    "a": "By trawling archived asteroid-survey images",
+    "w": [
+      "By pointing a new telescope at it",
+      "By a radio survey",
+      "By a chance naked-eye sighting"
+    ]
+  },
+  {
+    "fact": "tg_hidden",
+    "q": "What gave Teegarden's Star away in the archived images?",
+    "a": "One faint dot moved far too fast to be distant",
+    "w": [
+      "A sudden bright flare",
+      "A regular dip in brightness",
+      "An unusual colour"
+    ]
+  },
+  {
+    "fact": "tg_tiny",
+    "q": "How wide is Teegarden's Star compared with Jupiter?",
+    "a": "Only a few per cent wider",
+    "w": [
+      "About ten times wider",
+      "About half as wide",
+      "About a hundred times wider"
+    ]
+  },
+  {
+    "fact": "tg_tiny",
+    "q": "How much of the Sun's mass does Teegarden's Star hold?",
+    "a": "About 9%",
+    "w": [
+      "About 0.9%",
+      "About 25%",
+      "About 50%"
+    ]
+  },
+  {
+    "fact": "tg_ember",
+    "q": "Why did a star as close as Teegarden's stay hidden for so long?",
+    "a": "Almost all its light is invisible infrared",
+    "w": [
+      "It is blocked by a dust cloud",
+      "It only shines in short bursts",
+      "It sits too near the Sun in our sky"
+    ]
+  },
+  {
+    "fact": "tg_ember",
+    "q": "How much visible light does Teegarden's Star give off, compared with the Sun?",
+    "a": "Under a thousandth",
+    "w": [
+      "About a tenth",
+      "About a hundredth",
+      "About the same"
+    ]
+  },
+  {
+    "fact": "tg_ancient",
+    "q": "Roughly how old is Teegarden's Star?",
+    "a": "About 8 billion years",
+    "w": [
+      "About 800 million years",
+      "About 4.6 billion years",
+      "About 80 billion years"
+    ]
+  },
+  {
+    "fact": "tg_worlds",
+    "q": "How many planets are known at Teegarden's Star?",
+    "a": "Three",
+    "w": [
+      "One",
+      "Five",
+      "Seven"
+    ]
+  },
+  {
+    "fact": "tg_worlds",
+    "q": "What is unusual about the Teegarden planets as a set?",
+    "a": "Every one is about Earth's mass or less",
+    "w": [
+      "They are all gas giants",
+      "They all orbit backwards",
+      "They share a single orbit"
+    ]
+  },
+  {
+    "fact": "tg_earthlike",
+    "q": "What does the Earth Similarity Index measure?",
+    "a": "How closely a world resembles Earth, from 0 to 1",
+    "w": [
+      "How likely a world is to hold life",
+      "How far a world is from Earth",
+      "How old a world is"
+    ]
+  },
+  {
+    "fact": "tg_earthlike",
+    "q": "What did Teegarden b score on the Earth Similarity Index?",
+    "a": "0.95 — the highest of any known planet",
+    "w": [
+      "0.5, an average score",
+      "0.95, but several others score higher",
+      "1.0, a perfect match"
+    ]
+  },
+  {
+    "fact": "tg_year",
+    "q": "How long is a year on Teegarden b?",
+    "a": "About 4.9 days",
+    "w": [
+      "About 4.9 hours",
+      "About 49 days",
+      "About 4.9 months"
+    ]
+  },
+  {
+    "fact": "tg_year",
+    "q": "The whole Teegarden system would fit inside which orbit?",
+    "a": "Mercury's",
+    "w": [
+      "Earth's",
+      "Venus's",
+      "The Moon's"
+    ]
+  },
+  {
+    "fact": "tg_seen",
+    "q": "What could an observer at Teegarden's Star see that most stars cannot?",
+    "a": "Earth crossing the face of the Sun",
+    "w": [
+      "Radio broadcasts from Earth",
+      "City lights on Earth's night side",
+      "The Moon's surface"
+    ]
+  },
+  {
+    "fact": "tg_seen",
+    "q": "How much does Earth dim the Sun as it transits, seen from afar?",
+    "a": "About 0.008%",
+    "w": [
+      "About 0.8%",
+      "About 8%",
+      "About 0.08%"
+    ]
+  },
+  {
+    "fact": "tg_distance",
+    "q": "How far away is Teegarden's Star?",
+    "a": "About 12.5 light-years",
+    "w": [
+      "About 1.25 light-years",
+      "About 5.96 light-years",
+      "About 125 light-years"
+    ]
+  },
+  {
+    "fact": "sp_voyager",
+    "q": "In which year were the twin Voyager probes launched?",
+    "a": "1977",
+    "w": [
+      "1969",
+      "1985",
+      "1997"
+    ]
+  },
+  {
+    "fact": "sp_voyager",
+    "q": "Where are the Voyager probes now?",
+    "a": "In interstellar space",
+    "w": [
+      "In orbit around Jupiter",
+      "Inside the asteroid belt",
+      "Just past Mars"
+    ]
+  },
+  {
+    "fact": "sp_sun",
+    "q": "How much hydrogen does the Sun fuse into helium every second?",
+    "a": "About 600 million tonnes",
+    "w": [
+      "About 600 tonnes",
+      "About 600 thousand tonnes",
+      "About 600 billion tonnes"
+    ]
+  },
+  {
+    "fact": "sp_sun",
+    "q": "How wide is the Sun?",
+    "a": "About 1.39 million km",
+    "w": [
+      "About 139,000 km",
+      "About 13.9 million km",
+      "About 150 million km"
+    ]
+  },
+  {
+    "fact": "sp_iss",
+    "q": "How often does the crew of the Space Station see a sunrise or sunset?",
+    "a": "Every 45 minutes",
+    "w": [
+      "Every 90 minutes",
+      "Every 12 hours",
+      "Once a day, like on Earth"
+    ]
+  },
+  {
+    "fact": "sp_iss",
+    "q": "Roughly how big is the International Space Station?",
+    "a": "About the size of a football field",
+    "w": [
+      "About the size of a bus",
+      "About the size of a small town",
+      "About the size of a house"
+    ]
+  },
+  {
+    "fact": "sp_starship",
+    "q": "What top speed do the most ambitious starship concepts aim for?",
+    "a": "Around a tenth of light speed",
+    "w": [
+      "Around half of light speed",
+      "Faster than light",
+      "Around 1% of light speed"
+    ]
+  },
+  {
+    "fact": "sp_starship",
+    "q": "Which of these is a proposed way to drive an interstellar craft?",
+    "a": "A vast light-sail pushed by lasers",
+    "w": [
+      "A solar panel array",
+      "A nuclear submarine reactor",
+      "A gravity tractor"
+    ]
+  },
+  {
+    "fact": "sp_olympus",
+    "q": "How tall is Olympus Mons?",
+    "a": "About 22 km",
+    "w": [
+      "About 8.8 km",
+      "About 2.2 km",
+      "About 220 km"
+    ]
+  },
+  {
+    "fact": "sp_olympus",
+    "q": "Why could Olympus Mons grow so large?",
+    "a": "Low gravity and a crust that never shifted",
+    "w": [
+      "Constant meteor impacts",
+      "Mars's thick atmosphere",
+      "Water erosion piling up rock"
+    ]
+  },
+  {
+    "fact": "sp_blackhole",
+    "q": "What is the event horizon of a black hole?",
+    "a": "The boundary past which nothing can escape",
+    "w": [
+      "The black hole's solid surface",
+      "The ring of orbiting gas",
+      "The point where gravity reverses"
+    ]
+  },
+  {
+    "fact": "sp_blackhole",
+    "q": "How massive is Sagittarius A*, at the heart of our galaxy?",
+    "a": "About 4 million Suns",
+    "w": [
+      "About 4,000 Suns",
+      "About 4 billion Suns",
+      "About 40 Suns"
+    ]
+  },
+  {
+    "fact": "sp_wormhole",
+    "q": "How many wormholes have ever been observed?",
+    "a": "None",
+    "w": [
+      "One",
+      "A handful",
+      "Thousands"
+    ]
+  },
+  {
+    "fact": "sp_wormhole",
+    "q": "What would holding a wormhole open be thought to require?",
+    "a": "Exotic matter",
+    "w": [
+      "An enormous magnetic field",
+      "A nearby black hole",
+      "A constant energy beam"
+    ]
+  },
+  {
+    "fact": "sp_pulsar",
+    "q": "What makes a pulsar appear to flash?",
+    "a": "Its beam sweeps past Earth as it spins",
+    "w": [
+      "It brightens and dims as it cools",
+      "It is eclipsed by a companion",
+      "It explodes repeatedly"
+    ]
+  },
+  {
+    "fact": "sp_pulsar",
+    "q": "How fast can the fastest pulsars spin?",
+    "a": "Hundreds of times a second",
+    "w": [
+      "Once a second",
+      "Once an hour",
+      "Millions of times a second"
+    ]
+  },
+  {
+    "fact": "sp_neutron",
+    "q": "How wide is a typical neutron star?",
+    "a": "About 20 km",
+    "w": [
+      "About 2 km",
+      "About 200 km",
+      "About 2,000 km"
+    ]
+  },
+  {
+    "fact": "sp_neutron",
+    "q": "What would a teaspoon of neutron-star matter weigh?",
+    "a": "About a billion tonnes",
+    "w": [
+      "About a tonne",
+      "About a million tonnes",
+      "About a trillion tonnes"
+    ]
+  },
+  {
+    "fact": "sp_supernova",
+    "q": "How bright can a supernova become?",
+    "a": "Brighter than its entire galaxy",
+    "w": [
+      "Brighter than the full Moon",
+      "About as bright as its own star was",
+      "Brighter than the whole universe"
+    ]
+  },
+  {
+    "fact": "sp_supernova",
+    "q": "What do supernovae forge and scatter?",
+    "a": "Heavy elements like gold and iron",
+    "w": [
+      "Hydrogen and helium only",
+      "Dark matter",
+      "Antimatter"
+    ]
+  },
+  {
+    "fact": "sp_milkyway",
+    "q": "How wide is the Milky Way?",
+    "a": "About 100,000 light-years",
+    "w": [
+      "About 1,000 light-years",
+      "About 10,000 light-years",
+      "About 10 million light-years"
+    ]
+  },
+  {
+    "fact": "sp_milkyway",
+    "q": "How long does the Sun take to orbit the centre of the galaxy once?",
+    "a": "About 225 million years",
+    "w": [
+      "About 225 thousand years",
+      "About 225 years",
+      "About 225 billion years"
+    ]
+  },
+  {
+    "fact": "sp_comet",
+    "q": "Which way does a comet's tail point?",
+    "a": "Away from the Sun",
+    "w": [
+      "Behind its direction of travel",
+      "Towards the Sun",
+      "Towards the nearest planet"
+    ]
+  },
+  {
+    "fact": "sp_comet",
+    "q": "What is a comet made of?",
+    "a": "Ice and dust",
+    "w": [
+      "Molten rock",
+      "Iron and nickel",
+      "Compressed gas"
+    ]
+  },
+  {
+    "fact": "sp_eclipse",
+    "q": "What makes a total solar eclipse possible?",
+    "a": "The Moon and Sun look almost the same size from Earth",
+    "w": [
+      "The Moon is larger than the Sun",
+      "Earth's shadow falls on the Sun",
+      "The Sun briefly dims"
+    ]
+  },
+  {
+    "fact": "sp_eclipse",
+    "q": "What becomes visible during totality?",
+    "a": "The Sun's corona",
+    "w": [
+      "The Sun's core",
+      "The Moon's far side",
+      "The planets' orbits"
+    ]
+  },
+  {
+    "fact": "sp_kuiper",
+    "q": "Where does the Kuiper Belt lie?",
+    "a": "Beyond Neptune",
+    "w": [
+      "Between Mars and Jupiter",
+      "Just outside Earth's orbit",
+      "Beyond the Oort Cloud"
+    ]
+  },
+  {
+    "fact": "sp_kuiper",
+    "q": "Which is the Kuiper Belt's most famous resident?",
+    "a": "Pluto",
+    "w": [
+      "Ceres",
+      "Halley's Comet",
+      "Europa"
+    ]
+  },
+  {
+    "fact": "sp_hexagon",
+    "q": "What sits at Saturn's north pole?",
+    "a": "A six-sided jet stream",
+    "w": [
+      "A ring of volcanoes",
+      "A permanent aurora",
+      "A gap in the clouds"
+    ]
+  },
+  {
+    "fact": "sp_hexagon",
+    "q": "How does Saturn's hexagon compare with Earth in size?",
+    "a": "It is wider than two Earths",
+    "w": [
+      "It is about the size of Earth",
+      "It is about a tenth of Earth's width",
+      "It is wider than Jupiter"
+    ]
+  },
+  {
+    "fact": "sp_rogue",
+    "q": "What is a rogue planet?",
+    "a": "A world drifting through space with no star",
+    "w": [
+      "A planet orbiting backwards",
+      "A planet with no atmosphere",
+      "A planet that will soon hit its star"
+    ]
+  },
+  {
+    "fact": "sp_rogue",
+    "q": "How many rogue planets may wander the galaxy?",
+    "a": "Possibly more than there are stars",
+    "w": [
+      "A few dozen",
+      "About a thousand",
+      "None — they are only theoretical"
+    ]
+  },
+  {
+    "fact": "sp_aurora",
+    "q": "What causes the aurora?",
+    "a": "Solar particles slamming into the upper atmosphere",
+    "w": [
+      "Sunlight refracting through ice crystals",
+      "Lightning high in the atmosphere",
+      "Heat rising from the poles"
+    ]
+  },
+  {
+    "fact": "sp_aurora",
+    "q": "Which gas gives the aurora its green glow?",
+    "a": "Oxygen",
+    "w": [
+      "Nitrogen",
+      "Helium",
+      "Hydrogen"
+    ]
+  },
+  {
+    "fact": "sp_europa",
+    "q": "What lies beneath Europa's cracked shell of ice?",
+    "a": "A global ocean of liquid water",
+    "w": [
+      "A molten iron core exposed to space",
+      "A layer of solid nitrogen",
+      "Nothing — it is ice all the way down"
+    ]
+  },
+  {
+    "fact": "sp_europa",
+    "q": "What keeps Europa's hidden ocean from freezing?",
+    "a": "Tidal heating from Jupiter",
+    "w": [
+      "Sunlight through the ice",
+      "Volcanic vents on its surface",
+      "Radioactive decay in its crust"
+    ]
+  },
+  {
+    "fact": "sp_quasar",
+    "q": "What powers a quasar?",
+    "a": "A supermassive black hole feeding on gas",
+    "w": [
+      "A chain of supernovae",
+      "A cluster of new stars",
+      "Two galaxies colliding"
+    ]
+  },
+  {
+    "fact": "sp_quasar",
+    "q": "How bright can the most luminous quasars be?",
+    "a": "Brighter than a trillion Suns",
+    "w": [
+      "Brighter than a million Suns",
+      "Brighter than a thousand Suns",
+      "About as bright as their galaxy"
+    ]
+  },
+  {
+    "fact": "sp_jwst",
+    "q": "Where does the James Webb Space Telescope sit?",
+    "a": "At L2, 1.5 million km from Earth",
+    "w": [
+      "In low Earth orbit",
+      "On the far side of the Moon",
+      "Orbiting Mars"
+    ]
+  },
+  {
+    "fact": "sp_jwst",
+    "q": "What kind of light does JWST's golden mirror collect?",
+    "a": "Infrared",
+    "w": [
+      "Ultraviolet",
+      "X-ray",
+      "Radio"
+    ]
+  },
+  {
+    "fact": "sp_enceladus",
+    "q": "What does Enceladus shoot into space through cracks at its south pole?",
+    "a": "Plumes of water ice and salts",
+    "w": [
+      "Jets of molten rock",
+      "Clouds of methane gas",
+      "Streams of iron dust"
+    ]
+  },
+  {
+    "fact": "sp_enceladus",
+    "q": "What do the geysers of Enceladus feed?",
+    "a": "Saturn's outer E ring",
+    "w": [
+      "Saturn's atmosphere",
+      "Titan's lakes",
+      "Jupiter's magnetic field"
+    ]
+  },
+  {
+    "fact": "sp_redspot",
+    "q": "How wide is Jupiter's Great Red Spot?",
+    "a": "About 16,000 km",
+    "w": [
+      "About 1,600 km",
+      "About 160,000 km",
+      "About 160 km"
+    ]
+  },
+  {
+    "fact": "sp_redspot",
+    "q": "How fast do the winds race around the rim of the Great Red Spot?",
+    "a": "Over 430 km/h",
+    "w": [
+      "About 43 km/h",
+      "Over 4,300 km/h",
+      "About 100 km/h"
+    ]
+  },
+  {
+    "fact": "sp_betelgeuse",
+    "q": "If Betelgeuse replaced the Sun, how far would its surface reach?",
+    "a": "Past the orbit of Mars",
+    "w": [
+      "Just past Mercury",
+      "Out to Jupiter's moons",
+      "Beyond Neptune"
+    ]
+  },
+  {
+    "fact": "sp_betelgeuse",
+    "q": "How will Betelgeuse end its life?",
+    "a": "As a supernova",
+    "w": [
+      "As a white dwarf",
+      "By fading quietly away",
+      "By swallowing its companion"
+    ]
+  },
+  {
+    "fact": "sp_frb",
+    "q": "How long does a fast radio burst last?",
+    "a": "A few milliseconds",
+    "w": [
+      "A few seconds",
+      "A few minutes",
+      "A few hours"
+    ]
+  },
+  {
+    "fact": "sp_frb",
+    "q": "How much energy can a single fast radio burst release?",
+    "a": "As much as the Sun makes in three days",
+    "w": [
+      "As much as the Sun makes in a second",
+      "As much as the Sun makes in a year",
+      "As much as a galaxy makes in a year"
+    ]
+  },
+  {
+    "fact": "sp_titan",
+    "q": "What falls as rain on Titan?",
+    "a": "Methane and ethane",
+    "w": [
+      "Water",
+      "Sulphuric acid",
+      "Liquid nitrogen"
+    ]
+  },
+  {
+    "fact": "sp_titan",
+    "q": "What is Titan's atmosphere mostly made of?",
+    "a": "Nitrogen",
+    "w": [
+      "Carbon dioxide",
+      "Oxygen",
+      "Hydrogen"
+    ]
+  },
+  {
+    "fact": "sp_oort",
+    "q": "How far out does the Oort Cloud reach?",
+    "a": "Perhaps a light-year and a half",
+    "w": [
+      "About 50 AU",
+      "About a tenth of a light-year",
+      "About ten light-years"
+    ]
+  },
+  {
+    "fact": "sp_oort",
+    "q": "How long would Voyager 1 need just to reach the inner edge of the Oort Cloud?",
+    "a": "About 300 years",
+    "w": [
+      "About 30 years",
+      "About 3,000 years",
+      "About 30,000 years"
+    ]
+  },
+  {
+    "fact": "sp_gwave",
+    "q": "What did detectors first pick up in September 2015?",
+    "a": "Two black holes spiralling together",
+    "w": [
+      "A nearby supernova",
+      "A signal from another star",
+      "The birth of a new galaxy"
+    ]
+  },
+  {
+    "fact": "sp_gwave",
+    "q": "By how much did the passing gravitational wave stretch a four-kilometre detector?",
+    "a": "Less than a ten-thousandth of a proton's width",
+    "w": [
+      "About a millimetre",
+      "About the width of an atom",
+      "About a metre"
+    ]
+  },
+  {
+    "fact": "sp_oumuamua",
+    "q": "What made ʻOumuamua remarkable when it was spotted in 2017?",
+    "a": "It came from outside the Solar System",
+    "w": [
+      "It was the largest comet ever seen",
+      "It orbited the Sun backwards",
+      "It was heading straight for Earth"
+    ]
+  },
+  {
+    "fact": "sp_oumuamua",
+    "q": "What gave away that ʻOumuamua was interstellar?",
+    "a": "Its path was far too steep for the Sun to have bent",
+    "w": [
+      "Its unusual colour",
+      "Its radio emissions",
+      "Its enormous size"
+    ]
+  },
+  {
+    "fact": "sp_cmb",
+    "q": "How long after the Big Bang did the universe turn clear, releasing the oldest light?",
+    "a": "About 380,000 years",
+    "w": [
+      "About 380 years",
+      "About 380 million years",
+      "About 3.8 billion years"
+    ]
+  },
+  {
+    "fact": "sp_cmb",
+    "q": "What has 13.8 billion years of expansion done to that oldest light?",
+    "a": "Stretched it into faint microwaves",
+    "w": [
+      "Scattered it into darkness",
+      "Turned it into visible starlight",
+      "Absorbed it entirely"
+    ]
+  }
+]

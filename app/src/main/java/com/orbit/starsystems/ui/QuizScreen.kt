@@ -1,7 +1,16 @@
 package com.orbit.starsystems.ui
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,7 +20,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,6 +35,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,46 +44,70 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.orbit.starsystems.core.Analytics
+import com.orbit.starsystems.core.Fact
 import com.orbit.starsystems.core.OrbitPrefs
 import com.orbit.starsystems.core.Quiz
 import com.orbit.starsystems.core.QuizQuestion
+import com.orbit.starsystems.core.SYS_META
 import com.orbit.starsystems.core.factById
 
-private val Right = Color(0xFF6BC08A)
-private val Wrong = Color(0xFFE0654A)
+private val Right = Color(0xFF5BD68C)
+private val Wrong = Color(0xFFFF6B5A)
 private val QuizAccent = Color(0xFFFFC24D)
+
+/** One step darker than pure black, so the cards and the accent glow have something to sit on. */
+private val Ink = Color(0xFF08080C)
+private val Card = Color(0xFFFFFFFF).copy(alpha = 0.045f)
+private val Hairline = Color(0xFFFFFFFF).copy(alpha = 0.08f)
+
+private val CardShape = RoundedCornerShape(22.dp)
+private val ButtonShape = RoundedCornerShape(16.dp)
 
 /** What the screen is showing: the opening card, a round in progress, or the score. */
 private enum class Stage { INTRO, PLAYING, RESULT }
 
 /**
- * Ten questions built from facts the app already ships — see [Quiz] for how they are made.
+ * Ten authored questions drawn from the facts the app already ships — see [Quiz] for the bank.
  *
- * A wrong answer is the interesting moment, so it is never just marked wrong: the right answer
- * is shown immediately, and the round ends with every fact that was missed, tappable, so the
- * quiz sends people back into the content rather than out of it.
+ * A wrong answer is the interesting moment, so it is never just marked wrong: the right answer is
+ * shown immediately along with the fact it came from, and the round ends with every fact that was
+ * missed, tappable, so the quiz sends people back into the content rather than out of it.
+ *
+ * The screen keeps its colour from the fact being asked about, so the backdrop shifts from
+ * question to question — the same accent the fact's own scene and card use.
  */
 @Composable
 fun QuizScreen(onOpenFact: (String) -> Unit, onClose: () -> Unit) {
     var stage by remember { mutableStateOf(Stage.INTRO) }
     var questions by remember { mutableStateOf(emptyList<QuizQuestion>()) }
     var index by remember { mutableIntStateOf(0) }
-    var score by remember { mutableIntStateOf(0) }
     var picked by remember { mutableStateOf<Int?>(null) }
+    /** One entry per answered question, in order — drives the score, the pips and the accuracy. */
+    var results by remember { mutableStateOf(emptyList<Boolean>()) }
     var missed by remember { mutableStateOf(emptyList<String>()) }
     var beatBest by remember { mutableStateOf(false) }
+
+    val score = results.count { it }
+    val question = questions.getOrNull(index)
+    val fact = factById(question?.factId)
 
     fun start() {
         questions = Quiz.round()
         index = 0
-        score = 0
         picked = null
+        results = emptyList()
         missed = emptyList()
         beatBest = false
         stage = Stage.PLAYING
@@ -92,50 +125,47 @@ fun QuizScreen(onOpenFact: (String) -> Unit, onClose: () -> Unit) {
         }
     }
 
-    Column(Modifier.fillMaxSize().background(Color.Black)) {
-        Row(
-            Modifier.fillMaxWidth().statusBarsPadding().padding(start = 14.dp, end = 14.dp, top = 12.dp, bottom = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                Modifier.size(38.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.08f)).clickable(onClick = onClose),
-                contentAlignment = Alignment.Center,
-            ) { Ico("back", size = 20.dp, color = Color.White, sw = 2.1f) }
-            Spacer(Modifier.width(12.dp))
-            Text(
-                if (stage == Stage.PLAYING) "Question ${index + 1} of ${questions.size}" else "Cosmic Quiz",
-                style = ts(16f, FontWeight.SemiBold, Color.White),
-                modifier = Modifier.weight(1f),
-            )
-            if (stage == Stage.PLAYING) {
-                Text("$score correct", style = ts(13.5f, FontWeight.Medium, QuizAccent))
-            }
-        }
+    val accent = when (stage) {
+        Stage.PLAYING -> fact?.accent ?: QuizAccent
+        else -> QuizAccent
+    }
+    val glow by animateColorAsState(accent, tween(500), label = "quizGlow")
+
+    Column(Modifier.fillMaxSize().background(Ink).auroraGlow(glow)) {
+        TopBar(
+            stage = stage,
+            index = index,
+            total = questions.size,
+            score = score,
+            accent = accent,
+            onClose = onClose,
+        )
 
         when (stage) {
             Stage.INTRO -> Intro(onStart = { start() })
-            Stage.PLAYING -> {
-                val question = questions.getOrNull(index)
-                if (question == null) {
-                    // The pool cannot realistically empty, but an empty round must not strand.
-                    Intro(onStart = { start() })
-                } else {
-                    Progress(index, questions.size)
-                    Question(
-                        question = question,
-                        picked = picked,
-                        onPick = { choice ->
-                            if (picked == null) {
-                                picked = choice
-                                if (choice == question.answerIndex) score += 1
-                                else missed = missed + question.factId
-                            }
-                        },
-                        onNext = { advance() },
-                        isLast = index + 1 == questions.size,
-                    )
-                }
+
+            // The pool cannot realistically empty, but an empty round must not strand.
+            Stage.PLAYING -> if (question == null) Intro(onStart = { start() }) else {
+                Pips(total = questions.size, results = results, current = index, accent = accent)
+                Question(
+                    question = question,
+                    fact = fact,
+                    accent = accent,
+                    picked = picked,
+                    isLast = index + 1 == questions.size,
+                    onPick = { choice ->
+                        if (picked == null) {
+                            picked = choice
+                            val correct = choice == question.answerIndex
+                            results = results + correct
+                            if (!correct) missed = missed + question.factId
+                        }
+                    },
+                    onNext = { advance() },
+                    onOpenFact = onOpenFact,
+                )
             }
+
             Stage.RESULT -> Result(
                 score = score,
                 total = questions.size,
@@ -149,181 +179,447 @@ fun QuizScreen(onOpenFact: (String) -> Unit, onClose: () -> Unit) {
     }
 }
 
+/** A soft wash of the current accent behind everything, bled in from the top corners. */
+private fun Modifier.auroraGlow(color: Color) = drawBehind {
+    drawRect(
+        Brush.radialGradient(
+            colors = listOf(color.copy(alpha = 0.22f), Color.Transparent),
+            center = Offset(size.width * 0.22f, 0f),
+            radius = size.width * 1.05f,
+        ),
+    )
+    drawRect(
+        Brush.radialGradient(
+            colors = listOf(color.copy(alpha = 0.10f), Color.Transparent),
+            center = Offset(size.width * 0.95f, size.height * 0.18f),
+            radius = size.width * 0.85f,
+        ),
+    )
+}
+
 @Composable
-private fun Progress(index: Int, total: Int) {
-    val target = if (total == 0) 0f else index.toFloat() / total
-    val width by animateFloatAsState(target, tween(320), label = "quizProgress")
-    Box(Modifier.fillMaxWidth().height(3.dp).background(Color.White.copy(alpha = 0.10f))) {
-        Box(Modifier.fillMaxHeight().fillMaxWidth(width).background(QuizAccent))
+private fun TopBar(
+    stage: Stage,
+    index: Int,
+    total: Int,
+    score: Int,
+    accent: Color,
+    onClose: () -> Unit,
+) {
+    Row(
+        Modifier.fillMaxWidth().statusBarsPadding().padding(start = 14.dp, end = 14.dp, top = 10.dp, bottom = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color.White.copy(alpha = 0.07f))
+                .border(1.dp, Hairline, CircleShape)
+                .clickable(onClick = onClose),
+            contentAlignment = Alignment.Center,
+        ) { Ico("back", size = 19.dp, color = Color.White, sw = 2.1f) }
+
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text("COSMIC QUIZ", style = ts(10.5f, FontWeight.Bold, Dim, 0.22f))
+            if (stage == Stage.PLAYING && total > 0) {
+                Text(
+                    "Question ${index + 1} of $total",
+                    style = ts(16f, FontWeight.SemiBold, Color.White),
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+            }
+        }
+
+        if (stage == Stage.PLAYING) {
+            Row(
+                Modifier
+                    .clip(CircleShape)
+                    .background(accent.copy(alpha = 0.14f))
+                    .border(1.dp, accent.copy(alpha = 0.30f), CircleShape)
+                    .padding(horizontal = 13.dp, vertical = 7.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Ico("check", size = 13.dp, color = accent, sw = 2.6f)
+                Spacer(Modifier.width(6.dp))
+                Text("$score", style = ts(14f, FontWeight.Bold, accent))
+            }
+        }
     }
 }
+
+/**
+ * One pip per question, so progress and performance read in a single glance: answered pips carry
+ * their own result, the current one is a wider bar in the accent, the rest stay faint.
+ */
+@Composable
+private fun Pips(total: Int, results: List<Boolean>, current: Int, accent: Color) {
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        repeat(total) { i ->
+            val answered = results.getOrNull(i)
+            val target = when {
+                answered == true -> Right
+                answered == false -> Wrong
+                i == current -> accent
+                else -> Color.White.copy(alpha = 0.12f)
+            }
+            val color by animateColorAsState(target, tween(280), label = "pip$i")
+            val weight by animateFloatAsState(if (i == current) 2.2f else 1f, tween(280), label = "pipW$i")
+            Box(
+                Modifier
+                    .weight(weight)
+                    .height(4.dp)
+                    .clip(CircleShape)
+                    .background(color),
+            )
+        }
+    }
+}
+
+// ───────────────────────── intro ─────────────────────────
 
 @Composable
 private fun Intro(onStart: () -> Unit) {
     val best = OrbitPrefs.quizBest
     val rounds = OrbitPrefs.quizRounds
+
+    // A slow breath on the badge, so the opening screen is not completely static.
+    val pulse = rememberInfiniteTransition(label = "quizPulse")
+    val breath by pulse.animateFloat(
+        initialValue = 0.94f,
+        targetValue = 1.06f,
+        animationSpec = infiniteRepeatable(tween(2600, easing = LinearEasing), RepeatMode.Reverse),
+        label = "breath",
+    )
+
     Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 26.dp),
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .navigationBarsPadding()
+            .padding(horizontal = 22.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(40.dp))
-        Box(
-            Modifier
-                .size(96.dp)
-                .clip(CircleShape)
-                .background(Brush.radialGradient(listOf(QuizAccent.copy(alpha = 0.30f), Color.Transparent))),
-            contentAlignment = Alignment.Center,
-        ) { Ico("spotlight", size = 46.dp, color = QuizAccent, filled = true) }
+        Spacer(Modifier.height(30.dp))
+        Box(contentAlignment = Alignment.Center) {
+            Box(
+                Modifier
+                    .size(150.dp)
+                    .graphicsLayer { scaleX = breath; scaleY = breath }
+                    .background(
+                        Brush.radialGradient(listOf(QuizAccent.copy(alpha = 0.26f), Color.Transparent)),
+                        CircleShape,
+                    ),
+            )
+            Box(
+                Modifier
+                    .size(84.dp)
+                    .clip(CircleShape)
+                    .background(QuizAccent.copy(alpha = 0.12f))
+                    .border(1.dp, QuizAccent.copy(alpha = 0.35f), CircleShape),
+                contentAlignment = Alignment.Center,
+            ) { Ico("spotlight", size = 38.dp, color = QuizAccent, filled = true) }
+        }
+
         Text(
             "Cosmic Quiz",
-            style = ts(34f, FontWeight.Bold, Color.White, -0.02f),
-            modifier = Modifier.padding(top = 18.dp),
+            style = ts(36f, FontWeight.Bold, Color.White, -0.025f),
+            modifier = Modifier.padding(top = 20.dp),
         )
         Text(
             "Ten questions, drawn from the facts in this app. Miss one and you'll see the answer — and the fact it came from.",
-            style = ts(15.5f, FontWeight.Light, Mute, lineHeight = 24f),
+            style = ts(15f, FontWeight.Light, Mute, lineHeight = 23f),
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 12.dp),
+            modifier = Modifier.padding(top = 10.dp, start = 6.dp, end = 6.dp),
         )
-        if (rounds > 0) {
-            Row(
-                Modifier
-                    .padding(top = 26.dp)
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(Color.White.copy(alpha = 0.04f))
-                    .border(1.dp, Color.White.copy(alpha = 0.07f), RoundedCornerShape(18.dp))
-                    .padding(horizontal = 30.dp, vertical = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(38.dp),
-            ) {
-                Stat("$best/${Quiz.ROUND_SIZE}", "BEST")
-                Stat(rounds.toString(), if (rounds == 1) "ROUND" else "ROUNDS")
-            }
-        }
-        Spacer(Modifier.height(30.dp))
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp))
-                .background(QuizAccent)
-                .clickable(onClick = onStart)
-                .padding(vertical = 15.dp),
-            contentAlignment = Alignment.Center,
+
+        Row(
+            Modifier.fillMaxWidth().padding(top = 26.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Text(if (rounds == 0) "Start" else "Play again", style = ts(16f, FontWeight.Bold, Color.Black))
+            StatTile("$best", "BEST SCORE", Modifier.weight(1f))
+            StatTile("$rounds", if (rounds == 1) "ROUND PLAYED" else "ROUNDS PLAYED", Modifier.weight(1f))
+            StatTile("${Quiz.bank.size}", "QUESTIONS", Modifier.weight(1f))
         }
-        Spacer(Modifier.height(40.dp))
+
+        Spacer(Modifier.height(26.dp))
+        PrimaryButton(if (rounds == 0) "Start the round" else "Play again", QuizAccent, onStart)
+        Spacer(Modifier.height(34.dp))
     }
 }
 
 @Composable
-private fun Stat(value: String, label: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value, style = ts(26f, FontWeight.Bold, Color.White))
-        Text(label, style = ts(10.5f, FontWeight.SemiBold, Dim, 0.14f), modifier = Modifier.padding(top = 3.dp))
+private fun StatTile(value: String, label: String, modifier: Modifier = Modifier) {
+    Column(
+        modifier
+            .clip(CardShape)
+            .background(Card)
+            .border(1.dp, Hairline, CardShape)
+            .padding(vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(value, style = ts(24f, FontWeight.Bold, Color.White))
+        Text(
+            label,
+            style = ts(9.5f, FontWeight.SemiBold, Dim, 0.13f),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp),
+        )
     }
 }
+
+// ───────────────────────── a question ─────────────────────────
 
 @Composable
 private fun Question(
     question: QuizQuestion,
+    fact: Fact?,
+    accent: Color,
     picked: Int?,
+    isLast: Boolean,
     onPick: (Int) -> Unit,
     onNext: () -> Unit,
-    isLast: Boolean,
+    onOpenFact: (String) -> Unit,
 ) {
-    val accent = factById(question.factId)?.accent ?: QuizAccent
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).navigationBarsPadding()
-            .padding(start = 22.dp, end = 22.dp, top = 26.dp, bottom = 24.dp),
-    ) {
-        question.subject?.let {
-            Text(it, style = ts(13f, FontWeight.SemiBold, accent, 0.10f))
-        }
-        Text(
-            question.prompt,
-            style = ts(28f, FontWeight.Bold, Color.White, -0.02f, lineHeight = 34f),
-            modifier = Modifier.padding(top = 8.dp, bottom = 26.dp),
-        )
-        question.options.forEachIndexed { i, option ->
-            Option(
-                text = option,
-                state = when {
-                    picked == null -> OptionState.IDLE
-                    i == question.answerIndex -> OptionState.RIGHT
-                    i == picked -> OptionState.WRONG
-                    else -> OptionState.MUTED
+    // Each question slides up as it arrives, so moving on reads as a new card rather than as
+    // text being swapped underneath the same options.
+    val enter = remember(question.prompt) { Animatable(0f) }
+    LaunchedEffect(question.prompt) { enter.animateTo(1f, tween(340, easing = FastOutSlowInEasing)) }
+
+    Column(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp)
+                .padding(top = 16.dp, bottom = 12.dp)
+                .graphicsLayer {
+                    alpha = enter.value
+                    translationY = (1f - enter.value) * 26.dp.toPx()
                 },
-                onClick = { onPick(i) },
-            )
-            Spacer(Modifier.height(10.dp))
-        }
-        if (picked != null) {
-            val correct = picked == question.answerIndex
-            Spacer(Modifier.height(10.dp))
+        ) {
+            fact?.let { Eyebrow(it, accent) }
             Text(
-                if (correct) "Correct." else "The answer is ${question.answer}.",
-                style = ts(15f, FontWeight.SemiBold, if (correct) Right else Wrong),
+                question.prompt,
+                style = ts(26f, FontWeight.Bold, Color.White, -0.02f, lineHeight = 33f),
+                modifier = Modifier.padding(top = 12.dp, bottom = 22.dp),
             )
-            factById(question.factId)?.let { fact ->
-                Text(
-                    "From “${fact.title}”.",
-                    style = ts(13.5f, color = Dim, lineHeight = 20f),
-                    modifier = Modifier.padding(top = 4.dp),
+            question.options.forEachIndexed { i, option ->
+                Option(
+                    letter = ('A' + i).toString(),
+                    text = option,
+                    accent = accent,
+                    state = when {
+                        picked == null -> OptionState.IDLE
+                        i == question.answerIndex -> OptionState.RIGHT
+                        i == picked -> OptionState.WRONG
+                        else -> OptionState.MUTED
+                    },
+                    onClick = { onPick(i) },
+                )
+                Spacer(Modifier.height(9.dp))
+            }
+            if (picked != null && fact != null) {
+                Spacer(Modifier.height(8.dp))
+                Verdict(
+                    correct = picked == question.answerIndex,
+                    answer = question.answer,
+                    fact = fact,
+                    onOpenFact = { onOpenFact(fact.id) },
                 )
             }
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(8.dp))
+        }
+
+        // Pinned to the bottom so the next question is always one tap away in the same place,
+        // however long the options run.
+        if (picked != null) {
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(Color.White.copy(alpha = 0.12f))
-                    .clickable(onClick = onNext)
-                    .padding(vertical = 15.dp),
-                contentAlignment = Alignment.Center,
+                    .background(Brush.verticalGradient(listOf(Color.Transparent, Ink)))
+                    .navigationBarsPadding()
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
             ) {
-                Text(if (isLast) "See your score" else "Next", style = ts(16f, FontWeight.SemiBold, Color.White))
+                PrimaryButton(if (isLast) "See your score" else "Next question", accent, onNext)
             }
+        } else {
+            Spacer(Modifier.navigationBarsPadding().height(12.dp))
         }
+    }
+}
+
+/** Where the question came from: its system and the category it sits in. */
+@Composable
+private fun Eyebrow(fact: Fact, accent: Color) {
+    val system = SYS_META[fact.sys]?.label
+    val label = if (system == null) fact.cat else "$system · ${fact.cat}"
+    Row(
+        Modifier
+            .clip(CircleShape)
+            .background(accent.copy(alpha = 0.12f))
+            .border(1.dp, accent.copy(alpha = 0.26f), CircleShape)
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.size(5.dp).clip(CircleShape).background(accent))
+        Spacer(Modifier.width(7.dp))
+        Text(label.uppercase(), style = ts(10.5f, FontWeight.Bold, accent, 0.12f))
     }
 }
 
 private enum class OptionState { IDLE, RIGHT, WRONG, MUTED }
 
 @Composable
-private fun Option(text: String, state: OptionState, onClick: () -> Unit) {
-    val border = when (state) {
-        OptionState.IDLE -> Color.White.copy(alpha = 0.16f)
+private fun Option(
+    letter: String,
+    text: String,
+    accent: Color,
+    state: OptionState,
+    onClick: () -> Unit,
+) {
+    val tint = when (state) {
+        OptionState.IDLE -> accent
         OptionState.RIGHT -> Right
         OptionState.WRONG -> Wrong
-        OptionState.MUTED -> Color.White.copy(alpha = 0.08f)
+        OptionState.MUTED -> Color.White.copy(alpha = 0.22f)
     }
-    val fill = when (state) {
-        OptionState.RIGHT -> Right.copy(alpha = 0.14f)
-        OptionState.WRONG -> Wrong.copy(alpha = 0.14f)
-        else -> Color.White.copy(alpha = 0.04f)
-    }
-    val label = when (state) {
-        OptionState.MUTED -> Color(0xFF7A7A7A)
-        else -> Color.White
-    }
+    val border by animateColorAsState(
+        when (state) {
+            OptionState.IDLE -> Color.White.copy(alpha = 0.10f)
+            OptionState.MUTED -> Color.White.copy(alpha = 0.05f)
+            else -> tint.copy(alpha = 0.75f)
+        },
+        tween(260),
+        label = "optBorder",
+    )
+    val fill by animateColorAsState(
+        when (state) {
+            OptionState.RIGHT -> Right.copy(alpha = 0.13f)
+            OptionState.WRONG -> Wrong.copy(alpha = 0.13f)
+            OptionState.MUTED -> Color.White.copy(alpha = 0.02f)
+            else -> Card
+        },
+        tween(260),
+        label = "optFill",
+    )
+    val label by animateColorAsState(
+        if (state == OptionState.MUTED) Color(0xFF6E6E76) else Color.White,
+        tween(260),
+        label = "optLabel",
+    )
+    // The chosen row lifts very slightly, so the tap has a physical answer to it.
+    val scale by animateFloatAsState(
+        if (state == OptionState.RIGHT || state == OptionState.WRONG) 1.015f else 1f,
+        tween(260, easing = FastOutSlowInEasing),
+        label = "optScale",
+    )
+
+    val shape = RoundedCornerShape(18.dp)
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
+            .graphicsLayer { scaleX = scale; scaleY = scale }
+            .clip(shape)
             .background(fill)
-            .border(1.dp, border, RoundedCornerShape(14.dp))
+            .border(1.dp, border, shape)
             .clickable(enabled = state == OptionState.IDLE, onClick = onClick)
-            .padding(horizontal = 18.dp, vertical = 16.dp),
+            .padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text, style = ts(16f, FontWeight.Medium, label), modifier = Modifier.weight(1f))
-        when (state) {
-            OptionState.RIGHT -> Ico("check", size = 18.dp, color = Right, sw = 2.4f)
-            OptionState.WRONG -> Ico("close", size = 17.dp, color = Wrong, sw = 2.2f)
-            else -> Unit
+        Box(
+            Modifier
+                .size(30.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(tint.copy(alpha = if (state == OptionState.MUTED) 0.05f else 0.16f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            when (state) {
+                OptionState.RIGHT -> Ico("check", size = 15.dp, color = Right, sw = 2.6f)
+                OptionState.WRONG -> Ico("close", size = 14.dp, color = Wrong, sw = 2.4f)
+                else -> Text(
+                    letter,
+                    style = ts(
+                        13f,
+                        FontWeight.Bold,
+                        if (state == OptionState.MUTED) Color(0xFF6E6E76) else tint,
+                    ),
+                )
+            }
+        }
+        Spacer(Modifier.width(13.dp))
+        Text(text, style = ts(15.5f, FontWeight.Medium, label, lineHeight = 21f), modifier = Modifier.weight(1f))
+    }
+}
+
+/** Shown once an answer is locked in: the verdict, the answer, and a way back to the fact. */
+@Composable
+private fun Verdict(correct: Boolean, answer: String, fact: Fact, onOpenFact: () -> Unit) {
+    val tone = if (correct) Right else Wrong
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(CardShape)
+            .background(tone.copy(alpha = 0.07f))
+            .border(1.dp, tone.copy(alpha = 0.22f), CardShape)
+            .padding(16.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Ico(if (correct) "check" else "close", size = 15.dp, color = tone, sw = 2.5f)
+            Spacer(Modifier.width(8.dp))
+            Text(
+                if (correct) "Correct" else "Not quite",
+                style = ts(14f, FontWeight.Bold, tone, 0.02f),
+            )
+        }
+        if (!correct) {
+            // Set on its own line under a label rather than folded into a sentence: the options
+            // are written as phrases, and "The answer is By a tug on the star…" reads badly.
+            Text(
+                "THE ANSWER",
+                style = ts(9.5f, FontWeight.Bold, Dim, 0.16f),
+                modifier = Modifier.padding(top = 12.dp),
+            )
+            Text(
+                answer,
+                style = ts(16f, FontWeight.SemiBold, Color.White, lineHeight = 22f),
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+        Row(
+            Modifier
+                .padding(top = 12.dp)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(14.dp))
+                .background(Color.White.copy(alpha = 0.05f))
+                .clickable(onClick = onOpenFact)
+                .padding(horizontal = 13.dp, vertical = 11.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(fact.title, style = ts(14f, FontWeight.SemiBold, Color.White))
+                if (fact.sub.isNotBlank()) {
+                    Text(
+                        fact.sub,
+                        style = ts(12.5f, color = Mute, lineHeight = 17f),
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
+                }
+            }
+            Spacer(Modifier.width(10.dp))
+            Box(Modifier.graphicsLayer { rotationZ = 180f }) {
+                Ico("back", size = 16.dp, color = fact.accent, sw = 2.1f)
+            }
         }
     }
 }
+
+// ───────────────────────── the score ─────────────────────────
 
 @Composable
 private fun Result(
@@ -336,65 +632,133 @@ private fun Result(
     onClose: () -> Unit,
 ) {
     val facts = remember(missed) { missed.mapNotNull { factById(it) } }
+    val pct = if (total == 0) 0 else score * 100 / total
     LazyColumn(
         Modifier.fillMaxSize().navigationBarsPadding(),
-        contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 24.dp, bottom = 30.dp),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 30.dp),
     ) {
         item {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("$score", style = ts(72f, FontWeight.Bold, QuizAccent, -0.03f))
-                Text("out of $total".uppercase(), style = ts(12f, FontWeight.SemiBold, Dim, 0.2f))
+                ScoreRing(score = score, total = total)
+                if (beatBest) {
+                    Row(
+                        Modifier
+                            .padding(top = 16.dp)
+                            .clip(CircleShape)
+                            .background(QuizAccent.copy(alpha = 0.14f))
+                            .border(1.dp, QuizAccent.copy(alpha = 0.32f), CircleShape)
+                            .padding(horizontal = 13.dp, vertical = 7.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Ico("bolt", size = 13.dp, color = QuizAccent, filled = true)
+                        Spacer(Modifier.width(6.dp))
+                        Text("NEW PERSONAL BEST", style = ts(10.5f, FontWeight.Bold, QuizAccent, 0.14f))
+                    }
+                }
                 Text(
                     when {
-                        beatBest -> "A new personal best."
                         score == total -> "Every one. Nothing left to catch you out."
-                        score >= total * 3 / 4 -> "Strong round."
-                        score >= total / 2 -> "Over halfway there."
+                        pct >= 75 -> "Strong round."
+                        pct >= 50 -> "Over halfway there."
                         else -> "Plenty of sky left to learn."
                     },
                     style = ts(16f, FontWeight.Light, Color(0xFFCFCFCF), lineHeight = 24f),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = 16.dp),
                 )
-                Spacer(Modifier.height(28.dp))
+                Spacer(Modifier.height(22.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    StatTile("$pct%", "ACCURACY", Modifier.weight(1f))
+                    StatTile("${total - score}", if (total - score == 1) "MISSED" else "MISSES", Modifier.weight(1f))
+                    StatTile("${OrbitPrefs.quizBest}", "BEST SCORE", Modifier.weight(1f))
+                }
+                Spacer(Modifier.height(26.dp))
             }
         }
         if (facts.isNotEmpty()) {
             item {
                 Text(
                     "WORTH A SECOND LOOK",
-                    style = ts(11.5f, FontWeight.Bold, Dim, 0.22f),
+                    style = ts(11f, FontWeight.Bold, Dim, 0.2f),
                     modifier = Modifier.padding(bottom = 12.dp),
                 )
             }
             items(facts.size) { i ->
                 val fact = facts[i]
-                Box(Modifier.padding(bottom = 12.dp)) {
+                Box(Modifier.padding(bottom = 10.dp)) {
                     FactListCard(fact = fact, onClick = { onOpenFact(fact.id) })
                 }
             }
         }
         item {
             Spacer(Modifier.height(14.dp))
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(QuizAccent)
-                    .clickable(onClick = onAgain)
-                    .padding(vertical = 15.dp),
-                contentAlignment = Alignment.Center,
-            ) { Text("Play again", style = ts(16f, FontWeight.Bold, Color.Black)) }
+            PrimaryButton("Play again", QuizAccent, onAgain)
             Spacer(Modifier.height(10.dp))
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(Color.White.copy(alpha = 0.08f))
+                    .clip(ButtonShape)
+                    .background(Color.White.copy(alpha = 0.06f))
+                    .border(1.dp, Hairline, ButtonShape)
                     .clickable(onClick = onClose)
                     .padding(vertical = 15.dp),
                 contentAlignment = Alignment.Center,
-            ) { Text("Done", style = ts(16f, FontWeight.SemiBold, Color.White)) }
+            ) { Text("Done", style = ts(15.5f, FontWeight.SemiBold, Color.White)) }
         }
+    }
+}
+
+/** The score as a sweep around a ring, drawn up from zero when the round ends. */
+@Composable
+private fun ScoreRing(score: Int, total: Int) {
+    val target = if (total == 0) 0f else score.toFloat() / total
+    val sweep = remember { Animatable(0f) }
+    LaunchedEffect(target) { sweep.animateTo(target, tween(900, easing = FastOutSlowInEasing)) }
+
+    Box(Modifier.size(180.dp), contentAlignment = Alignment.Center) {
+        Canvas(Modifier.fillMaxSize()) {
+            val stroke = 12.dp.toPx()
+            val inset = stroke / 2f
+            val arcSize = Size(size.width - stroke, size.height - stroke)
+            drawArc(
+                color = Color.White.copy(alpha = 0.08f),
+                startAngle = 0f,
+                sweepAngle = 360f,
+                useCenter = false,
+                topLeft = Offset(inset, inset),
+                size = arcSize,
+                style = Stroke(width = stroke, cap = StrokeCap.Round),
+            )
+            if (sweep.value > 0f) {
+                drawArc(
+                    brush = Brush.sweepGradient(listOf(QuizAccent, Right, QuizAccent)),
+                    startAngle = -90f,
+                    sweepAngle = 360f * sweep.value,
+                    useCenter = false,
+                    topLeft = Offset(inset, inset),
+                    size = arcSize,
+                    style = Stroke(width = stroke, cap = StrokeCap.Round),
+                )
+            }
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("$score", style = ts(62f, FontWeight.Bold, Color.White, -0.04f))
+            Text("OUT OF $total", style = ts(11f, FontWeight.SemiBold, Dim, 0.18f))
+        }
+    }
+}
+
+@Composable
+private fun PrimaryButton(label: String, accent: Color, onClick: () -> Unit) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .clip(ButtonShape)
+            .background(Brush.horizontalGradient(listOf(accent, accent.copy(alpha = 0.82f))))
+            .clickable(onClick = onClick)
+            .padding(vertical = 16.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(label, style = ts(15.5f, FontWeight.Bold, Color.Black.copy(alpha = 0.88f)))
     }
 }

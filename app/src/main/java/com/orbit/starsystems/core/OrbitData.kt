@@ -30,6 +30,9 @@ object OrbitData {
     /** Every fact across explorable systems then Spotlight (matches the old ALL_FACTS order). */
     var allFacts: List<Fact> = emptyList(); private set
 
+    /** The authored quiz bank, minus any entry pointing at a fact that is no longer shipped. */
+    var quiz: List<QuizEntry> = emptyList(); private set
+
     @Volatile private var loaded = false
 
     fun factsForSys(sys: String): List<Fact> =
@@ -77,6 +80,10 @@ object OrbitData {
             allFacts = facts.entries
                 .filter { it.key != SPOTLIGHT }
                 .flatMap { it.value } + (facts[SPOTLIGHT] ?: emptyList())
+
+            val factIds = allFacts.mapTo(HashSet()) { it.id }
+            quiz = parseArray(read("quiz.json")) { it.toQuizEntry() }
+                .filter { it.factId in factIds }
 
             loaded = true
         }
@@ -165,6 +172,16 @@ object OrbitData {
             sys = sys,
             musicResId = optString("music").takeIf { it.isNotEmpty() }?.let { MUSIC[it] },
             source = SourceManager.sourceFor(sys, num),
+        )
+    }
+
+    private fun JSONObject.toQuizEntry(): QuizEntry {
+        val wrong = getJSONArray("w")
+        return QuizEntry(
+            factId = getString("fact"),
+            prompt = getString("q"),
+            answer = getString("a"),
+            wrong = (0 until wrong.length()).map { wrong.getString(it) },
         )
     }
 
