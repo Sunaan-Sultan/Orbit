@@ -53,12 +53,13 @@ object AdManager {
     private const val TEST_BANNER_ID = "ca-app-pub-3940256099942544/6300978111"
 
     // A unit per placement, so AdMob reports impressions, revenue and eCPM for streak repair
-    // and for the quiz hint separately without any work on our side.
-    private const val REAL_REWARDED_REPAIR_ID = "ca-app-pub-9720007236604856/0000000000"
-    private const val REAL_REWARDED_HINT_ID = "ca-app-pub-9720007236604856/0000000000"
+    // and for the quiz hint separately without any work on our side. If the two ever read the
+    // wrong way round in AdMob, only the attribution is wrong — swapping them back is safe.
+    private const val REAL_REWARDED_REPAIR_ID = "ca-app-pub-9720007236604856/1969526474"
+    private const val REAL_REWARDED_HINT_ID = "ca-app-pub-9720007236604856/4413700292"
     private const val TEST_REWARDED_ID = "ca-app-pub-3940256099942544/5224354917"
 
-    /** Placeholder the two real ids ship with until the units exist in AdMob. */
+    /** What an unfilled real id looks like, so a release build never requests a dead unit. */
     private const val UNSET_UNIT = "/0000000000"
 
     /** Rewarded ads expire; anything older than this is reloaded rather than shown. */
