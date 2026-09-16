@@ -65,6 +65,8 @@ import kotlinx.coroutines.delay
 fun SpaceFactsApp(
     pendingFactId: String? = null,
     onPendingFactConsumed: () -> Unit = {},
+    pendingQuiz: Boolean = false,
+    onPendingQuizConsumed: () -> Unit = {},
 ) {
     var tab by remember { mutableStateOf("systems") }
     var openSys by remember { mutableStateOf<String?>(null) }
@@ -148,9 +150,10 @@ fun SpaceFactsApp(
     }
 
     fun openFact(id: String, source: String) {
-        // The streak counts days a fact was actually watched, not bare launches, so it is
-        // recorded here rather than in MainActivity. Idempotent within a day.
-        OrbitPrefs.recordFactSeen()
+        // The streak counts days something was actually read, not bare launches, so it is
+        // recorded here rather than in MainActivity. Finishing the daily quiz credits the same
+        // day through the same transform. Idempotent within a day.
+        OrbitPrefs.recordActivity()
         factById(id)?.let { Analytics.factView(it, source) }
         withAd { factId = id; paused = false; sheet = false; sourceUrl = null; viewed = viewed + id }
     }
@@ -161,7 +164,7 @@ fun SpaceFactsApp(
      * on arrival would be an ad they never asked for.
      */
     fun jumpToFact(id: String) {
-        OrbitPrefs.recordFactSeen()
+        OrbitPrefs.recordActivity()
         factById(id)?.let { Analytics.factView(it, Analytics.Source.DEEP_LINK) }
         factId = id
         paused = false
@@ -180,6 +183,21 @@ fun SpaceFactsApp(
             jumpToFact(target)
         }
         onPendingFactConsumed()
+    }
+
+    // The reminder points here when a streak is at stake. Not routed through the ad cap, for the
+    // same reason jumpToFact isn't: an interstitial on arrival is an ad the user never asked for.
+    LaunchedEffect(pendingQuiz) {
+        if (!pendingQuiz) return@LaunchedEffect
+        tab = "systems"
+        openSys = null
+        searching = false
+        // Load-bearing: the quiz only renders while no fact player is open, so arriving from a
+        // notification on top of one would otherwise set the flag with nothing on screen.
+        factId = null
+        quizOpen = true
+        Analytics.notificationOpened("quiz")
+        onPendingQuizConsumed()
     }
 
     fun exitPlayer() {
@@ -295,6 +313,9 @@ fun SpaceFactsApp(
                 // the time these are reachable.
                 onOpenFact = { quizOpen = false; openFact(it, Analytics.Source.QUIZ) },
                 onClose = { quizOpen = false },
+                // Done, from the score screen, is the best natural break the app has — the
+                // round is over and the user is leaving anyway. The back arrow stays free.
+                onFinish = { quizOpen = false; withAd { } },
             )
         }
 

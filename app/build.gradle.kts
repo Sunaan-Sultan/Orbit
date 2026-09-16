@@ -3,6 +3,14 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+// Applied only once the Firebase config is actually present. The google-services plugin fails
+// the build outright when google-services.json is missing, and that would stop anyone without
+// the file from building the app at all. Drop the file into app/ and analytics starts working
+// with no other change: Analytics.sink is attached at runtime only if Firebase initialised.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 android {
     namespace = "com.orbit.starsystems"
     compileSdk = 37
@@ -54,6 +62,8 @@ dependencies {
     implementation(libs.play.app.update)
     implementation(libs.play.app.update.ktx)
     implementation(libs.billing.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
     testImplementation(libs.junit)
     testImplementation(libs.org.json)
     androidTestImplementation(platform(libs.androidx.compose.bom))

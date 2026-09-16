@@ -110,8 +110,12 @@ fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
             enableReminder()
         }
     }
-    // Both come from disk and only change between launches, so a plain read is enough.
-    val streak = OrbitPrefs.streak
+    // These come from disk, and the daily quiz can change them while this screen is alive, so
+    // the read is keyed to the revision rather than left to a plain one-off.
+    val revision = OrbitPrefs.revision
+    val dayIndex = OrbitPrefs.dayIndex
+    val streakState = remember(revision, dayIndex) { OrbitPrefs.streakState }
+    val streak = streakState.current.coerceAtLeast(1)
     val daysExploring = OrbitPrefs.daysSinceFirstOpen
 
     Column(
@@ -143,9 +147,13 @@ fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
                 .padding(vertical = 18.dp),
         ) {
             ProfileStat(viewed.toString(), "Facts seen")
-            ProfileStat(FEATURED_SYSTEMS.size.toString(), "Systems")
             ProfileStat(savedCount.toString(), "Saved")
-            // Only once there is a score to show — an empty column reads as a missing feature.
+            // Only once there is something to show — an empty column reads as a missing feature.
+            if (OrbitPrefs.dailyQuizCount > 0) {
+                ProfileStat(OrbitPrefs.dailyQuizCount.toString(), "Dailies")
+            } else {
+                ProfileStat(FEATURED_SYSTEMS.size.toString(), "Systems")
+            }
             if (OrbitPrefs.quizRounds > 0) {
                 ProfileStat("${OrbitPrefs.quizBest}/${Quiz.ROUND_SIZE}", "Quiz best")
             }
@@ -162,26 +170,41 @@ fun ProfileScreen(savedCount: Int, viewed: Int, onClearSaved: () -> Unit) {
         ) {
             Ico("bolt", size = 30.dp, color = Color(0xFFFF9E34), filled = true)
             Spacer(Modifier.width(14.dp))
-            Column {
+            Column(Modifier.weight(1f)) {
                 Text("$streak-day streak", style = ts(19f, FontWeight.Bold, Color.White))
                 Text(
-                    if (streak == 1) "Come back tomorrow to start a run." else "Come back tomorrow to keep it going.",
+                    when {
+                        streakState.longest > streak -> "Longest run: ${streakState.longest} days"
+                        streak == 1 -> "Come back tomorrow to start a run."
+                        else -> "Your longest run yet — keep it going tomorrow."
+                    },
                     style = ts(13.5f, color = Color(0xFFC9A98A)),
                     modifier = Modifier.padding(top = 1.dp),
+                )
+                Text(
+                    "LAST 7 DAYS",
+                    style = ts(9.5f, FontWeight.Bold, Dim, 0.16f),
+                    modifier = Modifier.padding(top = 12.dp),
+                )
+                WeekDots(
+                    streakState.week(dayIndex),
+                    modifier = Modifier.padding(top = 6.dp),
                 )
             }
         }
 
-        SectionLabel("DAILY FACT")
+        SectionLabel("DAILY REMINDER")
         SettingsCard {
             SettingsRow(
                 icon = "bell",
                 iconTint = if (notifyOn) Accent else Color(0xFFCFCFCF),
                 title = "Daily reminder",
+                // The reminder is one send that picks its own subject, so the copy names both
+                // rather than promising only the fact it used to always be.
                 subtitle = when {
                     notifyDenied -> "Notifications are off for Space Facts — turn them on in Settings"
-                    notifyOn -> "One fact from the cosmos, every day"
-                    else -> "One fact from the cosmos, once a day"
+                    notifyOn -> "A fact each day — or the quiz, when your streak is at stake"
+                    else -> "One nudge a day, at a time you choose"
                 },
                 subtitleTint = if (notifyDenied) Danger else Dim,
                 showChevron = false,

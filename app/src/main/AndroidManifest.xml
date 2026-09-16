@@ -17,6 +17,7 @@
     </queries>
 
     <application
+        android:name=".OrbitApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -39,8 +40,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- spacefacts://fact/<factId> — used by the daily reminder and by the
-                 caption on a shared fact image. -->
+            <!-- spacefacts://fact/<factId> — a single fact, used by the reminder and by the
+                 caption on a shared fact image.
+                 spacefacts://quiz — today's round, used by the reminder when a streak is at
+                 stake. One filter covers both: Android matches the cross-product of the
+                 scheme and host entries inside it. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -49,6 +53,9 @@
 
                 <data
                     android:host="fact"
+                    android:scheme="spacefacts" />
+                <data
+                    android:host="quiz"
                     android:scheme="spacefacts" />
             </intent-filter>
         </activity>

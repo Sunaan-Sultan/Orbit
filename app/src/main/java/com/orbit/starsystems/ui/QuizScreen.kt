@@ -38,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,30 +57,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.orbit.starsystems.core.Analytics
+import com.orbit.starsystems.core.DailyQuiz
+import com.orbit.starsystems.core.DailyQuizOutcome
 import com.orbit.starsystems.core.Fact
 import com.orbit.starsystems.core.OrbitPrefs
 import com.orbit.starsystems.core.Quiz
 import com.orbit.starsystems.core.QuizQuestion
 import com.orbit.starsystems.core.SYS_META
+import com.orbit.starsystems.core.Streak
 import com.orbit.starsystems.core.factById
 
-private val Right = Color(0xFF5BD68C)
-private val Wrong = Color(0xFFFF6B5A)
-private val QuizAccent = Color(0xFFFFC24D)
-
-/** One step darker than pure black, so the cards and the accent glow have something to sit on. */
-private val Ink = Color(0xFF08080C)
-private val Card = Color(0xFFFFFFFF).copy(alpha = 0.045f)
-private val Hairline = Color(0xFFFFFFFF).copy(alpha = 0.08f)
-
-private val CardShape = RoundedCornerShape(22.dp)
-private val ButtonShape = RoundedCornerShape(16.dp)
-
-/** What the screen is showing: the opening card, a round in progress, or the score. */
+/** What the screen is showing: the opening hub, a round in progress, or the score. */
 private enum class Stage { INTRO, PLAYING, RESULT }
 
 /**
  * Ten authored questions drawn from the facts the app already ships — see [Quiz] for the bank.
+ *
+ * Two ways in. **Today's quiz** is the same ten questions for everyone, worked out from the date
+ * alone ([DailyQuiz]), and finishing it keeps the streak alive; that is the reason to come back
+ * tomorrow, and it is what the screen leads with. **Practice** draws a fresh random round, as
+ * many times as you like, and costs nothing — the daily is the occasion, not a limit on playing.
  *
  * A wrong answer is the interesting moment, so it is never just marked wrong: the right answer is
  * shown immediately along with the fact it came from, and the round ends with every fact that was
@@ -89,7 +86,12 @@ private enum class Stage { INTRO, PLAYING, RESULT }
  * question to question — the same accent the fact's own scene and card use.
  */
 @Composable
-fun QuizScreen(onOpenFact: (String) -> Unit, onClose: () -> Unit) {
+fun QuizScreen(
+    onOpenFact: (String) -> Unit,
+    onClose: () -> Unit,
+    /** Leaving from the score, which is a natural break — the only exit the ad cap sees. */
+    onFinish: () -> Unit = onClose,
+) {
     var stage by remember { mutableStateOf(Stage.INTRO) }
     var questions by remember { mutableStateOf(emptyList<QuizQuestion>()) }
     var index by remember { mutableIntStateOf(0) }
@@ -99,28 +101,57 @@ fun QuizScreen(onOpenFact: (String) -> Unit, onClose: () -> Unit) {
     var missed by remember { mutableStateOf(emptyList<String>()) }
     var beatBest by remember { mutableStateOf(false) }
 
+    var daily by remember { mutableStateOf(true) }
+    /** The day the round on screen was drawn for — pinned so a round played across midnight
+     *  still counts as the day whose questions it actually asked. */
+    var playDay by remember { mutableLongStateOf(0L) }
+    var outcome by remember { mutableStateOf<DailyQuizOutcome?>(null) }
+    var hintUsed by remember { mutableStateOf(false) }
+    var hidden by remember { mutableStateOf(emptySet<Int>()) }
+    var hintOpen by remember { mutableStateOf(false) }
+
+    // Subscribing to the revision is what keeps the hub honest: finishing a round changes the
+    // streak underneath it, and these are plain reads off disk.
+    val revision = OrbitPrefs.revision
+    val today = OrbitPrefs.dayIndex
+    val streak = remember(revision, today) { OrbitPrefs.streakState }
+    val doneToday = remember(revision, today) { OrbitPrefs.isDailyQuizDone(today) }
+
     val score = results.count { it }
     val question = questions.getOrNull(index)
     val fact = factById(question?.factId)
 
-    fun start() {
-        questions = Quiz.round()
+    fun start(isDaily: Boolean) {
+        daily = isDaily
+        playDay = OrbitPrefs.dayIndex
+        questions = if (isDaily) DailyQuiz.roundForDay(playDay) else Quiz.round()
         index = 0
         picked = null
         results = emptyList()
         missed = emptyList()
         beatBest = false
+        outcome = null
+        hintUsed = false
+        hidden = emptySet()
         stage = Stage.PLAYING
-        Analytics.quizStarted()
+        Analytics.quizStarted(daily = isDaily)
     }
 
     fun advance() {
         if (index + 1 < questions.size) {
             index += 1
             picked = null
+            hidden = emptySet()
         } else {
-            beatBest = OrbitPrefs.recordQuizRound(score)
             Analytics.quizFinished(score, questions.size)
+            if (daily) {
+                val result = OrbitPrefs.recordDailyQuiz(playDay, score)
+                outcome = result
+                beatBest = result.beatBest
+                Analytics.dailyQuizFinished(score, questions.size, result.streak, hintUsed)
+            } else {
+                beatBest = OrbitPrefs.recordQuizRound(score)
+            }
             stage = Stage.RESULT
         }
     }
@@ -134,6 +165,7 @@ fun QuizScreen(onOpenFact: (String) -> Unit, onClose: () -> Unit) {
     Column(Modifier.fillMaxSize().background(Ink).auroraGlow(glow)) {
         TopBar(
             stage = stage,
+            daily = daily,
             index = index,
             total = questions.size,
             score = score,
@@ -142,10 +174,18 @@ fun QuizScreen(onOpenFact: (String) -> Unit, onClose: () -> Unit) {
         )
 
         when (stage) {
-            Stage.INTRO -> Intro(onStart = { start() })
+            Stage.INTRO -> Intro(
+                streak = streak,
+                today = today,
+                doneToday = doneToday,
+                onPlayDaily = { start(isDaily = true) },
+                onPractice = { start(isDaily = false) },
+            )
 
-            // The pool cannot realistically empty, but an empty round must not strand.
-            Stage.PLAYING -> if (question == null) Intro(onStart = { start() }) else {
+            // The bank cannot realistically empty, but an empty round must not strand.
+            Stage.PLAYING -> if (question == null) {
+                Intro(streak, today, doneToday, { start(true) }, { start(false) })
+            } else {
                 Pips(total = questions.size, results = results, current = index, accent = accent)
                 Question(
                     question = question,
@@ -153,6 +193,12 @@ fun QuizScreen(onOpenFact: (String) -> Unit, onClose: () -> Unit) {
                     accent = accent,
                     picked = picked,
                     isLast = index + 1 == questions.size,
+                    hidden = hidden,
+                    // The hint is offered on the daily only. Practice rounds are unlimited and
+                    // unscored, so a hint there is worth nothing to the user while turning the
+                    // placement into a loop anyone could farm.
+                    canHint = daily && !hintUsed && picked == null,
+                    onHint = { hintOpen = true },
                     onPick = { choice ->
                         if (picked == null) {
                             picked = choice
@@ -169,13 +215,32 @@ fun QuizScreen(onOpenFact: (String) -> Unit, onClose: () -> Unit) {
             Stage.RESULT -> Result(
                 score = score,
                 total = questions.size,
+                daily = daily,
+                outcome = outcome,
                 beatBest = beatBest,
                 missed = missed,
                 onOpenFact = onOpenFact,
-                onAgain = { start() },
-                onClose = onClose,
+                onAgain = { start(isDaily = false) },
+                onClose = onFinish,
             )
         }
+    }
+
+    if (hintOpen && question != null) {
+        RewardPrompt(
+            title = "Rule out two answers",
+            body = "Two of the wrong options will be struck out, once this round.",
+            cta = "Use 50/50",
+            placement = Analytics.Placement.QUIZ_HINT,
+            accent = accent,
+            onGranted = { method ->
+                hidden = Quiz.fiftyFiftyHidden(question)
+                hintUsed = true
+                hintOpen = false
+                Analytics.hintUsed(method)
+            },
+            onDismiss = { hintOpen = false },
+        )
     }
 }
 
@@ -200,6 +265,7 @@ private fun Modifier.auroraGlow(color: Color) = drawBehind {
 @Composable
 private fun TopBar(
     stage: Stage,
+    daily: Boolean,
     index: Int,
     total: Int,
     score: Int,
@@ -222,7 +288,10 @@ private fun TopBar(
 
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
-            Text("COSMIC QUIZ", style = ts(10.5f, FontWeight.Bold, Dim, 0.22f))
+            Text(
+                if (stage == Stage.PLAYING && daily) "TODAY'S QUIZ" else if (stage == Stage.PLAYING) "PRACTICE ROUND" else "COSMIC QUIZ",
+                style = ts(10.5f, FontWeight.Bold, Dim, 0.22f),
+            )
             if (stage == Stage.PLAYING && total > 0) {
                 Text(
                     "Question ${index + 1} of $total",
@@ -284,9 +353,16 @@ private fun Pips(total: Int, results: List<Boolean>, current: Int, accent: Color
 // ───────────────────────── intro ─────────────────────────
 
 @Composable
-private fun Intro(onStart: () -> Unit) {
+private fun Intro(
+    streak: Streak,
+    today: Long,
+    doneToday: Boolean,
+    onPlayDaily: () -> Unit,
+    onPractice: () -> Unit,
+) {
     val best = OrbitPrefs.quizBest
-    val rounds = OrbitPrefs.quizRounds
+    val dailies = OrbitPrefs.dailyQuizCount
+    val todayScore = OrbitPrefs.dailyQuizScore
 
     // A slow breath on the badge, so the opening screen is not completely static.
     val pulse = rememberInfiniteTransition(label = "quizPulse")
@@ -305,11 +381,11 @@ private fun Intro(onStart: () -> Unit) {
             .padding(horizontal = 22.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(30.dp))
+        Spacer(Modifier.height(22.dp))
         Box(contentAlignment = Alignment.Center) {
             Box(
                 Modifier
-                    .size(150.dp)
+                    .size(132.dp)
                     .graphicsLayer { scaleX = breath; scaleY = breath }
                     .background(
                         Brush.radialGradient(listOf(QuizAccent.copy(alpha = 0.26f), Color.Transparent)),
@@ -318,38 +394,94 @@ private fun Intro(onStart: () -> Unit) {
             )
             Box(
                 Modifier
-                    .size(84.dp)
+                    .size(76.dp)
                     .clip(CircleShape)
                     .background(QuizAccent.copy(alpha = 0.12f))
                     .border(1.dp, QuizAccent.copy(alpha = 0.35f), CircleShape),
                 contentAlignment = Alignment.Center,
-            ) { Ico("spotlight", size = 38.dp, color = QuizAccent, filled = true) }
+            ) { Ico("spotlight", size = 34.dp, color = QuizAccent, filled = true) }
         }
 
         Text(
             "Cosmic Quiz",
-            style = ts(36f, FontWeight.Bold, Color.White, -0.025f),
-            modifier = Modifier.padding(top = 20.dp),
+            style = ts(34f, FontWeight.Bold, Color.White, -0.025f),
+            modifier = Modifier.padding(top = 16.dp),
         )
         Text(
-            "Ten questions, drawn from the facts in this app. Miss one and you'll see the answer — and the fact it came from.",
+            if (doneToday) {
+                "Today's round is done. Come back tomorrow for ten new ones — or keep practising."
+            } else {
+                "Ten questions, the same for everyone today. Finish them to keep your streak."
+            },
             style = ts(15f, FontWeight.Light, Mute, lineHeight = 23f),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 10.dp, start = 6.dp, end = 6.dp),
         )
 
-        Row(
-            Modifier.fillMaxWidth().padding(top = 26.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            StatTile("$best", "BEST SCORE", Modifier.weight(1f))
-            StatTile("$rounds", if (rounds == 1) "ROUND PLAYED" else "ROUNDS PLAYED", Modifier.weight(1f))
-            StatTile("${Quiz.bank.size}", "QUESTIONS", Modifier.weight(1f))
+        if (streak.current > 0) {
+            Spacer(Modifier.height(20.dp))
+            StreakBanner(streak = streak, today = today)
         }
 
-        Spacer(Modifier.height(26.dp))
-        PrimaryButton(if (rounds == 0) "Start the round" else "Play again", QuizAccent, onStart)
+        Row(
+            Modifier.fillMaxWidth().padding(top = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            StatTile("${streak.longest}", "LONGEST RUN", Modifier.weight(1f))
+            StatTile("$dailies", if (dailies == 1) "DAILY DONE" else "DAILIES DONE", Modifier.weight(1f))
+            StatTile("$best", "BEST SCORE", Modifier.weight(1f))
+        }
+
+        Spacer(Modifier.height(22.dp))
+        // Whichever of the two is the point right now leads; the other stays one tap away.
+        if (doneToday) {
+            PrimaryButton("Practice round", QuizAccent, onClick = onPractice)
+            Spacer(Modifier.height(10.dp))
+            SecondaryButton("Replay today · $todayScore of ${Quiz.ROUND_SIZE}", onClick = onPlayDaily)
+        } else {
+            PrimaryButton("Play today's quiz", QuizAccent, onClick = onPlayDaily)
+            Spacer(Modifier.height(10.dp))
+            SecondaryButton("Practice round", onClick = onPractice)
+        }
         Spacer(Modifier.height(34.dp))
+    }
+}
+
+/** The run, its record, and the week behind it — the thing the daily round is played for. */
+@Composable
+private fun StreakBanner(
+    streak: Streak,
+    today: Long,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .clip(CardShape)
+            .background(
+                Brush.horizontalGradient(
+                    listOf(StreakAccent.copy(alpha = 0.18f), StreakAccent.copy(alpha = 0.05f)),
+                ),
+            )
+            .border(1.dp, StreakAccent.copy(alpha = 0.28f), CardShape)
+            .padding(horizontal = 18.dp, vertical = 15.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Ico("bolt", size = 24.dp, color = StreakAccent, filled = true)
+        Spacer(Modifier.width(13.dp))
+        Column(Modifier.weight(1f)) {
+            Text(
+                "${streak.current}-day streak",
+                style = ts(18f, FontWeight.Bold, Color.White),
+            )
+            Text(
+                if (streak.current >= streak.longest) "Your longest run yet" else "Longest: ${streak.longest} days",
+                style = ts(12.5f, color = Color(0xFFC9A98A)),
+                modifier = Modifier.padding(top = 2.dp),
+            )
+        }
+        Spacer(Modifier.width(10.dp))
+        WeekDots(streak.week(today))
     }
 }
 
@@ -358,7 +490,7 @@ private fun StatTile(value: String, label: String, modifier: Modifier = Modifier
     Column(
         modifier
             .clip(CardShape)
-            .background(Card)
+            .background(CardFill)
             .border(1.dp, Hairline, CardShape)
             .padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -382,6 +514,9 @@ private fun Question(
     accent: Color,
     picked: Int?,
     isLast: Boolean,
+    hidden: Set<Int>,
+    canHint: Boolean,
+    onHint: () -> Unit,
     onPick: (Int) -> Unit,
     onNext: () -> Unit,
     onOpenFact: (String) -> Unit,
@@ -407,14 +542,21 @@ private fun Question(
             Text(
                 question.prompt,
                 style = ts(26f, FontWeight.Bold, Color.White, -0.02f, lineHeight = 33f),
-                modifier = Modifier.padding(top = 12.dp, bottom = 22.dp),
+                modifier = Modifier.padding(top = 12.dp, bottom = if (canHint) 14.dp else 22.dp),
             )
+            if (canHint) {
+                HintPill(accent = accent, armed = enter.value >= 1f, onClick = onHint)
+                // A wide gap under the pill on purpose: a button that plays an ad must not sit
+                // within a thumb's slip of the answer the user actually meant to tap.
+                Spacer(Modifier.height(26.dp))
+            }
             question.options.forEachIndexed { i, option ->
                 Option(
                     letter = ('A' + i).toString(),
                     text = option,
                     accent = accent,
                     state = when {
+                        picked == null && i in hidden -> OptionState.STRUCK
                         picked == null -> OptionState.IDLE
                         i == question.answerIndex -> OptionState.RIGHT
                         i == picked -> OptionState.WRONG
@@ -446,7 +588,7 @@ private fun Question(
                     .navigationBarsPadding()
                     .padding(horizontal = 20.dp, vertical = 12.dp),
             ) {
-                PrimaryButton(if (isLast) "See your score" else "Next question", accent, onNext)
+                PrimaryButton(if (isLast) "See your score" else "Next question", accent, onClick = onNext)
             }
         } else {
             Spacer(Modifier.navigationBarsPadding().height(12.dp))
@@ -473,7 +615,39 @@ private fun Eyebrow(fact: Fact, accent: Color) {
     }
 }
 
-private enum class OptionState { IDLE, RIGHT, WRONG, MUTED }
+/**
+ * [STRUCK] is a still-playable question's option ruled out by the 50/50. It stays in place,
+ * greyed and dead, rather than being removed: taking a row out reflows the list and renumbers
+ * the A/B/C/D badges under the reader's thumb mid-question.
+ */
+private enum class OptionState { IDLE, RIGHT, WRONG, MUTED, STRUCK }
+
+/**
+ * The 50/50 offer.
+ *
+ * [armed] is false for the few hundred milliseconds a new question takes to animate in, so a
+ * fast tap aimed at the previous screen's button cannot land on an ad prompt by accident.
+ */
+@Composable
+private fun HintPill(accent: Color, armed: Boolean, onClick: () -> Unit) {
+    val alpha by animateFloatAsState(if (armed) 1f else 0.4f, tween(200), label = "hintArm")
+    Row(
+        Modifier
+            .graphicsLayer { this.alpha = alpha }
+            .clip(CircleShape)
+            .background(Color.White.copy(alpha = 0.05f))
+            .border(1.dp, accent.copy(alpha = 0.28f), CircleShape)
+            .clickable(enabled = armed, onClick = onClick)
+            .padding(horizontal = 13.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Ico("bolt", size = 13.dp, color = accent, filled = true)
+        Spacer(Modifier.width(7.dp))
+        Text("50/50", style = ts(12.5f, FontWeight.Bold, accent, 0.06f))
+        Spacer(Modifier.width(7.dp))
+        Text("rule out two", style = ts(12.5f, FontWeight.Medium, Mute))
+    }
+}
 
 @Composable
 private fun Option(
@@ -487,12 +661,12 @@ private fun Option(
         OptionState.IDLE -> accent
         OptionState.RIGHT -> Right
         OptionState.WRONG -> Wrong
-        OptionState.MUTED -> Color.White.copy(alpha = 0.22f)
+        OptionState.MUTED, OptionState.STRUCK -> Color.White.copy(alpha = 0.22f)
     }
     val border by animateColorAsState(
         when (state) {
             OptionState.IDLE -> Color.White.copy(alpha = 0.10f)
-            OptionState.MUTED -> Color.White.copy(alpha = 0.05f)
+            OptionState.MUTED, OptionState.STRUCK -> Color.White.copy(alpha = 0.05f)
             else -> tint.copy(alpha = 0.75f)
         },
         tween(260),
@@ -502,14 +676,14 @@ private fun Option(
         when (state) {
             OptionState.RIGHT -> Right.copy(alpha = 0.13f)
             OptionState.WRONG -> Wrong.copy(alpha = 0.13f)
-            OptionState.MUTED -> Color.White.copy(alpha = 0.02f)
-            else -> Card
+            OptionState.MUTED, OptionState.STRUCK -> Color.White.copy(alpha = 0.02f)
+            else -> CardFill
         },
         tween(260),
         label = "optFill",
     )
     val label by animateColorAsState(
-        if (state == OptionState.MUTED) Color(0xFF6E6E76) else Color.White,
+        if (state == OptionState.MUTED || state == OptionState.STRUCK) Color(0xFF6E6E76) else Color.White,
         tween(260),
         label = "optLabel",
     )
@@ -536,12 +710,17 @@ private fun Option(
             Modifier
                 .size(30.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(tint.copy(alpha = if (state == OptionState.MUTED) 0.05f else 0.16f)),
+                .background(
+                    tint.copy(
+                        alpha = if (state == OptionState.MUTED || state == OptionState.STRUCK) 0.05f else 0.16f,
+                    ),
+                ),
             contentAlignment = Alignment.Center,
         ) {
             when (state) {
                 OptionState.RIGHT -> Ico("check", size = 15.dp, color = Right, sw = 2.6f)
                 OptionState.WRONG -> Ico("close", size = 14.dp, color = Wrong, sw = 2.4f)
+                OptionState.STRUCK -> Ico("close", size = 13.dp, color = Color(0xFF6E6E76), sw = 2.2f)
                 else -> Text(
                     letter,
                     style = ts(
@@ -625,6 +804,8 @@ private fun Verdict(correct: Boolean, answer: String, fact: Fact, onOpenFact: ()
 private fun Result(
     score: Int,
     total: Int,
+    daily: Boolean,
+    outcome: DailyQuizOutcome?,
     beatBest: Boolean,
     missed: List<String>,
     onOpenFact: (String) -> Unit,
@@ -640,6 +821,12 @@ private fun Result(
         item {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 ScoreRing(score = score, total = total)
+                // The streak goes above everything else the score screen has to say. It is the
+                // reason the round was played, and it is the only line that says come back.
+                if (outcome != null && outcome.extended) {
+                    Spacer(Modifier.height(20.dp))
+                    StreakEarned(outcome)
+                }
                 if (beatBest) {
                     Row(
                         Modifier
@@ -657,6 +844,7 @@ private fun Result(
                 }
                 Text(
                     when {
+                        outcome != null && !outcome.firstToday -> "Today was already counted — this one was for the practice."
                         score == total -> "Every one. Nothing left to catch you out."
                         pct >= 75 -> "Strong round."
                         pct >= 50 -> "Over halfway there."
@@ -692,19 +880,51 @@ private fun Result(
         }
         item {
             Spacer(Modifier.height(14.dp))
-            PrimaryButton("Play again", QuizAccent, onAgain)
+            PrimaryButton(if (daily) "Practice round" else "Play again", QuizAccent, onClick = onAgain)
             Spacer(Modifier.height(10.dp))
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .clip(ButtonShape)
-                    .background(Color.White.copy(alpha = 0.06f))
-                    .border(1.dp, Hairline, ButtonShape)
-                    .clickable(onClick = onClose)
-                    .padding(vertical = 15.dp),
-                contentAlignment = Alignment.Center,
-            ) { Text("Done", style = ts(15.5f, FontWeight.SemiBold, Color.White)) }
+            SecondaryButton("Done", onClick = onClose)
         }
+    }
+}
+
+/**
+ * The payoff: the run this round just extended, and the week it sits in.
+ *
+ * Deliberately loud compared with the rest of the score screen — a streak only works as a reason
+ * to return if the moment it grows is worth seeing.
+ */
+@Composable
+private fun StreakEarned(outcome: DailyQuizOutcome) {
+    val grow = remember(outcome.streak) { Animatable(0.7f) }
+    LaunchedEffect(outcome.streak) {
+        grow.animateTo(1f, tween(420, easing = FastOutSlowInEasing))
+    }
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .graphicsLayer { scaleX = grow.value; scaleY = grow.value }
+            .clip(CardShape)
+            .background(
+                Brush.horizontalGradient(
+                    listOf(StreakAccent.copy(alpha = 0.20f), StreakAccent.copy(alpha = 0.06f)),
+                ),
+            )
+            .border(1.dp, StreakAccent.copy(alpha = 0.32f), CardShape)
+            .padding(horizontal = 18.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Ico("bolt", size = 22.dp, color = StreakAccent, filled = true)
+            Spacer(Modifier.width(10.dp))
+            Text("${outcome.streak}-day streak", style = ts(22f, FontWeight.Bold, Color.White, -0.02f))
+        }
+        Text(
+            if (outcome.newLongest) "Your longest run yet." else "Come back tomorrow to keep it going.",
+            style = ts(13.5f, color = Color(0xFFC9A98A)),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 5.dp),
+        )
+        WeekDots(outcome.week, dot = 8.dp, modifier = Modifier.padding(top = 12.dp))
     }
 }
 
@@ -745,20 +965,5 @@ private fun ScoreRing(score: Int, total: Int) {
             Text("$score", style = ts(62f, FontWeight.Bold, Color.White, -0.04f))
             Text("OUT OF $total", style = ts(11f, FontWeight.SemiBold, Dim, 0.18f))
         }
-    }
-}
-
-@Composable
-private fun PrimaryButton(label: String, accent: Color, onClick: () -> Unit) {
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .clip(ButtonShape)
-            .background(Brush.horizontalGradient(listOf(accent, accent.copy(alpha = 0.82f))))
-            .clickable(onClick = onClick)
-            .padding(vertical = 16.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(label, style = ts(15.5f, FontWeight.Bold, Color.Black.copy(alpha = 0.88f)))
     }
 }

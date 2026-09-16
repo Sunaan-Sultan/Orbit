@@ -23,27 +23,34 @@ Current version in source: **3.2** (versionCode 32) — see `app/build.gradle.kt
 
 ## 3.2 — Unreleased
 
-**Headline:** A fact a day, a quiz, and a way to find any of them
+**Headline:** A quiz a day, a streak to keep, and a way to find any fact
 
 - **Fact of the day.** One of the 131 facts now leads the Systems tab, chosen fresh each morning and the same for the whole day. It walks the catalog as a shuffled cycle, so nothing repeats until everything else has had its turn.
 - **A daily reminder.** Switch it on in the You tab and pick a time — morning, midday, evening or night — and the day's fact arrives as a notification. Tapping it opens that fact directly. Off by default; the permission is only ever asked for on the tap that turns it on.
-- **Cosmic Quiz.** Ten multiple-choice questions a round, built from the facts already in the app — a measurement to name, a description to match to its fact, a fact to place in its system. Wrong answers show the right one straight away, and the round ends with every fact you missed, ready to open and read again. Your best score is kept on the You tab.
+- **Cosmic Quiz.** Ten multiple-choice questions a round, drawn from a bank of 255 written against the facts already in the app — at least one for every one of the 131. Wrong answers show the right one straight away, and the round ends with every fact you missed, ready to open and read again.
+- **Today's quiz, and a streak to keep.** One fixed round a day, worked out from the date alone, so everyone gets the same ten questions. Finishing it keeps your streak — as does watching a fact, so there is still only one streak and only one number to care about. The Systems tab, the quiz and the You tab all show it, with the last seven days as dots and your longest run beside it.
+- **Restore a broken streak.** Miss a single day on a run of three or more and you can get it back, that day only, by watching a short video. Capped at once a fortnight, because a streak that can be bought back whenever you like is not a record of anything. If no video will load, the streak is simply given back.
+- **A 50/50 on today's quiz.** Once a round, rule out two wrong answers. Optional, and never on practice rounds.
+- **The reminder now knows what is at stake.** The same one send a day, at the time you picked, but when a live streak has not been kept yet it points at the quiz and says so, rather than always offering the day's fact.
+- Anyone who has bought **Remove ads** gets both the streak repair and the 50/50 outright, with no video.
 - **Search.** The library outgrew browsing. Search any fact by name, by what it is, by its category or system, or by a number buried in its blurb or stats — "diamond", "habitable", "1918".
 - **Your progress now shows.** Facts you have seen are ticked in every list, each system card carries a progress bar and tells you how many of its facts you have explored, and each category shows how far through it you are.
 - **Share a fact as a picture.** The Learn more sheet has a share button that renders the fact's own scene as an image card and hands it to the share sheet — with a link that opens straight back to that fact.
 - **A privacy choice for ads.** Where the law gives you one, ads now ask before they personalise, and the choice can be changed at any time from the You tab.
-- The daily streak now counts days you actually watched a fact, rather than days you merely opened the app.
+- The daily streak now counts days you actually watched a fact or finished the quiz, rather than days you merely opened the app. It also remembers your longest run, which older versions never recorded — an existing streak is carried over intact, with its week of dots filled in.
+- Groundwork for measurement: the app can now report anonymous usage to Firebase Analytics once a `google-services.json` is added. Without one, nothing leaves the device and nothing changes.
 
 ### Play Store copy
 
 ```
-A fact a day — and a way to find any of them.
+A quiz a day, and a streak to keep.
 
-One of Space Facts' 131 facts now leads the app each morning, and a daily reminder can bring it to you at a time you choose.
+Ten questions every day, the same for everyone, written from Space Facts' own 131 facts. Finish them to keep your streak going — and a reminder will tell you when it is at stake.
 
-• Cosmic Quiz — ten questions a round, drawn from the facts
+• Today's quiz — ten questions, a new set each morning
+• A streak, your longest run, and the last seven days at a glance
+• A fact of the day leading the Systems tab
 • Search every fact by name, subject or number
-• See your progress — ticked facts, and how far through each system you are
 • Share any fact as a picture of its own scene
 ```
 

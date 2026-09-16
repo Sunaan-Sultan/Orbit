@@ -60,6 +60,9 @@ class MainActivity : ComponentActivity() {
      */
     private var pendingFactId by mutableStateOf<String?>(null)
 
+    /** Same idea as [pendingFactId], for the reminder's "your streak ends tonight" link. */
+    private var pendingQuiz by mutableStateOf(false)
+
     private val mainHandler = Handler(Looper.getMainLooper())
 
     /**
@@ -91,6 +94,7 @@ class MainActivity : ComponentActivity() {
         OrbitData.init(this)
         OrbitPrefs.init(this)
         pendingFactId = DeepLink.factIdFrom(intent)
+        pendingQuiz = DeepLink.isQuizLink(intent)
         // Re-arm the reminder: work does not survive an app update or a "force stop".
         DailyReminder.sync(this)
         BillingManager.init(this)
@@ -98,9 +102,11 @@ class MainActivity : ComponentActivity() {
         // The Mobile Ads SDK must not start before consent is settled, or the first requests
         // go out with no legal basis. AdConsent always calls back, so ads are never stranded.
         if (AdManager.adsEnabled) {
+            // Loading from inside the initialize callback, not beside it: a request made
+            // before the SDK is actually up is dropped, and the rewarded path needs to know
+            // when it is safe to ask.
             AdConsent.gather(this) {
-                MobileAds.initialize(this) {}
-                AdManager.loadInterstitial(this)
+                MobileAds.initialize(this) { AdManager.onAdsInitialized(this) }
             }
         }
 
@@ -122,6 +128,8 @@ class MainActivity : ComponentActivity() {
                 Gate.ALLOWED -> SpaceFactsApp(
                     pendingFactId = pendingFactId,
                     onPendingFactConsumed = { pendingFactId = null },
+                    pendingQuiz = pendingQuiz,
+                    onPendingQuizConsumed = { pendingQuiz = false },
                 )
             }
         }
@@ -133,6 +141,7 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         DeepLink.factIdFrom(intent)?.let { pendingFactId = it }
+        if (DeepLink.isQuizLink(intent)) pendingQuiz = true
     }
 
     override fun onResume() {

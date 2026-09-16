@@ -44,12 +44,14 @@ import com.orbit.starsystems.core.factsForSys
  * are looked up in the catalog, so the cards stay in step with the content in assets/.
  */
 private object Release {
-    const val HEADLINE = "A fact a day, a quiz, and a way to find any of them"
+    const val HEADLINE = "A quiz a day, a streak to keep, and a way to find any fact"
     val NEW_SYSTEMS = emptyList<String>()
     val ALSO = listOf(
+        "Today's quiz — ten questions, the same for everyone, a new set each morning. Finish it to keep your streak.",
+        "A streak that counts a fact watched or a quiz finished, with your longest run and the last seven days at a glance.",
+        "Missed a single day? You can restore a streak of three or more, that day only, by watching a short video.",
         "A fact of the day, waiting at the top of the Systems tab — one of the 131, chosen fresh each morning.",
-        "Cosmic Quiz — ten questions built from the facts themselves, with every one you miss listed at the end to read again.",
-        "A daily reminder you can switch on in the You tab, at a time that suits you.",
+        "A daily reminder you can switch on in the You tab, at a time that suits you — it points at the quiz when your streak is at stake.",
         "Search, at last: find any fact by its name, by what it is, or by a number buried in it.",
         "Your progress now shows: seen facts are ticked, and every system tells you how far through it you are.",
         "Share a fact as a picture — the real scene, ready to send.",

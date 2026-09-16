@@ -88,6 +88,20 @@ object Quiz {
         return out.map { it.toQuestion(random) }
     }
 
+    /**
+     * Two wrong options to strike out, for the 50/50 hint.
+     *
+     * Never returns the answer's index, and hands back fewer than two only if a question somehow
+     * ships with fewer than three wrong options — the bank is checked for four distinct options
+     * in [QuizTest], so in practice it is always exactly two.
+     */
+    fun fiftyFiftyHidden(question: QuizQuestion, random: Random = Random.Default): Set<Int> =
+        question.options.indices
+            .filter { it != question.answerIndex }
+            .shuffled(random)
+            .take(2)
+            .toSet()
+
     private fun QuizEntry.toQuestion(random: Random): QuizQuestion {
         val options = (wrong + answer).shuffled(random)
         return QuizQuestion(factId, prompt, options, options.indexOf(answer))

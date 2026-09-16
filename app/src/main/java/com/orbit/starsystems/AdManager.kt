@@ -8,7 +8,25 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.orbit.starsystems.billing.BillingManager
+import com.orbit.starsystems.core.Analytics
+
+/** How a rewarded ad ended. Four values rather than a boolean, because the answers differ.  */
+enum class RewardResult {
+    /** The video was watched far enough to earn the reward. Grant the perk. */
+    EARNED,
+
+    /** Shown, then dismissed early. The user's own choice — say nothing, leave the offer live. */
+    ABANDONED,
+
+    /** It broke after we committed to showing it. Our fault. */
+    FAILED,
+
+    /** Nothing to show: no fill, no consent, offline, or the SDK is not up yet. Our fault. */
+    UNAVAILABLE,
+}
 
 object AdManager {
     private var interstitialAd: InterstitialAd? = null
@@ -34,6 +52,21 @@ object AdManager {
     private const val REAL_BANNER_ID = "ca-app-pub-9720007236604856/2781830136"
     private const val TEST_BANNER_ID = "ca-app-pub-3940256099942544/6300978111"
 
+    // A unit per placement, so AdMob reports impressions, revenue and eCPM for streak repair
+    // and for the quiz hint separately without any work on our side.
+    private const val REAL_REWARDED_REPAIR_ID = "ca-app-pub-9720007236604856/0000000000"
+    private const val REAL_REWARDED_HINT_ID = "ca-app-pub-9720007236604856/0000000000"
+    private const val TEST_REWARDED_ID = "ca-app-pub-3940256099942544/5224354917"
+
+    /** Placeholder the two real ids ship with until the units exist in AdMob. */
+    private const val UNSET_UNIT = "/0000000000"
+
+    /** Rewarded ads expire; anything older than this is reloaded rather than shown. */
+    private const val REWARDED_TTL_MS = 50 * 60_000L
+
+    /** How long to sit on a failed load before trying again, so a dead network isn't hammered. */
+    private const val REWARDED_BACKOFF_MS = 30_000L
+
     private val interstitialId: String
         get() = if (useTestAds) TEST_INTERSTITIAL_ID else REAL_INTERSTITIAL_ID
 
@@ -45,11 +78,34 @@ object AdManager {
     var isAdShowing by mutableStateOf(false)
         private set
 
-    /** Restarts the launch grace period. Called once from MainActivity.onCreate. */
+    /**
+     * Whether the Mobile Ads SDK has finished starting.
+     *
+     * It is deliberately not initialised until UMP consent resolves, so anything that requests
+     * an ad before this is true is quietly dropped. Interstitials survive that because they are
+     * retried on the next navigation; a rewarded ad is asked for once, by hand, so it has to
+     * know.
+     */
+    var sdkReady = false
+        private set
+
+    /** Called from the consent callback, once MobileAds.initialize has actually finished. */
+    fun onAdsInitialized(context: Context) {
+        sdkReady = true
+        loadInterstitial(context)
+    }
+
+    /**
+     * Restarts the launch grace period. Called once from MainActivity.onCreate.
+     *
+     * [lastShownAt] is deliberately left alone. onCreate runs again on every configuration
+     * change, and clearing it there would let an interstitial fire seconds after a rewarded ad
+     * simply because the user rotated the phone. [LAUNCH_GRACE_MS] already covers a genuine
+     * cold start, which is the only thing this needs to protect.
+     */
     fun startSession() {
         sessionStartedAt = System.currentTimeMillis()
         actionsSinceAd = 0
-        lastShownAt = 0L
         isAdShowing = false
     }
 
@@ -160,5 +216,151 @@ object AdManager {
     fun discard() {
         interstitialAd = null
         loadInFlight = false
+        rewardedAd = null
+        rewardedReady = false
+    }
+
+    // ───────────────────────── rewarded ─────────────────────────
+
+    private var rewardedAd: RewardedAd? = null
+    private var rewardedLoadedAt = 0L
+    private var rewardedLoadInFlight = false
+    private var rewardedFailedAt = 0L
+    private var rewardedWaiters = mutableListOf<(Boolean) -> Unit>()
+
+    /** Compose state so a "watch" button can light up the moment fill arrives. */
+    var rewardedReady by mutableStateOf(false)
+        private set
+
+    private fun rewardedId(placement: String): String = when {
+        useTestAds -> TEST_REWARDED_ID
+        placement == Analytics.Placement.QUIZ_HINT -> REAL_REWARDED_HINT_ID
+        else -> REAL_REWARDED_REPAIR_ID
+    }
+
+    /**
+     * Guards a release build shipped before the AdMob units were created: requesting an invalid
+     * unit id logs errors forever and never fills, so it is better not to ask.
+     */
+    private fun rewardedConfigured(placement: String): Boolean =
+        useTestAds || !rewardedId(placement).endsWith(UNSET_UNIT)
+
+    private fun rewardedFresh(now: Long): Boolean =
+        rewardedAd != null && now - rewardedLoadedAt < REWARDED_TTL_MS
+
+    /**
+     * Warms a rewarded ad, calling [onReady] with whether one is available.
+     *
+     * Never called at launch: the overwhelming majority of sessions never reach a reward, and a
+     * request per session for an ad nobody asks for is wasted fill. The two surfaces that can
+     * offer one warm it as they appear instead.
+     */
+    fun loadRewarded(
+        context: Context,
+        placement: String = Analytics.Placement.STREAK_REPAIR,
+        onReady: ((Boolean) -> Unit)? = null,
+    ) {
+        val now = System.currentTimeMillis()
+        if (!adsEnabled || !sdkReady || !rewardedConfigured(placement)) {
+            onReady?.invoke(false)
+            return
+        }
+        if (rewardedFresh(now)) {
+            onReady?.invoke(true)
+            return
+        }
+        onReady?.let { rewardedWaiters += it }
+        if (rewardedLoadInFlight) return
+        if (now - rewardedFailedAt < REWARDED_BACKOFF_MS) {
+            drainRewardedWaiters(false)
+            return
+        }
+        rewardedLoadInFlight = true
+        RewardedAd.load(
+            context,
+            rewardedId(placement),
+            AdRequest.Builder().build(),
+            object : RewardedAdLoadCallback() {
+                override fun onAdLoaded(ad: RewardedAd) {
+                    rewardedLoadInFlight = false
+                    rewardedAd = ad
+                    rewardedLoadedAt = System.currentTimeMillis()
+                    rewardedReady = true
+                    drainRewardedWaiters(true)
+                }
+
+                override fun onAdFailedToLoad(error: LoadAdError) {
+                    rewardedLoadInFlight = false
+                    rewardedAd = null
+                    rewardedReady = false
+                    rewardedFailedAt = System.currentTimeMillis()
+                    Analytics.rewardedFailed(placement, "no_fill_${error.code}")
+                    drainRewardedWaiters(false)
+                }
+            },
+        )
+    }
+
+    private fun drainRewardedWaiters(ready: Boolean) {
+        val waiting = rewardedWaiters
+        rewardedWaiters = mutableListOf()
+        waiting.forEach { it(ready) }
+    }
+
+    /**
+     * Plays a rewarded ad for [placement] and reports how it ended.
+     *
+     * [record] runs *before* the ad is shown rather than after. It is the same call the
+     * interstitial triggers make, so charging the rewarded against the shared cap up front is
+     * what stops an interstitial firing on the very next navigation — the user would otherwise
+     * watch a video by choice and immediately be handed one they did not choose. Doing it first
+     * also covers the failure path, where the ad may already have drawn something.
+     *
+     * The reward is banked in the SDK's own callback but only delivered on dismissal, so the UI
+     * never changes behind the ad.
+     */
+    fun showRewarded(
+        activity: android.app.Activity,
+        placement: String,
+        onResult: (RewardResult) -> Unit,
+    ) {
+        val now = System.currentTimeMillis()
+        val ad = rewardedAd
+        if (isAdShowing || !sdkReady || ad == null || !rewardedFresh(now)) {
+            loadRewarded(activity, placement)
+            Analytics.rewardedFailed(placement, if (!sdkReady) "sdk_not_ready" else "not_loaded")
+            onResult(RewardResult.UNAVAILABLE)
+            return
+        }
+        var earned = false
+        isAdShowing = true
+        record(now)
+        rewardedAd = null
+        rewardedReady = false
+        ad.fullScreenContentCallback = object : com.google.android.gms.ads.FullScreenContentCallback() {
+            override fun onAdShowedFullScreenContent() {
+                Analytics.rewardedShown(placement)
+            }
+
+            override fun onAdDismissedFullScreenContent() {
+                isAdShowing = false
+                if (earned) {
+                    onResult(RewardResult.EARNED)
+                } else {
+                    Analytics.rewardedAbandoned(placement)
+                    onResult(RewardResult.ABANDONED)
+                }
+            }
+
+            override fun onAdFailedToShowFullScreenContent(error: com.google.android.gms.ads.AdError) {
+                isAdShowing = false
+                Analytics.rewardedFailed(placement, "show_${error.code}")
+                onResult(RewardResult.FAILED)
+            }
+        }
+        ad.show(activity) {
+            earned = true
+            Analytics.rewardedEarned(placement)
+        }
     }
 }

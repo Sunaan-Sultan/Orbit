@@ -33,6 +33,19 @@ object Analytics {
     /** Null until a provider is attached; events are dropped rather than queued. */
     var sink: Sink? = null
 
+    /** Which rewarded slot an ad was asked for, so revenue can be read per placement. */
+    object Placement {
+        const val STREAK_REPAIR = "streak_repair"
+        const val QUIZ_HINT = "quiz_hint"
+    }
+
+    /** How a perk was granted — paid for with an ad, owned outright, or given up on. */
+    object Grant {
+        const val AD = "ad"
+        const val AD_FREE = "ad_free"
+        const val FALLBACK = "fallback"
+    }
+
     /** Where a fact was opened from, so drop-off can be attributed to a surface. */
     object Source {
         const val TODAY = "today"
@@ -60,12 +73,57 @@ object Analytics {
     fun reminderToggled(enabled: Boolean, hour: Int) =
         log("reminder_toggled", "enabled" to enabled.toString(), "hour" to hour.toString())
 
-    fun quizStarted() = log("quiz_started")
+    fun quizStarted(daily: Boolean) = log("quiz_started", "daily" to daily.toString())
 
     fun quizFinished(score: Int, total: Int) =
         log("quiz_finished", "score" to score.toString(), "total" to total.toString())
 
-    fun purchase(outcome: String) = log("purchase", "outcome" to outcome)
+    fun dailyQuizFinished(score: Int, total: Int, streak: Int, hintUsed: Boolean) =
+        log(
+            "daily_quiz_finished",
+            "score" to score.toString(),
+            "total" to total.toString(),
+            "streak" to streak.toString(),
+            "hint_used" to hintUsed.toString(),
+        )
+
+    // The streak pair is what answers the question the whole daily loop was built to answer:
+    // whether a run actually brings people back, and how long they last before one lapses.
+    fun streakExtended(days: Int) = log("streak_extended", "days" to days.toString())
+
+    fun streakBroken(days: Int, gapDays: Int) =
+        log("streak_broken", "days" to days.toString(), "gap_days" to gapDays.toString())
+
+    fun streakRepairOffered(days: Int) = log("streak_repair_offered", "days" to days.toString())
+
+    fun streakRepaired(days: Int, method: String) =
+        log("streak_repaired", "days" to days.toString(), "method" to method)
+
+    fun hintUsed(method: String) = log("hint_used", "method" to method)
+
+    // Requested → shown → earned, per placement, is the rewarded funnel; AdMob reports the
+    // money against the same two units, so the two halves can be read together.
+    fun rewardedRequested(placement: String) = log("rewarded_requested", "placement" to placement)
+
+    fun rewardedShown(placement: String) = log("rewarded_shown", "placement" to placement)
+
+    fun rewardedEarned(placement: String) = log("rewarded_earned", "placement" to placement)
+
+    fun rewardedAbandoned(placement: String) = log("rewarded_abandoned", "placement" to placement)
+
+    fun rewardedFailed(placement: String, reason: String) =
+        log("rewarded_failed", "placement" to placement, "reason" to reason)
+
+    fun notificationPosted(kind: String) = log("notification_posted", "kind" to kind)
+
+    fun notificationOpened(kind: String) = log("notification_opened", "kind" to kind)
+
+    /**
+     * Named `iap_purchase`, not `purchase`: Firebase reserves `purchase` for a recommended
+     * event with a currency/value schema, and logging a bare outcome against it corrupts the
+     * revenue reports it feeds.
+     */
+    fun purchase(outcome: String) = log("iap_purchase", "outcome" to outcome)
 
     private fun log(event: String, vararg params: Pair<String, String>) {
         val map = params.toMap()
