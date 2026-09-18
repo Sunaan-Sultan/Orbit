@@ -46,9 +46,6 @@ class MainActivity : ComponentActivity() {
 
     private var gate by mutableStateOf(Gate.CHECKING)
 
-    /** Kept so the gate's button can relaunch Play's flow without querying again. */
-    private var pendingUpdate: AppUpdateInfo? = null
-
     /** True while Play's UI is up, so the two callers below can't launch it twice. */
     private var updateFlowLaunched = false
 
@@ -118,12 +115,7 @@ class MainActivity : ComponentActivity() {
             when (gate) {
                 Gate.CHECKING -> UpdateCheckSplash()
                 Gate.BLOCKED -> UpdateRequiredScreen(
-                    onUpdate = {
-                        // Every path that blocks also records the info, but a dead button
-                        // on a hard gate would trap the user — so fall back to the listing.
-                        pendingUpdate?.let { startImmediateUpdate(it) }
-                            ?: AppActions.openPlayListing(this)
-                    },
+                    onUpdate = { AppActions.openPlayListing(this) },
                 )
                 Gate.ALLOWED -> SpaceFactsApp(
                     pendingFactId = pendingFactId,
@@ -186,7 +178,6 @@ class MainActivity : ComponentActivity() {
 
     /** Closes the gate *before* launching the flow, so a launch that fails still blocks. */
     private fun block(info: AppUpdateInfo) {
-        pendingUpdate = info
         gate = Gate.BLOCKED
         startImmediateUpdate(info)
     }

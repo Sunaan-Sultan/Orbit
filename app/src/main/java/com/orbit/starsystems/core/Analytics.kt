@@ -33,10 +33,13 @@ object Analytics {
     /** Null until a provider is attached; events are dropped rather than queued. */
     var sink: Sink? = null
 
-    /** Which rewarded slot an ad was asked for, so revenue can be read per placement. */
+    /** Which slot an ad was asked for, so revenue can be read per placement. */
     object Placement {
         const val STREAK_REPAIR = "streak_repair"
         const val QUIZ_HINT = "quiz_hint"
+        const val QUIZ_ROUND_END = "quiz_round_end"
+        const val NAVIGATION = "navigation"
+        const val FACT_SCROLL = "fact_scroll"
     }
 
     /** How a perk was granted — paid for with an ad, owned outright, or given up on. */
@@ -100,6 +103,11 @@ object Analytics {
         log("streak_repaired", "days" to days.toString(), "method" to method)
 
     fun hintUsed(method: String) = log("hint_used", "method" to method)
+
+    fun interstitialShown(placement: String) = log("interstitial_shown", "placement" to placement)
+
+    fun interstitialFailed(placement: String, reason: String) =
+        log("interstitial_failed", "placement" to placement, "reason" to reason)
 
     // Requested → shown → earned, per placement, is the rewarded funnel; AdMob reports the
     // money against the same two units, so the two halves can be read together.

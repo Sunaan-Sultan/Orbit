@@ -32,6 +32,7 @@ object OrbitPrefs {
     private const val KEY_NOTIFY_HOUR = "notify_hour"
     private const val KEY_QUIZ_BEST = "quiz_best"
     private const val KEY_QUIZ_ROUNDS = "quiz_rounds"
+    private const val KEY_QUIZ_PROGRESS = "quiz_progress"
 
     // Added with the daily quiz. All additive: no existing key changes meaning, so an upgrade
     // never costs anyone their streak or their collection.
@@ -132,6 +133,15 @@ object OrbitPrefs {
 
     /** How many rounds have been finished, daily and practice together. */
     val quizRounds: Int get() = prefs?.getInt(KEY_QUIZ_ROUNDS, 0) ?: 0
+
+    var quizProgress: String?
+        get() = prefs?.getString(KEY_QUIZ_PROGRESS, null)
+        set(value) {
+            val p = prefs ?: return
+            val e = p.edit()
+            if (value == null) e.remove(KEY_QUIZ_PROGRESS) else e.putString(KEY_QUIZ_PROGRESS, value)
+            e.apply()
+        }
 
     /** Records a finished round and reports whether it beat the previous best. */
     fun recordQuizRound(score: Int): Boolean {

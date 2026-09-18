@@ -36,6 +36,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -53,9 +54,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.orbit.starsystems.AdManager
 import com.orbit.starsystems.core.Analytics
 import com.orbit.starsystems.core.DailyQuiz
 import com.orbit.starsystems.core.DailyQuizOutcome
@@ -66,9 +69,144 @@ import com.orbit.starsystems.core.QuizQuestion
 import com.orbit.starsystems.core.SYS_META
 import com.orbit.starsystems.core.Streak
 import com.orbit.starsystems.core.factById
+import org.json.JSONArray
+import org.json.JSONObject
 
 /** What the screen is showing: the opening hub, a round in progress, or the score. */
-private enum class Stage { INTRO, PLAYING, RESULT }
+enum class Stage { INTRO, PLAYING, RESULT }
+
+@Stable
+class QuizSession {
+    val stageState = mutableStateOf(Stage.INTRO)
+    val questionsState = mutableStateOf(emptyList<QuizQuestion>())
+    val indexState = mutableIntStateOf(0)
+    val pickedState = mutableStateOf<Int?>(null)
+    val resultsState = mutableStateOf(emptyList<Boolean>())
+    val missedState = mutableStateOf(emptyList<String>())
+    val beatBestState = mutableStateOf(false)
+    val dailyState = mutableStateOf(true)
+    val playDayState = mutableLongStateOf(0L)
+    val outcomeState = mutableStateOf<DailyQuizOutcome?>(null)
+    val hintUsedState = mutableStateOf(false)
+    val hiddenState = mutableStateOf(emptySet<Int>())
+    val openState = mutableStateOf(false)
+
+    fun clearIfFinished() {
+        if (stageState.value == Stage.RESULT) clear()
+    }
+
+    fun discardStaleDaily() {
+        if (stageState.value == Stage.PLAYING &&
+            dailyState.value &&
+            playDayState.longValue != OrbitPrefs.dayIndex
+        ) {
+            clear()
+        }
+    }
+
+    fun clear() {
+        stageState.value = Stage.INTRO
+        questionsState.value = emptyList()
+        indexState.intValue = 0
+        pickedState.value = null
+        resultsState.value = emptyList()
+        missedState.value = emptyList()
+        beatBestState.value = false
+        dailyState.value = true
+        playDayState.longValue = 0L
+        outcomeState.value = null
+        hintUsedState.value = false
+        hiddenState.value = emptySet()
+        OrbitPrefs.quizProgress = null
+    }
+
+    fun noteOpen(open: Boolean) {
+        openState.value = open
+        persist()
+    }
+
+    fun persist() {
+        val questions = questionsState.value
+        if (stageState.value != Stage.PLAYING || questions.isEmpty()) {
+            OrbitPrefs.quizProgress = null
+            return
+        }
+        val out = JSONObject()
+            .put("v", SNAPSHOT_VERSION)
+            .put("daily", dailyState.value)
+            .put("day", playDayState.longValue)
+            .put("index", indexState.intValue)
+            .put("results", JSONArray(resultsState.value))
+            .put("missed", JSONArray(missedState.value))
+            .put("hintUsed", hintUsedState.value)
+            .put("hidden", JSONArray(hiddenState.value.toList()))
+            .put("open", openState.value)
+            .put("questions", JSONArray(questions.map(::encodeQuestion)))
+        pickedState.value?.let { out.put("picked", it) }
+        OrbitPrefs.quizProgress = out.toString()
+    }
+
+    fun restore() {
+        val raw = OrbitPrefs.quizProgress ?: return
+        val loaded = runCatching { load(raw) }.getOrDefault(false)
+        if (!loaded) {
+            clear()
+            return
+        }
+        discardStaleDaily()
+        if (stageState.value != Stage.PLAYING) openState.value = false
+    }
+
+    private fun load(raw: String): Boolean {
+        val o = JSONObject(raw)
+        if (o.optInt("v") != SNAPSHOT_VERSION) return false
+        val array = o.optJSONArray("questions") ?: return false
+        val questions = (0 until array.length()).map { decodeQuestion(array.getJSONObject(it)) }
+        if (questions.isEmpty() || questions.any { it.answerIndex !in it.options.indices }) return false
+
+        val results = o.optJSONArray("results").bools().take(questions.size)
+        stageState.value = Stage.PLAYING
+        questionsState.value = questions
+        indexState.intValue = o.optInt("index").coerceIn(0, questions.lastIndex)
+        pickedState.value = if (o.has("picked")) o.getInt("picked") else null
+        resultsState.value = results
+        missedState.value = o.optJSONArray("missed").strings()
+        beatBestState.value = false
+        dailyState.value = o.optBoolean("daily", true)
+        playDayState.longValue = o.optLong("day")
+        outcomeState.value = null
+        hintUsedState.value = o.optBoolean("hintUsed")
+        hiddenState.value = o.optJSONArray("hidden").ints().toSet()
+        openState.value = o.optBoolean("open")
+        return true
+    }
+
+    private companion object {
+        const val SNAPSHOT_VERSION = 1
+
+        fun encodeQuestion(q: QuizQuestion) = JSONObject()
+            .put("fact", q.factId)
+            .put("prompt", q.prompt)
+            .put("options", JSONArray(q.options))
+            .put("answer", q.answerIndex)
+
+        fun decodeQuestion(o: JSONObject) = QuizQuestion(
+            factId = o.getString("fact"),
+            prompt = o.getString("prompt"),
+            options = o.getJSONArray("options").strings(),
+            answerIndex = o.getInt("answer"),
+        )
+
+        fun JSONArray?.strings(): List<String> =
+            if (this == null) emptyList() else (0 until length()).map { getString(it) }
+
+        fun JSONArray?.ints(): List<Int> =
+            if (this == null) emptyList() else (0 until length()).map { getInt(it) }
+
+        fun JSONArray?.bools(): List<Boolean> =
+            if (this == null) emptyList() else (0 until length()).map { getBoolean(it) }
+    }
+}
 
 /**
  * Ten authored questions drawn from the facts the app already ships — see [Quiz] for the bank.
@@ -87,28 +225,41 @@ private enum class Stage { INTRO, PLAYING, RESULT }
  */
 @Composable
 fun QuizScreen(
+    session: QuizSession,
     onOpenFact: (String) -> Unit,
     onClose: () -> Unit,
-    /** Leaving from the score, which is a natural break — the only exit the ad cap sees. */
-    onFinish: () -> Unit = onClose,
 ) {
-    var stage by remember { mutableStateOf(Stage.INTRO) }
-    var questions by remember { mutableStateOf(emptyList<QuizQuestion>()) }
-    var index by remember { mutableIntStateOf(0) }
-    var picked by remember { mutableStateOf<Int?>(null) }
-    /** One entry per answered question, in order — drives the score, the pips and the accuracy. */
-    var results by remember { mutableStateOf(emptyList<Boolean>()) }
-    var missed by remember { mutableStateOf(emptyList<String>()) }
-    var beatBest by remember { mutableStateOf(false) }
-
-    var daily by remember { mutableStateOf(true) }
-    /** The day the round on screen was drawn for — pinned so a round played across midnight
-     *  still counts as the day whose questions it actually asked. */
-    var playDay by remember { mutableLongStateOf(0L) }
-    var outcome by remember { mutableStateOf<DailyQuizOutcome?>(null) }
-    var hintUsed by remember { mutableStateOf(false) }
-    var hidden by remember { mutableStateOf(emptySet<Int>()) }
+    var stage by session.stageState
+    var questions by session.questionsState
+    var index by session.indexState
+    var picked by session.pickedState
+    var results by session.resultsState
+    var missed by session.missedState
+    var beatBest by session.beatBestState
+    var daily by session.dailyState
+    var playDay by session.playDayState
+    var outcome by session.outcomeState
+    var hintUsed by session.hintUsedState
+    var hidden by session.hiddenState
     var hintOpen by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val activity = context as? android.app.Activity
+
+    LaunchedEffect(stage, questions, index, picked, results, hidden, hintUsed) { session.persist() }
+
+    LaunchedEffect(stage) {
+        if (stage == Stage.PLAYING) AdManager.preloadQuizInterstitial(context)
+    }
+
+    fun leave(exit: () -> Unit) {
+        session.clearIfFinished()
+        exit()
+    }
+
+    fun atRoundBoundary(next: () -> Unit) {
+        if (activity != null) AdManager.maybeShowQuizInterstitial(activity, next) else next()
+    }
 
     // Subscribing to the revision is what keeps the hub honest: finishing a round changes the
     // streak underneath it, and these are plain reads off disk.
@@ -170,7 +321,7 @@ fun QuizScreen(
             total = questions.size,
             score = score,
             accent = accent,
-            onClose = onClose,
+            onClose = { leave(onClose) },
         )
 
         when (stage) {
@@ -208,7 +359,7 @@ fun QuizScreen(
                         }
                     },
                     onNext = { advance() },
-                    onOpenFact = onOpenFact,
+                    onOpenFact = { id -> leave { onOpenFact(id) } },
                 )
             }
 
@@ -219,9 +370,9 @@ fun QuizScreen(
                 outcome = outcome,
                 beatBest = beatBest,
                 missed = missed,
-                onOpenFact = onOpenFact,
-                onAgain = { start(isDaily = false) },
-                onClose = onFinish,
+                onOpenFact = { id -> leave { onOpenFact(id) } },
+                onAgain = { atRoundBoundary { start(isDaily = false) } },
+                onClose = { atRoundBoundary { leave(onClose) } },
             )
         }
     }

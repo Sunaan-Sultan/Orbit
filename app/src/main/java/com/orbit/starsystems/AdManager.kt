@@ -29,14 +29,16 @@ enum class RewardResult {
 }
 
 object AdManager {
-    private var interstitialAd: InterstitialAd? = null
-    private var loadInFlight = false
 
     // Shared frequency cap so every trigger point competes for the same slot and
     // ads never stack. Tune these knobs to trade revenue vs. user experience.
     private const val ACTIONS_PER_AD = 4         // show on every Nth eligible action
     private const val MIN_INTERVAL_MS = 100_000L // ...but never more often than this
     private const val LAUNCH_GRACE_MS = 90_000L  // ...and never this soon after a launch
+
+    private const val QUIZ_MIN_INTERVAL_MS = 120_000L
+
+    private const val INTERSTITIAL_BACKOFF_MS = 30_000L
 
     private var actionsSinceAd = 0
     private var lastShownAt = 0L
@@ -48,6 +50,8 @@ object AdManager {
 
     private const val REAL_INTERSTITIAL_ID = "ca-app-pub-9720007236604856/3193381376"
     private const val TEST_INTERSTITIAL_ID = "ca-app-pub-3940256099942544/1033173712"
+
+    private const val REAL_INTERSTITIAL_QUIZ_ID = "ca-app-pub-9720007236604856/3193381376"
 
     private const val REAL_BANNER_ID = "ca-app-pub-9720007236604856/2781830136"
     private const val TEST_BANNER_ID = "ca-app-pub-3940256099942544/6300978111"
@@ -68,9 +72,6 @@ object AdManager {
     /** How long to sit on a failed load before trying again, so a dead network isn't hammered. */
     private const val REWARDED_BACKOFF_MS = 30_000L
 
-    private val interstitialId: String
-        get() = if (useTestAds) TEST_INTERSTITIAL_ID else REAL_INTERSTITIAL_ID
-
     val bannerId: String
         get() = if (useTestAds) TEST_BANNER_ID else REAL_BANNER_ID
 
@@ -90,10 +91,84 @@ object AdManager {
     var sdkReady = false
         private set
 
+    private class InterstitialSlot(private val unitId: String) {
+        private var ad: InterstitialAd? = null
+        private var loadInFlight = false
+        private var failedAt = 0L
+
+        val ready: Boolean get() = ad != null
+
+        fun load(context: Context) {
+            if (!adsEnabled || !sdkReady || loadInFlight || ad != null) return
+            if (System.currentTimeMillis() - failedAt < INTERSTITIAL_BACKOFF_MS) return
+            loadInFlight = true
+            InterstitialAd.load(
+                context.applicationContext,
+                unitId,
+                AdRequest.Builder().build(),
+                object : InterstitialAdLoadCallback() {
+                    override fun onAdLoaded(loaded: InterstitialAd) {
+                        loadInFlight = false
+                        ad = loaded
+                        failedAt = 0L
+                    }
+
+                    override fun onAdFailedToLoad(error: LoadAdError) {
+                        loadInFlight = false
+                        ad = null
+                        failedAt = System.currentTimeMillis()
+                    }
+                },
+            )
+        }
+
+        fun show(activity: android.app.Activity, placement: String, onDismissed: () -> Unit) {
+            val showing = ad
+            if (showing == null) {
+                onDismissed()
+                return
+            }
+            ad = null
+            isAdShowing = true
+            showing.fullScreenContentCallback = object : com.google.android.gms.ads.FullScreenContentCallback() {
+                override fun onAdShowedFullScreenContent() {
+                    Analytics.interstitialShown(placement)
+                }
+
+                override fun onAdDismissedFullScreenContent() {
+                    isAdShowing = false
+                    load(activity)
+                    onDismissed()
+                }
+
+                override fun onAdFailedToShowFullScreenContent(error: com.google.android.gms.ads.AdError) {
+                    isAdShowing = false
+                    Analytics.interstitialFailed(placement, "show_${error.code}")
+                    load(activity)
+                    onDismissed()
+                }
+            }
+            showing.show(activity)
+        }
+
+        fun discard() {
+            ad = null
+            loadInFlight = false
+            failedAt = 0L
+        }
+    }
+
+    private val browseSlot =
+        InterstitialSlot(if (useTestAds) TEST_INTERSTITIAL_ID else REAL_INTERSTITIAL_ID)
+
+    private val quizSlot =
+        if (useTestAds || REAL_INTERSTITIAL_QUIZ_ID.endsWith(UNSET_UNIT)) browseSlot
+        else InterstitialSlot(REAL_INTERSTITIAL_QUIZ_ID)
+
     /** Called from the consent callback, once MobileAds.initialize has actually finished. */
     fun onAdsInitialized(context: Context) {
         sdkReady = true
-        loadInterstitial(context)
+        browseSlot.load(context)
     }
 
     /**
@@ -110,27 +185,9 @@ object AdManager {
         isAdShowing = false
     }
 
-    fun loadInterstitial(context: Context) {
-        if (!adsEnabled || loadInFlight || interstitialAd != null) return
-        loadInFlight = true
-        val adRequest = AdRequest.Builder().build()
-        InterstitialAd.load(
-            context,
-            interstitialId,
-            adRequest,
-            object : InterstitialAdLoadCallback() {
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    loadInFlight = false
-                    interstitialAd = ad
-                }
+    fun loadInterstitial(context: Context) = browseSlot.load(context)
 
-                override fun onAdFailedToLoad(error: LoadAdError) {
-                    loadInFlight = false
-                    interstitialAd = null
-                }
-            }
-        )
-    }
+    fun preloadQuizInterstitial(context: Context) = quizSlot.load(context)
 
     /**
      * Time-only trigger: shows an interstitial if at least [minIntervalMs] has
@@ -145,11 +202,11 @@ object AdManager {
         onProceed: () -> Unit,
     ) {
         val now = System.currentTimeMillis()
-        if (interstitialAd != null && quotaAllows(now, minIntervalMs)) {
+        if (browseSlot.ready && quotaAllows(now, minIntervalMs)) {
             record(now)
-            showInterstitial(activity, onProceed)
+            browseSlot.show(activity, Analytics.Placement.FACT_SCROLL, onProceed)
         } else {
-            loadInterstitial(activity)
+            browseSlot.load(activity)
             onProceed()
         }
     }
@@ -164,8 +221,8 @@ object AdManager {
      * banks up credits and the first ad to load fires immediately.
      */
     fun maybeShowInterstitial(activity: android.app.Activity, onProceed: () -> Unit) {
-        if (interstitialAd == null) {
-            loadInterstitial(activity)
+        if (!browseSlot.ready) {
+            browseSlot.load(activity)
             onProceed()
             return
         }
@@ -173,14 +230,26 @@ object AdManager {
         val now = System.currentTimeMillis()
         if (actionsSinceAd >= ACTIONS_PER_AD && quotaAllows(now, MIN_INTERVAL_MS)) {
             record(now)
-            showInterstitial(activity, onProceed)
+            browseSlot.show(activity, Analytics.Placement.NAVIGATION, onProceed)
         } else {
+            onProceed()
+        }
+    }
+
+    fun maybeShowQuizInterstitial(activity: android.app.Activity, onProceed: () -> Unit) {
+        val now = System.currentTimeMillis()
+        if (quizSlot.ready && quotaAllows(now, QUIZ_MIN_INTERVAL_MS)) {
+            record(now)
+            quizSlot.show(activity, Analytics.Placement.QUIZ_ROUND_END, onProceed)
+        } else {
+            quizSlot.load(activity)
             onProceed()
         }
     }
 
     private fun quotaAllows(now: Long, minIntervalMs: Long): Boolean =
         adsEnabled &&
+            !isAdShowing &&
             now - sessionStartedAt >= LAUNCH_GRACE_MS &&
             now - lastShownAt >= minIntervalMs
 
@@ -189,34 +258,10 @@ object AdManager {
         lastShownAt = now
     }
 
-    fun showInterstitial(context: android.app.Activity, onAdDismissed: () -> Unit) {
-        val ad = interstitialAd
-        if (ad == null) {
-            onAdDismissed()
-            return
-        }
-        isAdShowing = true
-        ad.fullScreenContentCallback = object : com.google.android.gms.ads.FullScreenContentCallback() {
-            override fun onAdDismissedFullScreenContent() {
-                isAdShowing = false
-                interstitialAd = null
-                loadInterstitial(context)
-                onAdDismissed()
-            }
-
-            override fun onAdFailedToShowFullScreenContent(error: com.google.android.gms.ads.AdError) {
-                isAdShowing = false
-                interstitialAd = null
-                onAdDismissed()
-            }
-        }
-        ad.show(context)
-    }
-
     /** Drops any cached ad the moment the user buys the entitlement. */
     fun discard() {
-        interstitialAd = null
-        loadInFlight = false
+        browseSlot.discard()
+        quizSlot.discard()
         rewardedAd = null
         rewardedReady = false
     }

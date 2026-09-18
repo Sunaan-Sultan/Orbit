@@ -37,8 +37,14 @@ Current version in source: **3.2** (versionCode 32) — see `app/build.gradle.kt
 - **Your progress now shows.** Facts you have seen are ticked in every list, each system card carries a progress bar and tells you how many of its facts you have explored, and each category shows how far through it you are.
 - **Share a fact as a picture.** The Learn more sheet has a share button that renders the fact's own scene as an image card and hands it to the share sheet — with a link that opens straight back to that fact.
 - **A privacy choice for ads.** Where the law gives you one, ads now ask before they personalise, and the choice can be changed at any time from the You tab.
+- **The quiz carries an ad, at the end of a round.** A free quiz has to pay for itself somewhere, so the ad goes where the round is already over — after the score, as you tap Done or start another round. Never between questions, never before the score, and never on the back arrow. It obeys the same limits as the rest of the app: nothing in the first minute and a half of a session, nothing within two minutes of any other ad, and never one straight after a video you chose to watch for the 50/50. Anyone who has bought **Remove ads** sees none of it.
 - The daily streak now counts days you actually watched a fact or finished the quiz, rather than days you merely opened the app. It also remembers your longest run, which older versions never recorded — an existing streak is carried over intact, with its week of dots filled in.
 - Groundwork for measurement: the app can now report anonymous usage to Firebase Analytics once a `google-services.json` is added. Without one, nothing leaves the device and nothing changes.
+
+### Fixed
+
+- **The quiz now keeps your place.** Backing out of a round mid-question used to throw the whole round away, so coming back started again at question one. The round is now held outside the screen: leave it — for a fact, for the home page, for anything — and reopening the quiz drops you back on the same question with your answers intact. The round now survives the app being closed as well: it is written to disk on every answer, so closing Space Facts mid-question and coming back later reopens the round exactly where it was left, rather than starting over. A finished round still clears itself, so the next visit opens the hub, and an unfinished *daily* round left over from a previous day is discarded rather than resumed as "today's quiz".
+- **"Update now" works again.** On the forced-update screen, the button could do nothing at all: Google Play only lets each update handle launch its flow once, and the button was replaying the handle already spent when the screen appeared. It now opens the app's Play Store listing instead, so there is always somewhere for the tap to go.
 
 ### Play Store copy
 

@@ -51,6 +51,7 @@ import com.orbit.starsystems.ui.FactScreen
 import com.orbit.starsystems.ui.OrbitFont
 import com.orbit.starsystems.ui.ProfileScreen
 import com.orbit.starsystems.ui.QuizScreen
+import com.orbit.starsystems.ui.QuizSession
 import com.orbit.starsystems.ui.SavedScreen
 import com.orbit.starsystems.ui.SearchScreen
 import com.orbit.starsystems.ui.ShareCardCapture
@@ -80,7 +81,8 @@ fun SpaceFactsApp(
     var barVisible by remember { mutableStateOf(true) }
     var whatsNew by remember { mutableStateOf(false) }
     var searching by remember { mutableStateOf(false) }
-    var quizOpen by remember { mutableStateOf(false) }
+    val quizSession = remember { QuizSession().apply { restore() } }
+    var quizOpen by remember { mutableStateOf(quizSession.openState.value) }
     // Non-null only while a share card is being drawn and captured.
     var sharing by remember { mutableStateOf<String?>(null) }
 
@@ -88,6 +90,8 @@ fun SpaceFactsApp(
     // survive the process. The first run of each is a no-op write of what was just read.
     LaunchedEffect(saved) { OrbitPrefs.saved = saved }
     LaunchedEffect(viewed) { OrbitPrefs.viewed = viewed }
+
+    LaunchedEffect(quizOpen) { quizSession.noteOpen(quizOpen) }
 
     // Hide the bottom bar when the content scrolls down, reveal it when scrolling up.
     val barScrollConnection = remember {
@@ -195,6 +199,7 @@ fun SpaceFactsApp(
         // Load-bearing: the quiz only renders while no fact player is open, so arriving from a
         // notification on top of one would otherwise set the flag with nothing on screen.
         factId = null
+        quizSession.discardStaleDaily()
         quizOpen = true
         Analytics.notificationOpened("quiz")
         onPendingQuizConsumed()
@@ -217,7 +222,7 @@ fun SpaceFactsApp(
             sheet -> sheet = false
             factId != null -> exitPlayer()
             searching -> searching = false
-            quizOpen -> quizOpen = false
+            quizOpen -> { quizSession.clearIfFinished(); quizOpen = false }
             openSys != null -> openSys = null
             tab != "systems" -> tab = "systems"
         }
@@ -291,7 +296,7 @@ fun SpaceFactsApp(
                                 onOpenSystem = { sys -> Analytics.systemOpen(sys); withAd { openSys = sys } },
                                 onOpenFact = { openFact(it, Analytics.Source.TODAY) },
                                 onOpenSearch = { searching = true },
-                                onOpenQuiz = { quizOpen = true },
+                                onOpenQuiz = { quizSession.discardStaleDaily(); quizOpen = true },
                             )
                         }
                     }
@@ -309,13 +314,11 @@ fun SpaceFactsApp(
 
         if (quizOpen && factId == null) {
             QuizScreen(
+                session = quizSession,
                 // Leaves the quiz rather than stacking on top of it: the round is finished by
                 // the time these are reachable.
                 onOpenFact = { quizOpen = false; openFact(it, Analytics.Source.QUIZ) },
                 onClose = { quizOpen = false },
-                // Done, from the score screen, is the best natural break the app has — the
-                // round is over and the user is leaving anyway. The back arrow stays free.
-                onFinish = { quizOpen = false; withAd { } },
             )
         }
 
