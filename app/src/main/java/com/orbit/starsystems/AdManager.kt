@@ -36,7 +36,7 @@ object AdManager {
     private const val MIN_INTERVAL_MS = 100_000L // ...but never more often than this
     private const val LAUNCH_GRACE_MS = 90_000L  // ...and never this soon after a launch
 
-    private const val QUIZ_MIN_INTERVAL_MS = 120_000L
+    private const val QUIZ_MIN_INTERVAL_MS = 100_000L
 
     private const val INTERSTITIAL_BACKOFF_MS = 30_000L
 
