@@ -43,6 +43,8 @@ object BillingManager {
     var price by mutableStateOf<String?>(null)
         private set
 
+    var onEntitlementResolved: ((Boolean) -> Unit)? = null
+
     private const val TAG = "OrbitBilling"
     private const val MAX_RETRIES = 4
 
@@ -212,6 +214,7 @@ object BillingManager {
     private fun applyEntitlement(value: Boolean) {
         isAdFree = value
         OrbitPrefs.adFree = value
+        onEntitlementResolved?.invoke(value)
     }
 
     private fun finish(outcome: Outcome) {

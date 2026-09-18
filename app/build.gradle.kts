@@ -19,8 +19,8 @@ android {
         applicationId = "com.orbit.starsystems"
         minSdk = 24
         targetSdk = 36
-        versionCode = 33
-        versionName = "3.3"
+        versionCode = 35
+        versionName = "3.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

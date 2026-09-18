@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.rewarded.RewardedAd
@@ -48,6 +49,19 @@ object AdManager {
     // what gets an AdMob account suspended.
     private val useTestAds: Boolean get() = BuildConfig.DEBUG
 
+    private val TEST_DEVICE_IDS = listOf(
+        "2456E06B9D121737D8D584ED84E038C6",
+    )
+
+    fun applyTestDevices() {
+        if (TEST_DEVICE_IDS.isEmpty()) return
+        MobileAds.setRequestConfiguration(
+            MobileAds.getRequestConfiguration().toBuilder()
+                .setTestDeviceIds(TEST_DEVICE_IDS)
+                .build(),
+        )
+    }
+
     private const val REAL_INTERSTITIAL_ID = "ca-app-pub-9720007236604856/3193381376"
     private const val TEST_INTERSTITIAL_ID = "ca-app-pub-3940256099942544/1033173712"
 
@@ -76,6 +90,14 @@ object AdManager {
         get() = if (useTestAds) TEST_BANNER_ID else REAL_BANNER_ID
 
     val adsEnabled: Boolean get() = !BillingManager.isAdFree
+
+    private var startupRequested = false
+
+    fun requestStartup(): Boolean {
+        if (!adsEnabled || startupRequested) return false
+        startupRequested = true
+        return true
+    }
 
     var isAdShowing by mutableStateOf(false)
         private set

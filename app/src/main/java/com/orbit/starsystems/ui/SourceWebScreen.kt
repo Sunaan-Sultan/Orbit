@@ -52,6 +52,28 @@ import com.orbit.starsystems.AppActions
 
 private const val SHEET_BG = 0xFF0C0C0F
 
+private val AUTH_ROUTE = Regex(
+    "(^|/)(login|log-in|signin|sign-in|signup|sign-up|register|account|accounts|auth|oauth|session|password)(/|$)" +
+        "|special:userlogin|special:createaccount|special:password",
+    RegexOption.IGNORE_CASE,
+)
+
+private fun registrableDomain(rawHost: String?): String? {
+    val host = rawHost?.lowercase()?.trim('.')?.takeIf { it.isNotEmpty() } ?: return null
+    val labels = host.split('.')
+    return if (labels.size <= 2) host else labels.takeLast(2).joinToString(".")
+}
+
+private fun isInAppNavigable(rawUrl: String, baseDomain: String?): Boolean {
+    if (baseDomain == null) return false
+    val uri = runCatching { rawUrl.toUri() }.getOrNull() ?: return false
+    val scheme = uri.scheme?.lowercase()
+    if (scheme != "http" && scheme != "https") return false
+    if (registrableDomain(uri.host) != baseDomain) return false
+    val route = uri.path.orEmpty() + "?" + uri.query.orEmpty()
+    return !AUTH_ROUTE.containsMatchIn(route)
+}
+
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun SourceWebScreen(url: String, accent: Color, onClose: () -> Unit) {
@@ -67,6 +89,13 @@ fun SourceWebScreen(url: String, accent: Color, onClose: () -> Unit) {
 
     val host = remember(currentUrl) {
         currentUrl.toUri().host?.removePrefix("www.") ?: currentUrl
+    }
+    val baseDomain = remember(url) { registrableDomain(url.toUri().host) }
+
+    fun leaveForBrowser(view: WebView?, target: String) {
+        view?.stopLoading()
+        AppActions.openExternal(context, target)
+        if (view?.canGoBack() == true) view.goBack() else onClose()
     }
 
     BackHandler {
@@ -146,10 +175,13 @@ fun SourceWebScreen(url: String, accent: Color, onClose: () -> Unit) {
                                 request: WebResourceRequest?,
                             ): Boolean {
                                 val target = request?.url ?: return false
-                                val scheme = target.scheme?.lowercase()
-                                if (scheme == "http" || scheme == "https") return false
-                                AppActions.openExternal(context, target.toString())
-                                return true
+                                if (request.isForMainFrame &&
+                                    !isInAppNavigable(target.toString(), baseDomain)
+                                ) {
+                                    AppActions.openExternal(context, target.toString())
+                                    return true
+                                }
+                                return false
                             }
 
                             override fun doUpdateVisitedHistory(
@@ -158,7 +190,9 @@ fun SourceWebScreen(url: String, accent: Color, onClose: () -> Unit) {
                                 isReload: Boolean,
                             ) {
                                 canGoBack = view?.canGoBack() == true
-                                if (newUrl != null) currentUrl = newUrl
+                                if (newUrl != null && isInAppNavigable(newUrl, baseDomain)) {
+                                    currentUrl = newUrl
+                                }
                             }
 
                             override fun onPageStarted(
@@ -166,6 +200,13 @@ fun SourceWebScreen(url: String, accent: Color, onClose: () -> Unit) {
                                 newUrl: String?,
                                 favicon: android.graphics.Bitmap?,
                             ) {
+                                if (newUrl != null &&
+                                    newUrl != "about:blank" &&
+                                    !isInAppNavigable(newUrl, baseDomain)
+                                ) {
+                                    leaveForBrowser(view, newUrl)
+                                    return
+                                }
                                 failed = false
                                 if (newUrl != null) currentUrl = newUrl
                             }
@@ -255,6 +296,7 @@ fun SourceWebScreen(url: String, accent: Color, onClose: () -> Unit) {
             lifecycleOwner.lifecycle.removeObserver(observer)
             webView?.let {
                 it.stopLoading()
+                it.webViewClient = WebViewClient()
                 it.webChromeClient = null
                 it.loadUrl("about:blank")
                 it.destroy()

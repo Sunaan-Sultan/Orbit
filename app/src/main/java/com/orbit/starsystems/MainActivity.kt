@@ -62,6 +62,10 @@ class MainActivity : ComponentActivity() {
 
     private val mainHandler = Handler(Looper.getMainLooper())
 
+    private val entitlementListener: (Boolean) -> Unit = { owned ->
+        mainHandler.post { if (owned) AdManager.discard() else startAds() }
+    }
+
     /**
      * A hung update check must not brick the app, so the gate opens if Play hasn't
      * answered in [CHECK_TIMEOUT_MS]. The check runs again on the next launch.
@@ -95,17 +99,9 @@ class MainActivity : ComponentActivity() {
         // Re-arm the reminder: work does not survive an app update or a "force stop".
         DailyReminder.sync(this)
         BillingManager.init(this)
+        BillingManager.onEntitlementResolved = entitlementListener
         AdManager.startSession()
-        // The Mobile Ads SDK must not start before consent is settled, or the first requests
-        // go out with no legal basis. AdConsent always calls back, so ads are never stranded.
-        if (AdManager.adsEnabled) {
-            // Loading from inside the initialize callback, not beside it: a request made
-            // before the SDK is actually up is dropped, and the rewarded path needs to know
-            // when it is safe to ask.
-            AdConsent.gather(this) {
-                MobileAds.initialize(this) { AdManager.onAdsInitialized(this) }
-            }
-        }
+        startAds()
 
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkForImmediateUpdate()
@@ -151,8 +147,25 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        if (BillingManager.onEntitlementResolved === entitlementListener) {
+            BillingManager.onEntitlementResolved = null
+        }
         mainHandler.removeCallbacks(checkTimeout)
         super.onDestroy()
+    }
+
+    // The Mobile Ads SDK must not start before consent is settled, or the first requests
+    // go out with no legal basis. AdConsent always calls back, so ads are never stranded.
+    private fun startAds() {
+        if (isFinishing || isDestroyed) return
+        if (!AdManager.requestStartup()) return
+        // Loading from inside the initialize callback, not beside it: a request made
+        // before the SDK is actually up is dropped, and the rewarded path needs to know
+        // when it is safe to ask.
+        AdConsent.gather(this) {
+            AdManager.applyTestDevices()
+            MobileAds.initialize(this) { AdManager.onAdsInitialized(this) }
+        }
     }
 
     private fun checkForImmediateUpdate() {
